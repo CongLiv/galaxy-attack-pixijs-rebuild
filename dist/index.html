@@ -940,9 +940,9 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.player.x = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2;
     this.player.y = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2 + playerSize * 5;
     this.zIndex = 1;
-    this.player.died = false;
-    this.player.point = 0;
-    this.player.level = 1;
+    this.died = false;
+    this.point = 0;
+    this.level = 1;
     this.maxHealth = 100;
     this.health = this.maxHealth;
     this.player.interactive = true;
@@ -1334,6 +1334,14 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.healthBar.endFill();
     this.zIndex = 100;
     this.addChild(this.healthBar);
+    this.pointBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.pointBar.position.set(margin, margin);
+    this.playerPoint = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point, { fill: "white" });
+    this.playerPoint.anchor.set(0.5);
+    this.playerPoint.position.set(0, 0);
+    this.pointBar.addChild(this.playerPoint);
+    this.pointBar.zIndex = 100;
+    this.addChild(this.pointBar);
   }
   update(delta) {
     this.healthBar.width = this.healthBar.initalWidth * _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.health / _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.maxHealth;
@@ -34755,4 +34763,4 @@ _manager_js__WEBPACK_IMPORTED_MODULE_0__.Manager.changeScene(loady);
 })();
 
 /******/ })()
-;</script></head><body style="text-align: center; background-color: #212A3E;"><script type="module" src="../../dist/index.html"></script></body></html>
+;</script></head><body style="text-align: center; background-color: #212A3E;"></body></html>

@@ -17,10 +17,49 @@ export class Player extends PIXI.Container {
 
         const playerSize = 128;
 
+        // Tạo các texture cho player
+        this.playerTextures = [
+            PIXI.Texture.from('player-player08'),
+        ];
+
+        this.playerMoveLeftTextures = [
+            // PIXI.Texture.from('player-player07'),
+            PIXI.Texture.from('player-player06')
+        ];
+
+        this.playerMoveRightTextures = [
+            // PIXI.Texture.from('player-player09'),
+            PIXI.Texture.from('player-player10')
+        ];
+
+        this.playerMoveLeftUpTextures = [
+            PIXI.Texture.from('player-player02'),
+            // PIXI.Texture.from('player-player01')
+        ];
+
+        this.playerMoveRightUpTextures = [
+            PIXI.Texture.from('player-player04'),
+            // PIXI.Texture.from('player-player05')
+        ];
+
+        this.playerMoveLeftDownTextures = [
+            PIXI.Texture.from('player-player12'),
+            // PIXI.Texture.from('player-player11')
+
+        ];
+
+        this.playerMoveRightDownTextures = [
+            PIXI.Texture.from('player-player14'),
+            // PIXI.Texture.from('player-player15')
+        ];
+
+
+
         // Tạo đối tượng player
 
-        this.player = new PIXI.Sprite(PIXI.Texture.from('player-player03'));
-
+        this.player = new PIXI.AnimatedSprite(this.playerTextures);
+        this.player.animationSpeed = 0.1;
+        this.player.play();
         this.player.anchor.set(0.5);
         this.player.x = Manager.width / 2;
         this.player.y = Manager.width / 2 + playerSize * 5;
@@ -28,9 +67,9 @@ export class Player extends PIXI.Container {
 
         // Thuộc tính 
         this.zIndex = 1;
-        this.player.died = false;
-        this.player.point = 0;
-        this.player.level = 1;
+        this.died = false;
+        this.point = 0;
+        this.level = 1;
         this.maxHealth = 100;
         this.health = this.maxHealth;
 
@@ -47,43 +86,8 @@ export class Player extends PIXI.Container {
 
         this.addChild(this.player);
 
-
-
-        this.playerTextures = [
-            PIXI.Texture.from('player-player08'),
-            PIXI.Texture.from('player-player08'),
-        ];
-
-        this.playerMoveLeftTextures = [
-            PIXI.Texture.from('player-player07'),
-            PIXI.Texture.from('player-player06')
-        ];
-
-        this.playerMoveRightTextures = [
-            PIXI.Texture.from('player-player09'),
-            PIXI.Texture.from('player-player10')
-        ];
-
-        this.playerMoveLeftUpTextures = [
-            PIXI.Texture.from('player-player02'),
-            PIXI.Texture.from('player-player01')
-        ];
-
-        this.playerMoveRightUpTextures = [
-            PIXI.Texture.from('player-player04'),
-            PIXI.Texture.from('player-player05')
-        ];
-
-        this.playerMoveLeftDownTextures = [
-            PIXI.Texture.from('player-player12'),
-            PIXI.Texture.from('player-player11')
-
-        ];
-
-        this.playerMoveRightDownTextures = [
-            PIXI.Texture.from('player-player14'),
-            PIXI.Texture.from('player-player15')
-        ];
+        this.lastPosition = this.position.clone();
+        this.counterUpdatePosition = 0;
 
     }
 
@@ -138,12 +142,72 @@ export class Player extends PIXI.Container {
         }
 
 
+        this.counterUpdatePosition += delta;
+        if (this.counterUpdatePosition >= 160) {
+            this.lastPosition = this.player.position.clone();
+            this.counterUpdatePosition = 0;
+        }
+
     }
 
     onDragMove(event) {
         if (this.dragTarget) {
             this.dragTarget.parent.toLocal(event.data.global, null, this.dragTarget.position);
+
+            // change sprite texture while move
+
+            if (this.dragTarget) 
+            {
+                this.triggerChangeTexture = false;
+                const deltaX = this.dragTarget.x - this.lastPosition.x;
+                const deltaY = this.dragTarget.y - this.lastPosition.y;
+
+                if (deltaX > 0 && deltaY > 0) {
+                    // Drag right-down
+                    this.dragTarget.textures = this.playerMoveRightDownTextures;
+                } else if (deltaX > 0 && deltaY < 0) {
+                    // Drag right-up
+                    this.dragTarget.textures = this.playerMoveRightUpTextures;
+                } else if (deltaX < 0 && deltaY > 0) {
+                    // Drag left-down
+                    this.dragTarget.textures = this.playerMoveLeftDownTextures;
+                } else if (deltaX < 0 && deltaY < 0) {
+                    // Drag left-up
+                    this.dragTarget.textures = this.playerMoveLeftUpTextures;
+                } else if (deltaX > 0) {
+                    // Drag right
+                    this.dragTarget.textures = this.playerMoveRightTextures;
+                } else if (deltaX < 0) {
+                    // Drag left
+                    this.dragTarget.textures = this.playerMoveLeftTextures;
+                } else if (deltaY > 0) {
+                    // Drag down
+                    this.dragTarget.textures = this.playerTextures;
+                } else if (deltaY < 0) {
+                    // Drag up
+                    this.dragTarget.textures = this.playerTextures;
+                }
+
+
+                // Chạy animation
+                this.playPlayerSprite();
+
+            }
         }
+    }
+
+
+    playPlayerSprite() {
+
+        this.player.play();
+        this.player.loop = false; // Ngừng lặp lại animation sau khi chạy xong 2 frames
+        this.player.onComplete = () => { // Sự kiện khi hoàn thành animation
+            this.player.stop();
+            setTimeout(() => {
+
+                this.player.textures = this.playerTextures;
+            }, 150);
+        };
     }
 
     onDragStart(event) {

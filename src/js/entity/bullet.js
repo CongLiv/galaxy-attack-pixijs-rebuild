@@ -55,7 +55,7 @@ export class Bullet extends PIXI.Container {
         });
 
         this.collisionDetection();
-        console.log(this.children.length);
+       
 
     }
 
