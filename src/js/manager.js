@@ -127,6 +127,10 @@ export class Manager {
 // Also, this could be in its own file...
 export class IScene extends PIXI.Container {
 
+    constructor() {
+        super();
+        this.pausing = false;
+    }
     update(delta) {
 
     }

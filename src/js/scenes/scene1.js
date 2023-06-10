@@ -7,13 +7,12 @@ import { Bullet } from "../entity/bullet.js";
 import { Spawner } from "../entity/spawner.js";
 import { Enemy1 } from "../entity/enemy1.js";
 import { GameOverUI } from "../ui/gameOverUI.js";
-
+import { GamePauseUI } from "../ui/gamePauseUI.js";
 
 export class Scene1 extends IScene {
 
     constructor() {
         super();
-
         this.background = new PIXI.TilingSprite(
             PIXI.Texture.from('scene1-background'),
             Manager.app.screen.width,
@@ -33,33 +32,61 @@ export class Scene1 extends IScene {
 
         Manager.shooting = new Bullet(this.enemySpawner);
         this.addChild(Manager.shooting);
+        
+
+        this.gamePauseUI = new GamePauseUI();
+        this.addChild(this.gamePauseUI);
+        this.gamePauseUI.visible = false;
 
         this.sortableChildren = true;
 
     }
+
+    // get pausing() {
+    //     return this.pausing;
+    // }
+
+    // set pausing(value) {
+    //     this.pausing = value;
+    // }
+
     update(delta) {
 
-        this.background.tilePosition.y += 1 * delta;
+        if (this.pausing == false) {
+            this.gamePauseUI.visible = false;
+            this.background.tilePosition.y += 1 * delta;
 
-        this.gamePlayingUI.update(delta);
-        Manager.player.update(delta);
-        Manager.shooting.update(delta);
+            this.gamePlayingUI.update(delta);
+            Manager.player.update(delta);
+            Manager.shooting.update(delta);
 
-        this.enemySpawner.spawns.forEach((enemy) => {
-            enemy.update(delta);
-            this.addChild(enemy);
-        });
+            this.enemySpawner.spawns.forEach((enemy) => {
+                enemy.update(delta);
+                this.addChild(enemy);
+            });
 
-        if (Manager.player.died && !this.isGameOverAdded) {
-            console.log("game over");
-            this.addChild(this.gameOverUI);
-            this.isGameOverAdded = true;
+            if (Manager.player.died && !this.isGameOverAdded) {
+                console.log("game over");
+                this.addChild(this.gameOverUI);
+                this.isGameOverAdded = true;
+            }
+
+            if (Manager.player.died) this.gameOverUI.update(delta);
+
+            if (Manager.player.died && !this.removedChild) {
+                this.removeChild(this.gamePlayingUI);
+                this.removedChild = true;
+            }
         }
 
-        if (Manager.player.died) this.gameOverUI.update(delta);
+        else {
+            this.gamePauseUI.update(delta);
+            this.gamePauseUI.visible = true;
+        }
+
 
     }
-    
+
 
 
 }

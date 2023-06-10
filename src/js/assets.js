@@ -35,6 +35,7 @@ export const manifest = {
                 "enemy1": "../../assets/enemy1.png",
                 "enemy2": "../../assets/enemy2.png",
                 "background": "../../assets/background.png",
+                "pause": "../../assets/pause-button.png",
             }
 
         },

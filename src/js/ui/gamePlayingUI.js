@@ -42,13 +42,35 @@ export class GamePlayingUI extends PIXI.Container{
         this.pointBar.addChild(this.playerPoint);
         this.pointBar.zIndex = 100;
         this.addChild(this.pointBar);
+
+
+
+        this.pauseButtonBar = new PIXI.Container();
+        this.pauseButton = new PIXI.Sprite(PIXI.Texture.from('pause'));
+        this.pauseButton.zIndex = 2;
+        
+        this.pauseButtonBar.addChild(this.pauseButton);
+        this.pauseButtonBar.interactive = true;
+        this.pauseButtonBar.cursor = 'pointer';
+        this.pauseButtonBar.on('pointerdown', () => {
+            Manager.currentScene.pausing = true;
+        });
+
+        this.pauseButtonBar.position.set(margin, margin);
+        
+        this.addChild(this.pauseButtonBar);
+
+        this.zIndex = 99;
     }
 
     update(delta){
+
         this.healthBar.width = this.healthBar.initalWidth * Manager.player.health / Manager.player.maxHealth;
         this.playerPoint.text = "Point : " + Manager.player.point.toString();
         if (this.health <= 0) {
             this.player.died = true;
         }
+
+        
     }
 }

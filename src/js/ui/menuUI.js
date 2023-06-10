@@ -50,7 +50,7 @@ export class MenuUI extends PIXI.Container {
 
         this.playButtonBar.on('pointerover', () => {
             this.playButtonText.style.fontSize = 40;
-            this.playButtonText.style.fill = ['#2326e8', '#ffffff'];
+            this.playButtonText.style.fill = ['#60a7b3', '#e4d7bf'];
             this.playButtonBar.scale.set(1.05);
         });
 
