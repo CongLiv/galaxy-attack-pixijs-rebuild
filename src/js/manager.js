@@ -12,17 +12,28 @@ export class Manager {
     static width;
     static height;
 
-
+    // player and shooting are read-only after creation (for now)
     static player;
     static shooting;
 
 
+    // state of the game
+    static state = {
+        menu: 0,
+        playing: 1,
+        pause: 2,
+        gameOver: 3,
+    }
+
+    static gameState = Manager.state.menu;
+
+
     static generalFont = new PIXI.TextStyle({
-        fontFamily: 'Arial',
+        fontFamily: 'Arial Black',
         fontSize: 36,
-        fontStyle: 'italic',
+        // fontStyle: 'italic',
         fontWeight: 'bold',
-        fill: ['#ffffff', '#4240f5'],
+        fill: ['#878180', '#ffffff' ],
         stroke: '#4a1850',
         strokeThickness: 5,
         dropShadow: true,
@@ -96,7 +107,6 @@ export class Manager {
             Manager.currentScene.update(delta);
         }
 
-        // as I said before, I HATE the "frame passed" approach. I would rather use `Manager.app.ticker.deltaMS`
     }
 
 

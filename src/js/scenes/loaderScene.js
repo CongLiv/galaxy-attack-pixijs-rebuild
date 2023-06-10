@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { IScene } from "../manager.js";
 import { Scene1 } from "./scene1.js";
+import { Menu } from "./menu.js";
 import { Manager } from "../manager.js";
 import { manifest } from "../assets.js";
 export class LoaderScene extends IScene {
@@ -51,7 +52,7 @@ export class LoaderScene extends IScene {
     gameLoaded() {
 
         // Change scene to the game scene!
-        Manager.changeScene(new Scene1());
+        Manager.changeScene(new Menu());
     }
 
     update(delta) {

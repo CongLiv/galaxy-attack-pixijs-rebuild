@@ -137,7 +137,7 @@ export class Player extends PIXI.Container {
             this.player.level = 2;
         }
 
-        if (this.player.point == 20) {
+        if (this.player.point == 50) {
             this.player.level = 3;
         }
 

@@ -30,6 +30,16 @@ export const manifest = {
                 "background": "../../assets/background.png",
             }
 
+        },
+
+        {
+            name: "menu",
+            assets: {
+                "background": "../../assets/menu-background.png",
+                "button": "../../assets/menu-button.png",
+                "logo": "../../assets/menu-logo.png",
+  
+            }
         }
     ]
 };

@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { IScene } from "../manager.js";
 import { Manager } from "../manager.js";
 import { Player } from "../entity/player.js";
-import { GamePlayingUI } from "../ui/gamePlaying.js";
+import { GamePlayingUI } from "../ui/gamePlayingUI.js";
 import { Bullet } from "../entity/bullet.js";
 import { Spawner } from "../entity/spawner.js";
 import { Enemy1 } from "../entity/enemy1.js";
@@ -14,7 +14,7 @@ export class Scene1 extends IScene {
         super();
 
         this.background = new PIXI.TilingSprite(
-            PIXI.Texture.from('background'),
+            PIXI.Texture.from('scene1-background'),
             Manager.app.screen.width,
             Manager.app.screen.height
         );
