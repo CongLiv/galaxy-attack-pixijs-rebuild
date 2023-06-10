@@ -28,23 +28,6 @@ export class Manager {
     static gameState = Manager.state.menu;
 
 
-    static generalFont = new PIXI.TextStyle({
-        fontFamily: 'Arial Black',
-        fontSize: 36,
-        // fontStyle: 'italic',
-        fontWeight: 'bold',
-        fill: ['#878180', '#ffffff' ],
-        stroke: '#4a1850',
-        strokeThickness: 5,
-        dropShadow: true,
-        dropShadowColor: '#000000',
-        dropShadowBlur: 4,
-        dropShadowAngle: Math.PI / 6,
-        dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 440,
-    });
-
     // With getters but not setters, these variables become read-only
     static get width() {
         return Manager.width;
@@ -53,6 +36,11 @@ export class Manager {
 
     static get height() {
         return Manager.height;
+    }
+
+
+    static get generalFont() {
+        return Manager.generalFont;
     }
 
     // Use this function ONCE to start the entire machinery
@@ -69,7 +57,7 @@ export class Manager {
             width: width,
             height: height,
             backgroundColor: 'black',
-            resolution: window.devicePixelRatio || 1,
+            
         });
 
         // Add the canvas that Pixi automatically created for you to the HTML document

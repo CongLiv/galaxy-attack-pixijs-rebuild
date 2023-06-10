@@ -50,7 +50,6 @@ export class LoaderScene extends IScene {
     }
 
     gameLoaded() {
-
         // Change scene to the game scene!
         Manager.changeScene(new Menu());
     }

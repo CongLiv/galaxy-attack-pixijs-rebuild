@@ -8,7 +8,7 @@ export class Menu extends IScene {
     constructor() {
         super();
         this.menuBackground = new PIXI.TilingSprite(
-            PIXI.Texture.from('menu-background'),
+            PIXI.Texture.from('menu-menubackground'),
             Manager.app.screen.width,
             Manager.app.screen.height
         );

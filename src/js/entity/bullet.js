@@ -46,7 +46,15 @@ export class Bullet extends PIXI.Container {
 
 
     update(delta) {
-        this.fire()
+
+        if (Manager.player.died) {
+            // remove all bullet
+            this.bullets.forEach((bullet) => {
+                this.removeChild(bullet);
+            });
+            return;
+        }
+        this.fire();
         this.bullets.forEach((bullet) => {
             bullet.position.set(
                 bullet.position.x,

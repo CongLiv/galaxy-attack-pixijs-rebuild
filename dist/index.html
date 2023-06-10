@@ -723,7 +723,14 @@ const manifest = {
         "player12": "../../assets/player012.png",
         "player13": "../../assets/player013.png",
         "player14": "../../assets/player014.png",
-        "player15": "../../assets/player015.png"
+        "player15": "../../assets/player015.png",
+        "explosive01": "../../assets/explosive001.png",
+        "explosive02": "../../assets/explosive002.png",
+        "explosive03": "../../assets/explosive003.png",
+        "explosive04": "../../assets/explosive004.png",
+        "explosive05": "../../assets/explosive005.png",
+        "explosive06": "../../assets/explosive006.png",
+        "explosive07": "../../assets/explosive007.png"
       }
     },
     {
@@ -733,6 +740,14 @@ const manifest = {
         "enemy1": "../../assets/enemy1.png",
         "enemy2": "../../assets/enemy2.png",
         "background": "../../assets/background.png"
+      }
+    },
+    {
+      name: "menu",
+      assets: {
+        "menubackground": "../../assets/menu-background.png",
+        "button": "../../assets/menu-button.png",
+        "logo": "../../assets/menu-logo.png"
       }
     }
   ]
@@ -788,6 +803,12 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.lastBulletTime = currentTime;
   }
   update(delta) {
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died) {
+      this.bullets.forEach((bullet) => {
+        this.removeChild(bullet);
+      });
+      return;
+    }
     this.fire();
     this.bullets.forEach((bullet) => {
       bullet.position.set(
@@ -796,7 +817,6 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       );
     });
     this.collisionDetection();
-    console.log(this.children.length);
   }
   collisionDetection() {
     this.bullets.forEach((bullet, bulletIndex) => {
@@ -935,51 +955,64 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.stage.on("pointerup", this.onDragEnd);
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.stage.on("pointerupoutside", this.onDragEnd);
     const playerSize = 128;
-    this.player = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player03"));
+    this.playerTextures = [
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player08")
+    ];
+    this.playerMoveLeftTextures = [
+      // PIXI.Texture.from('player-player07'),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player06")
+    ];
+    this.playerMoveRightTextures = [
+      // PIXI.Texture.from('player-player09'),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player10")
+    ];
+    this.playerMoveLeftUpTextures = [
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player02")
+      // PIXI.Texture.from('player-player01')
+    ];
+    this.playerMoveRightUpTextures = [
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player04")
+      // PIXI.Texture.from('player-player05')
+    ];
+    this.playerMoveLeftDownTextures = [
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player12")
+      // PIXI.Texture.from('player-player11')
+    ];
+    this.playerMoveRightDownTextures = [
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player14")
+      // PIXI.Texture.from('player-player15')
+    ];
+    this.playerExplosiveTextures = [
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive01"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive02"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive03"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive04"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive05"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive06"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive07")
+    ];
+    this.player = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.AnimatedSprite(this.playerTextures);
+    this.player.animationSpeed = 0.1;
+    this.player.play();
     this.player.anchor.set(0.5);
-    this.player.x = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2;
-    this.player.y = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2 + playerSize * 5;
+    this.addChild(this.player);
+    this.x = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2;
+    this.y = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2 + playerSize * 5;
     this.zIndex = 1;
     this.died = false;
     this.point = 0;
     this.level = 1;
-    this.maxHealth = 100;
+    this.maxHealth = 10;
     this.health = this.maxHealth;
-    this.player.interactive = true;
-    this.player.cursor = "pointer";
+    this.interactive = true;
+    this.cursor = "pointer";
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragMove = this.onDragMove.bind(this);
-    this.player.on("pointerdown", this.onDragStart);
-    this.player.on("pointermove", this.onDragMove);
+    this.on("pointerdown", this.onDragStart);
+    this.on("pointermove", this.onDragMove);
     this.addChild(this.player);
-    this.playerTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player08"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player08")
-    ];
-    this.playerMoveLeftTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player07"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player06")
-    ];
-    this.playerMoveRightTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player09"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player10")
-    ];
-    this.playerMoveLeftUpTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player02"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player01")
-    ];
-    this.playerMoveRightUpTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player04"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player05")
-    ];
-    this.playerMoveLeftDownTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player12"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player11")
-    ];
-    this.playerMoveRightDownTextures = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player14"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-player15")
-    ];
+    this.lastPosition = this.position.clone();
+    this.counterUpdatePosition = 0;
   }
   attacked() {
     this.health -= 10;
@@ -987,42 +1020,75 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     setTimeout(() => {
       this.alpha = 1;
     }, 200);
+    if (this.health <= 0) {
+      this.died = true;
+    }
   }
-  get position() {
-    return this.player.position;
-  }
-  get width() {
-    return this.player.width;
-  }
-  get height() {
-    return this.player.height;
-  }
-  get died() {
-    return this.player.died;
-  }
-  set died(value) {
-    this.player.died = value;
-  }
-  get point() {
-    return this.player.point;
-  }
-  set point(value) {
-    this.player.point = value;
+  kill() {
+    this.cursor = "default";
+    this.player.textures = this.playerExplosiveTextures;
+    this.player.loop = false;
+    this.player.play();
+    this.player.onComplete = () => {
+      this.player.stop();
+      this.visible = false;
+    };
   }
   update(delta) {
-    if (this.died)
-      return;
-    if (this.player.point == 10) {
-      this.player.level = 2;
+    if (this.died && !this.isKilled) {
+      this.kill();
+      console.log("Player died");
+      this.isKilled = true;
     }
-    if (this.player.point == 20) {
-      this.player.level = 3;
+    if (this.point == 10) {
+      this.level = 2;
+    }
+    if (this.point == 50) {
+      this.level = 3;
+    }
+    this.counterUpdatePosition += delta;
+    if (this.counterUpdatePosition >= 160) {
+      this.lastPosition = this.position.clone();
+      this.counterUpdatePosition = 0;
     }
   }
   onDragMove(event) {
-    if (this.dragTarget) {
+    if (this.dragTarget && this.died == false) {
       this.dragTarget.parent.toLocal(event.data.global, null, this.dragTarget.position);
+      if (this.dragTarget) {
+        this.triggerChangeTexture = false;
+        const deltaX = this.dragTarget.x - this.lastPosition.x;
+        const deltaY = this.dragTarget.y - this.lastPosition.y;
+        if (deltaX > 0 && deltaY > 0) {
+          this.player.textures = this.playerMoveRightDownTextures;
+        } else if (deltaX > 0 && deltaY < 0) {
+          this.player.textures = this.playerMoveRightUpTextures;
+        } else if (deltaX < 0 && deltaY > 0) {
+          this.player.textures = this.playerMoveLeftDownTextures;
+        } else if (deltaX < 0 && deltaY < 0) {
+          this.player.textures = this.playerMoveLeftUpTextures;
+        } else if (deltaX > 0) {
+          this.player.textures = this.playerMoveRightTextures;
+        } else if (deltaX < 0) {
+          this.player.textures = this.playerMoveLeftTextures;
+        } else if (deltaY > 0) {
+          this.player.textures = this.playerTextures;
+        } else if (deltaY < 0) {
+          this.player.textures = this.playerTextures;
+        }
+        this.playPlayerSprite();
+      }
     }
+  }
+  playPlayerSprite() {
+    this.player.play();
+    this.player.loop = false;
+    this.player.onComplete = () => {
+      this.player.stop();
+      setTimeout(() => {
+        this.player.textures = this.playerTextures;
+      }, 150);
+    };
   }
   onDragStart(event) {
     this.dragTarget = event.currentTarget;
@@ -1100,6 +1166,9 @@ const _Manager = class {
   static get height() {
     return _Manager.height;
   }
+  static get generalFont() {
+    return _Manager.generalFont;
+  }
   // Use this function ONCE to start the entire machinery
   static initialize(width, height, background) {
     _Manager.width = width;
@@ -1109,8 +1178,7 @@ const _Manager = class {
       autoDensity: true,
       width,
       height,
-      backgroundColor: "black",
-      resolution: window.devicePixelRatio || 1
+      backgroundColor: "black"
     });
     document.body.appendChild(_Manager.app.view);
     _Manager.app.ticker.add((delta) => _Manager.update(delta));
@@ -1153,8 +1221,17 @@ __publicField(Manager, "currentScene");
 // Width and Height are read-only after creation (for now)
 __publicField(Manager, "width");
 __publicField(Manager, "height");
+// player and shooting are read-only after creation (for now)
 __publicField(Manager, "player");
 __publicField(Manager, "shooting");
+// state of the game
+__publicField(Manager, "state", {
+  menu: 0,
+  playing: 1,
+  pause: 2,
+  gameOver: 3
+});
+__publicField(Manager, "gameState", _Manager.state.menu);
 class IScene extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   update(delta) {
   }
@@ -1177,7 +1254,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
 /* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
 /* harmony import */ var _scene1_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scene1.js */ "./src/js/scenes/scene1.js");
-/* harmony import */ var _assets_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../assets.js */ "./src/js/assets.js");
+/* harmony import */ var _menu_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./menu.js */ "./src/js/scenes/menu.js");
+/* harmony import */ var _assets_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../assets.js */ "./src/js/assets.js");
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -1198,6 +1276,7 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
+
 
 
 
@@ -1230,8 +1309,8 @@ class LoaderScene extends _manager_js__WEBPACK_IMPORTED_MODULE_1__.IScene {
   }
   initializeLoader() {
     return __async(this, null, function* () {
-      yield pixi_js__WEBPACK_IMPORTED_MODULE_0__.Assets.init({ manifest: _assets_js__WEBPACK_IMPORTED_MODULE_3__.manifest });
-      const bundleIds = _assets_js__WEBPACK_IMPORTED_MODULE_3__.manifest.bundles.map((bundle) => bundle.name);
+      yield pixi_js__WEBPACK_IMPORTED_MODULE_0__.Assets.init({ manifest: _assets_js__WEBPACK_IMPORTED_MODULE_4__.manifest });
+      const bundleIds = _assets_js__WEBPACK_IMPORTED_MODULE_4__.manifest.bundles.map((bundle) => bundle.name);
       yield pixi_js__WEBPACK_IMPORTED_MODULE_0__.Assets.loadBundle(bundleIds, this.downloadProgress.bind(this));
     });
   }
@@ -1239,9 +1318,49 @@ class LoaderScene extends _manager_js__WEBPACK_IMPORTED_MODULE_1__.IScene {
     this.loaderBarFill.scale.x = progressRatio;
   }
   gameLoaded() {
-    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scene1_js__WEBPACK_IMPORTED_MODULE_2__.Scene1());
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _menu_js__WEBPACK_IMPORTED_MODULE_3__.Menu());
   }
   update(delta) {
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/scenes/menu.js":
+/*!*******************************!*\
+  !*** ./src/js/scenes/menu.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Menu: () => (/* binding */ Menu)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _ui_menuUI_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/menuUI.js */ "./src/js/ui/menuUI.js");
+
+
+
+
+class Menu extends _manager_js__WEBPACK_IMPORTED_MODULE_1__.IScene {
+  constructor() {
+    super();
+    this.menuBackground = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TilingSprite(
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("menu-menubackground"),
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width,
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height
+    );
+    this.menuBackground.zIndex = 0;
+    this.addChild(this.menuBackground);
+    this.menuUI = new _ui_menuUI_js__WEBPACK_IMPORTED_MODULE_2__.MenuUI();
+    this.addChild(this.menuUI);
+    this.sortChildren();
+  }
+  update(delta) {
+    this.menuUI.update(delta);
   }
 }
 
@@ -1262,10 +1381,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
 /* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
 /* harmony import */ var _entity_player_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../entity/player.js */ "./src/js/entity/player.js");
-/* harmony import */ var _ui_gamePlaying_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ui/gamePlaying.js */ "./src/js/ui/gamePlaying.js");
+/* harmony import */ var _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ui/gamePlayingUI.js */ "./src/js/ui/gamePlayingUI.js");
 /* harmony import */ var _entity_bullet_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../entity/bullet.js */ "./src/js/entity/bullet.js");
 /* harmony import */ var _entity_spawner_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../entity/spawner.js */ "./src/js/entity/spawner.js");
 /* harmony import */ var _entity_enemy1_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../entity/enemy1.js */ "./src/js/entity/enemy1.js");
+/* harmony import */ var _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../ui/gameOverUI.js */ "./src/js/ui/gameOverUI.js");
+
 
 
 
@@ -1278,15 +1399,16 @@ class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_1__.IScene {
   constructor() {
     super();
     this.background = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TilingSprite(
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("background"),
+      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("scene1-background"),
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width,
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height
     );
     this.addChild(this.background);
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player = new _entity_player_js__WEBPACK_IMPORTED_MODULE_2__.Player();
     this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player);
-    this.gamePlayingUI = new _ui_gamePlaying_js__WEBPACK_IMPORTED_MODULE_3__.GamePlayingUI();
+    this.gamePlayingUI = new _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_3__.GamePlayingUI();
     this.addChild(this.gamePlayingUI);
+    this.gameOverUI = new _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_7__.GameOverUI();
     this.enemySpawner = new _entity_spawner_js__WEBPACK_IMPORTED_MODULE_5__.Spawner(() => new _entity_enemy1_js__WEBPACK_IMPORTED_MODULE_6__.Enemy1());
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting = new _entity_bullet_js__WEBPACK_IMPORTED_MODULE_4__.Bullet(this.enemySpawner);
     this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting);
@@ -1301,16 +1423,107 @@ class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_1__.IScene {
       enemy.update(delta);
       this.addChild(enemy);
     });
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died && !this.isGameOverAdded) {
+      console.log("game over");
+      this.addChild(this.gameOverUI);
+      this.isGameOverAdded = true;
+    }
+    this.gameOverUI.update(delta);
   }
 }
 
 
 /***/ }),
 
-/***/ "./src/js/ui/gamePlaying.js":
-/*!**********************************!*\
-  !*** ./src/js/ui/gamePlaying.js ***!
-  \**********************************/
+/***/ "./src/js/ui/gameOverUI.js":
+/*!*********************************!*\
+  !*** ./src/js/ui/gameOverUI.js ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GameOverUI: () => (/* binding */ GameOverUI)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scenes/menu.js */ "./src/js/scenes/menu.js");
+
+
+
+class GameOverUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.gameOverBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.bigTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 50,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.smallTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 25,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.gameOverText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Game Over!", this.bigTextStyle);
+    this.gameOverText.anchor.set(0.5);
+    this.gameOverText.zIndex = 2;
+    this.gameOverBar.addChild(this.gameOverText);
+    this.gameReloadText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Return to menu", this.smallTextStyle);
+    this.gameReloadText.anchor.set(0.5);
+    this.gameReloadText.zIndex = 2;
+    this.gameReloadText.interactive = true;
+    this.gameReloadText.cursor = "pointer";
+    this.gameReloadText.position.set(0, 50);
+    this.gameOverBar.addChild(this.gameReloadText);
+    this.gameOverBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
+    this.gameReloadText.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__.Menu());
+    });
+    this.addChild(this.gameOverBar);
+    this.zIndex = 100;
+  }
+  update(delta) {
+    if (this.counterGameOver > 0) {
+      this.counterGameOver -= delta;
+      if (this.counterGameOver <= 0) {
+        this.gameReloadText.visible = !this.gameReloadText.visible;
+        this.counterGameOver = 250;
+      }
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/ui/gamePlayingUI.js":
+/*!************************************!*\
+  !*** ./src/js/ui/gamePlayingUI.js ***!
+  \************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -1334,10 +1547,25 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.healthBar.endFill();
     this.zIndex = 100;
     this.addChild(this.healthBar);
+    this.textStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 36,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
     this.pointBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
     this.pointBar.position.set(margin, margin);
-    this.playerPoint = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point, { fill: "white" });
-    this.playerPoint.anchor.set(0.5);
+    this.playerPoint = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Point : " + _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point.toString(), this.textStyle);
     this.playerPoint.position.set(0, 0);
     this.pointBar.addChild(this.playerPoint);
     this.pointBar.zIndex = 100;
@@ -1345,8 +1573,99 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   }
   update(delta) {
     this.healthBar.width = this.healthBar.initalWidth * _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.health / _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.maxHealth;
+    this.playerPoint.text = "Point : " + _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point.toString();
     if (this.health <= 0) {
       this.player.died = true;
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/ui/menuUI.js":
+/*!*****************************!*\
+  !*** ./src/js/ui/menuUI.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MenuUI: () => (/* binding */ MenuUI)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _scenes_scene1_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scenes/scene1.js */ "./src/js/scenes/scene1.js");
+
+
+
+class MenuUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.logo = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("menu-logo"));
+    this.logo.anchor.set(0.5);
+    this.logo.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
+    this.logo.zIndex = 1;
+    this.counterMoveLogo = 250;
+    this.addChild(this.logo);
+    this.playButtonBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.playButton = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("menu-button"));
+    this.playButton.anchor.set(0.5);
+    this.playButton.zIndex = 1;
+    this.playButton.interactive = true;
+    this.textStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 36,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.playButtonText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Play", this.textStyle);
+    this.playButtonText.anchor.set(0.5);
+    this.playButtonText.zIndex = 2;
+    this.playButtonBar.addChild(this.playButtonText);
+    this.playButtonBar.addChild(this.playButton);
+    this.playButtonBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
+    this.playButtonBar.sortChildren();
+    this.playButtonBar.zIndex = 1;
+    this.playButtonBar.interactive = true;
+    this.playButtonBar.cursor = "pointer";
+    this.playButtonBar.on("pointerover", () => {
+      this.playButtonText.style.fontSize = 40;
+      this.playButtonText.style.fill = ["#2326e8", "#ffffff"];
+      this.playButtonBar.scale.set(1.05);
+    });
+    this.playButtonBar.on("pointerout", () => {
+      this.playButtonText.style.fill = ["#878180", "#ffffff"];
+      this.playButtonBar.scale.set(1);
+    });
+    this.playButtonBar.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_scene1_js__WEBPACK_IMPORTED_MODULE_2__.Scene1());
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.gameState = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.state.playing;
+    });
+    this.sortChildren();
+  }
+  update(delta) {
+    if (this.counterMoveLogo > 0)
+      this.counterMoveLogo -= delta;
+    if (this.counterMoveLogo <= 0) {
+      this.addChild(this.playButtonBar);
+    }
+    if (this.counterMoveLogo <= 30) {
+      if (this.logo.position.y < 400) {
+        return;
+      }
+      this.logo.position.y -= 4 * delta;
     }
   }
 }

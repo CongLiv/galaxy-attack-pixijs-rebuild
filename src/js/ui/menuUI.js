@@ -1,6 +1,7 @@
 
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
+import { Scene1 } from "../scenes/scene1.js";
 
 export class MenuUI extends PIXI.Container {
     constructor() {
@@ -20,7 +21,23 @@ export class MenuUI extends PIXI.Container {
         this.playButton.interactive = true;
 
 
-        this.playButtonText = new PIXI.Text("Play", Manager.generalFont);
+        this.textStyle = new PIXI.TextStyle({
+            fontFamily: 'Arial Black',
+            fontSize: 36,
+            // fontStyle: 'italic',
+            fontWeight: 'bold',
+            fill: ['#878180', '#ffffff' ],
+            stroke: '#4a1850',
+            strokeThickness: 5,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 440,
+        });
+        this.playButtonText = new PIXI.Text("Play", this.textStyle);
         this.playButtonText.anchor.set(0.5);
         this.playButtonText.zIndex = 2;
         this.playButtonBar.addChild(this.playButtonText);
@@ -32,18 +49,21 @@ export class MenuUI extends PIXI.Container {
         this.playButtonBar.cursor = 'pointer';
 
         this.playButtonBar.on('pointerover', () => {
-            this.playButtonText.style.fill = ['#2235b3', '#ffffff' ]; 
-            this.playButtonText.style.fontSize = 45;
+            this.playButtonText.style.fontSize = 40;
+            this.playButtonText.style.fill = ['#2326e8', '#ffffff'];
+            this.playButtonBar.scale.set(1.05);
         });
 
         this.playButtonBar.on('pointerout', () => {
-            this.playButtonText.style.fill = ['#878180', '#ffffff' ]; 
-            this.playButtonText.style.fontSize = 36;
+
+            this.playButtonText.style.fill = ['#878180', '#ffffff'];
+            this.playButtonBar.scale.set(1);
         });
 
 
         this.playButtonBar.on('pointerdown', () => {
-            // Manager.changeScene();
+            Manager.changeScene(new Scene1());
+            Manager.gameState = Manager.state.playing;
         });
 
 

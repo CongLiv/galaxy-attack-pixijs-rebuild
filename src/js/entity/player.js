@@ -53,6 +53,16 @@ export class Player extends PIXI.Container {
             // PIXI.Texture.from('player-player15')
         ];
 
+        this.playerExplosiveTextures = [
+            PIXI.Texture.from('player-explosive01'),
+            PIXI.Texture.from('player-explosive02'),
+            PIXI.Texture.from('player-explosive03'),
+            PIXI.Texture.from('player-explosive04'),
+            PIXI.Texture.from('player-explosive05'),
+            PIXI.Texture.from('player-explosive06'),
+            PIXI.Texture.from('player-explosive07'),
+        ];
+
 
 
         // Tạo đối tượng player
@@ -61,8 +71,9 @@ export class Player extends PIXI.Container {
         this.player.animationSpeed = 0.1;
         this.player.play();
         this.player.anchor.set(0.5);
-        this.player.x = Manager.width / 2;
-        this.player.y = Manager.width / 2 + playerSize * 5;
+        this.addChild(this.player);
+        this.x = Manager.width / 2;
+        this.y = Manager.width / 2 + playerSize * 5;
 
 
         // Thuộc tính 
@@ -70,19 +81,19 @@ export class Player extends PIXI.Container {
         this.died = false;
         this.point = 0;
         this.level = 1;
-        this.maxHealth = 100;
+        this.maxHealth = 10;
         this.health = this.maxHealth;
 
 
         // this.died = false;
-        this.player.interactive = true;
-        this.player.cursor = 'pointer';
+        this.interactive = true;
+        this.cursor = 'pointer';
 
         // Bắt sự kiện pointerdown và pointermove
         this.onDragStart = this.onDragStart.bind(this);
         this.onDragMove = this.onDragMove.bind(this);
-        this.player.on('pointerdown', this.onDragStart);
-        this.player.on('pointermove', this.onDragMove);
+        this.on('pointerdown', this.onDragStart);
+        this.on('pointermove', this.onDragMove);
 
         this.addChild(this.player);
 
@@ -99,59 +110,53 @@ export class Player extends PIXI.Container {
         setTimeout(() => {
             this.alpha = 1;
         }, 200);
+
+        if (this.health <= 0) {
+            this.died = true;
+        }
     }
 
-
-    get position() {
-        return this.player.position;
-    }
-
-    get width() {
-        return this.player.width;
-    }
-
-    get height() {
-        return this.player.height;
-    }
-
-    get died() {
-        return this.player.died;
-    }
-    set died(value) {
-        this.player.died = value;
-    }
-
-    get point() {
-        return this.player.point;
-    }
-
-    set point(value) {
-        this.player.point = value;
+    kill(){
+    
+        this.cursor = 'default';
+        this.player.textures = this.playerExplosiveTextures;
+        this.player.loop = false;
+        this.player.play();
+        this.player.onComplete = () => {
+            this.player.stop();
+            this.visible = false;
+           
+        }
     }
 
 
     update(delta) {
-        if (this.died) return;
-
-        if (this.player.point == 10) {
-            this.player.level = 2;
+    
+        if (this.died && !this.isKilled) {
+            this.kill();
+            console.log("Player died");
+            this.isKilled = true;
         }
 
-        if (this.player.point == 50) {
-            this.player.level = 3;
+        if (this.point == 10) {
+            this.level = 2;
+        }
+
+        if (this.point == 50) {
+            this.level = 3;
         }
 
 
         this.counterUpdatePosition += delta;
         if (this.counterUpdatePosition >= 160) {
-            this.lastPosition = this.player.position.clone();
+            this.lastPosition = this.position.clone();
             this.counterUpdatePosition = 0;
         }
 
     }
 
     onDragMove(event) {
-        if (this.dragTarget) {
+        if (this.dragTarget && this.died == false) {
             this.dragTarget.parent.toLocal(event.data.global, null, this.dragTarget.position);
 
             // change sprite texture while move
@@ -164,28 +169,28 @@ export class Player extends PIXI.Container {
 
                 if (deltaX > 0 && deltaY > 0) {
                     // Drag right-down
-                    this.dragTarget.textures = this.playerMoveRightDownTextures;
+                    this.player.textures = this.playerMoveRightDownTextures;
                 } else if (deltaX > 0 && deltaY < 0) {
                     // Drag right-up
-                    this.dragTarget.textures = this.playerMoveRightUpTextures;
+                    this.player.textures = this.playerMoveRightUpTextures;
                 } else if (deltaX < 0 && deltaY > 0) {
                     // Drag left-down
-                    this.dragTarget.textures = this.playerMoveLeftDownTextures;
+                    this.player.textures = this.playerMoveLeftDownTextures;
                 } else if (deltaX < 0 && deltaY < 0) {
                     // Drag left-up
-                    this.dragTarget.textures = this.playerMoveLeftUpTextures;
+                    this.player.textures = this.playerMoveLeftUpTextures;
                 } else if (deltaX > 0) {
                     // Drag right
-                    this.dragTarget.textures = this.playerMoveRightTextures;
+                    this.player.textures = this.playerMoveRightTextures;
                 } else if (deltaX < 0) {
                     // Drag left
-                    this.dragTarget.textures = this.playerMoveLeftTextures;
+                    this.player.textures = this.playerMoveLeftTextures;
                 } else if (deltaY > 0) {
                     // Drag down
-                    this.dragTarget.textures = this.playerTextures;
+                    this.player.textures = this.playerTextures;
                 } else if (deltaY < 0) {
                     // Drag up
-                    this.dragTarget.textures = this.playerTextures;
+                    this.player.textures = this.playerTextures;
                 }
 
 

@@ -18,6 +18,13 @@ export const manifest = {
                 "player13": "../../assets/player013.png",  
                 "player14": "../../assets/player014.png",
                 "player15": "../../assets/player015.png",
+                "explosive01": "../../assets/explosive001.png",
+                "explosive02": "../../assets/explosive002.png",
+                "explosive03": "../../assets/explosive003.png",
+                "explosive04": "../../assets/explosive004.png",
+                "explosive05": "../../assets/explosive005.png",
+                "explosive06": "../../assets/explosive006.png",
+                "explosive07": "../../assets/explosive007.png",
             }
         },
 
@@ -35,7 +42,7 @@ export const manifest = {
         {
             name: "menu",
             assets: {
-                "background": "../../assets/menu-background.png",
+                "menubackground": "../../assets/menu-background.png",
                 "button": "../../assets/menu-button.png",
                 "logo": "../../assets/menu-logo.png",
   

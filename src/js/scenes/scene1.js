@@ -6,6 +6,7 @@ import { GamePlayingUI } from "../ui/gamePlayingUI.js";
 import { Bullet } from "../entity/bullet.js";
 import { Spawner } from "../entity/spawner.js";
 import { Enemy1 } from "../entity/enemy1.js";
+import { GameOverUI } from "../ui/gameOverUI.js";
 
 
 export class Scene1 extends IScene {
@@ -25,6 +26,8 @@ export class Scene1 extends IScene {
 
         this.gamePlayingUI = new GamePlayingUI();
         this.addChild(this.gamePlayingUI);
+
+        this.gameOverUI = new GameOverUI();
 
         this.enemySpawner = new Spawner(() => new Enemy1());
 
@@ -46,6 +49,14 @@ export class Scene1 extends IScene {
             enemy.update(delta);
             this.addChild(enemy);
         });
+
+        if (Manager.player.died && !this.isGameOverAdded) {
+            console.log("game over");
+            this.addChild(this.gameOverUI);
+            this.isGameOverAdded = true;
+        }
+
+        if (Manager.player.died) this.gameOverUI.update(delta);
 
     }
     
