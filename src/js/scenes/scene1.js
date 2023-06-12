@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { sound } from "@pixi/sound";
 import { IScene } from "../manager.js";
 import { Manager } from "../manager.js";
 import { Player } from "../entity/player.js";
@@ -32,7 +33,7 @@ export class Scene1 extends IScene {
 
         Manager.shooting = new Bullet(this.enemySpawner);
         this.addChild(Manager.shooting);
-        
+
 
         this.gamePauseUI = new GamePauseUI();
         this.addChild(this.gamePauseUI);
@@ -42,13 +43,6 @@ export class Scene1 extends IScene {
 
     }
 
-    // get pausing() {
-    //     return this.pausing;
-    // }
-
-    // set pausing(value) {
-    //     this.pausing = value;
-    // }
 
     update(delta) {
 
@@ -83,6 +77,8 @@ export class Scene1 extends IScene {
             this.gamePauseUI.update(delta);
             this.gamePauseUI.visible = true;
         }
+
+    
 
 
     }

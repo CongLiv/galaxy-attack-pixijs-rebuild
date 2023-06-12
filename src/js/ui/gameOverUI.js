@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
 import { Menu } from "../scenes/menu.js";
+import { sound } from "@pixi/sound";
 
 export class GameOverUI extends PIXI.Container {
 
@@ -63,6 +64,7 @@ export class GameOverUI extends PIXI.Container {
 
         this.gameReloadText.on('pointerdown', () => {
             Manager.changeScene(new Menu());
+            sound.stop('playingsound');
         });
 
         this.addChild(this.gameOverBar);

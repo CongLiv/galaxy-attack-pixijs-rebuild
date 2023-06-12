@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
+import { Sound, sound } from "@pixi/sound";
 
 export class GamePlayingUI extends PIXI.Container{
 
@@ -61,6 +62,13 @@ export class GamePlayingUI extends PIXI.Container{
         this.addChild(this.pauseButtonBar);
 
         this.zIndex = 99;
+
+        // this.bgSound = Sound.from('assets/playingsound.wav');
+        // this.bgSound.loop = true;
+        // this.bgSound.volume = 0.5;
+        // this.bgSound.play();
+        
+        sound.play('playingsound', {loop: true, volume: 0.5})
     }
 
     update(delta){

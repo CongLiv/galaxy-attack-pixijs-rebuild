@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
+import { Sound } from "@pixi/sound";
 
 export class Player extends PIXI.Container {
     constructor() {
@@ -63,15 +64,15 @@ export class Player extends PIXI.Container {
             PIXI.Texture.from('player-explosive07'),
         ];
 
-
+        this.explosionSound = Sound.from('assets/explosionsound.mp3');
 
         // Tạo đối tượng player
 
-        this.player = new PIXI.AnimatedSprite(this.playerTextures);
-        this.player.animationSpeed = 0.1;
-        this.player.play();
-        this.player.anchor.set(0.5);
-        this.addChild(this.player);
+        this.playerSprite = new PIXI.AnimatedSprite(this.playerTextures);
+        this.playerSprite.animationSpeed = 0.1;
+        this.playerSprite.play();
+        this.playerSprite.anchor.set(0.5);
+        this.addChild(this.playerSprite);
         this.x = Manager.width / 2;
         this.y = Manager.width / 2 + playerSize * 5;
 
@@ -95,7 +96,7 @@ export class Player extends PIXI.Container {
         this.on('pointerdown', this.onDragStart);
         this.on('pointermove', this.onDragMove);
 
-        this.addChild(this.player);
+        this.addChild(this.playerSprite);
 
         this.lastPosition = this.position.clone();
         this.counterUpdatePosition = 0;
@@ -119,11 +120,12 @@ export class Player extends PIXI.Container {
     kill(){
     
         this.cursor = 'default';
-        this.player.textures = this.playerExplosiveTextures;
-        this.player.loop = false;
-        this.player.play();
-        this.player.onComplete = () => {
-            this.player.stop();
+        this.playerSprite.textures = this.playerExplosiveTextures;
+        this.playerSprite.loop = false;
+        this.playerSprite.play();
+        this.explosionSound.play();
+        this.playerSprite.onComplete = () => {
+            this.playerSprite.stop();
             this.visible = false;
            
         }
@@ -134,6 +136,7 @@ export class Player extends PIXI.Container {
     
         if (this.died && !this.isKilled) {
             this.kill();
+            this.explosionSound.play();
             console.log("Player died");
             this.isKilled = true;
         }
@@ -169,28 +172,28 @@ export class Player extends PIXI.Container {
 
                 if (deltaX > 0 && deltaY > 0) {
                     // Drag right-down
-                    this.player.textures = this.playerMoveRightDownTextures;
+                    this.playerSprite.textures = this.playerMoveRightDownTextures;
                 } else if (deltaX > 0 && deltaY < 0) {
                     // Drag right-up
-                    this.player.textures = this.playerMoveRightUpTextures;
+                    this.playerSprite.textures = this.playerMoveRightUpTextures;
                 } else if (deltaX < 0 && deltaY > 0) {
                     // Drag left-down
-                    this.player.textures = this.playerMoveLeftDownTextures;
+                    this.playerSprite.textures = this.playerMoveLeftDownTextures;
                 } else if (deltaX < 0 && deltaY < 0) {
                     // Drag left-up
-                    this.player.textures = this.playerMoveLeftUpTextures;
+                    this.playerSprite.textures = this.playerMoveLeftUpTextures;
                 } else if (deltaX > 0) {
                     // Drag right
-                    this.player.textures = this.playerMoveRightTextures;
+                    this.playerSprite.textures = this.playerMoveRightTextures;
                 } else if (deltaX < 0) {
                     // Drag left
-                    this.player.textures = this.playerMoveLeftTextures;
+                    this.playerSprite.textures = this.playerMoveLeftTextures;
                 } else if (deltaY > 0) {
                     // Drag down
-                    this.player.textures = this.playerTextures;
+                    this.playerSprite.textures = this.playerTextures;
                 } else if (deltaY < 0) {
                     // Drag up
-                    this.player.textures = this.playerTextures;
+                    this.playerSprite.textures = this.playerTextures;
                 }
 
 
@@ -204,13 +207,13 @@ export class Player extends PIXI.Container {
 
     playPlayerSprite() {
 
-        this.player.play();
-        this.player.loop = false; // Ngừng lặp lại animation sau khi chạy xong 2 frames
-        this.player.onComplete = () => { // Sự kiện khi hoàn thành animation
-            this.player.stop();
+        this.playerSprite.play();
+        this.playerSprite.loop = false; // Ngừng lặp lại animation sau khi chạy xong 2 frames
+        this.playerSprite.onComplete = () => { // Sự kiện khi hoàn thành animation
+            this.playerSprite.stop();
             setTimeout(() => {
 
-                this.player.textures = this.playerTextures;
+                this.playerSprite.textures = this.playerTextures;
             }, 150);
         };
     }

@@ -6,10 +6,10 @@ export class Enemy1 extends PIXI.Container {
         super();
         this.enemySize = 100;
         const enemyTexture = PIXI.Texture.from('enemy1');
-        this.enemy = new PIXI.Sprite(enemyTexture);
-        this.enemy.anchor.set(0.5);
-        this.enemy.position.set(this.randomSpawnPoint(), 0);
-        this.addChild(this.enemy);
+        this.enemySprite = new PIXI.Sprite(enemyTexture);
+        this.enemySprite.anchor.set(0.5);
+        this.addChild(this.enemySprite);
+        this.position.set(this.randomSpawnPoint(), 0); 
         this.speed = 4;
         this.maxHealth = 20;
         this.health = this.maxHealth;
@@ -18,21 +18,21 @@ export class Enemy1 extends PIXI.Container {
 
     }
 
-    get position() {
-        return this.enemy.position;
-    }
+    // get position() {
+    //     return this.position;
+    // }
 
-    get width() {
-        return this.enemy.width;
-    }
+    // get width() {
+    //     return this.width;
+    // }
 
-    get height() {
-        return this.enemy.height;
-    }
+    // get height() {
+    //     return this.height;
+    // }
 
-    get getBounds() {
-        return this.enemy.getBounds();
-    }
+    // get getBounds() {
+    //     return this.getBounds();
+    // }
 
 
     attack() {
@@ -58,18 +58,18 @@ export class Enemy1 extends PIXI.Container {
     kill() {
 
         Manager.player.point = Manager.player.point + 1;
-        this.enemy.destroy();
+        this.destroy();
 
     }
     update(delta) {
-        this.enemy.y += this.speed * delta;
-        if (this.enemy.y > Manager.width * 2) {
-            this.enemy.y = 0;
-            this.enemy.x = this.randomSpawnPoint();
+        this.y += this.speed * delta;
+        if (this.y > Manager.width * 2) {
+            this.y = 0;
+            this.x = this.randomSpawnPoint();
             this.attacking = false;
         }
 
-        if (this.rectsIntersect({ a: Manager.player, b: this.enemy })) {
+        if (this.rectsIntersect({ a: Manager.player, b: this })) {
             this.attack();
             return;
         }

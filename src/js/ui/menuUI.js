@@ -2,6 +2,8 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
 import { Scene1 } from "../scenes/scene1.js";
+import { sound } from "@pixi/sound";
+import { Sound } from "@pixi/sound";
 
 export class MenuUI extends PIXI.Container {
     constructor() {
@@ -62,13 +64,14 @@ export class MenuUI extends PIXI.Container {
 
 
         this.playButtonBar.on('pointerdown', () => {
+            sound.stop('menusound');
             Manager.changeScene(new Scene1());
             Manager.gameState = Manager.state.playing;
         });
 
-
-
         this.sortChildren();
+
+        sound.play('menusound', { loop: true, volume: 0.1});
     }
 
     update(delta) {

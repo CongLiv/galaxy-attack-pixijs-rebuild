@@ -48,6 +48,17 @@ export const manifest = {
                 "logo": "../../assets/menu-logo.png",
   
             }
-        }
+        },
+
+        {
+            name: "sound",
+            assets: {
+                "menusound": "../../assets/menusound.wav",
+                "playingsound": "../../assets/playingsound.wav",
+                "bulletsound": "../../assets/bulletsound.mp3",
+                "explosionsound": "../../assets/explosionsound.mp3",
+            }
+        },
+
     ]
 };

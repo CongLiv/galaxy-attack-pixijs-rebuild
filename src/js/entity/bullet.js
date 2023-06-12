@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
+import { sound } from "@pixi/sound";
 
 
 export class Bullet extends PIXI.Container {
@@ -13,6 +14,7 @@ export class Bullet extends PIXI.Container {
         this.bulletCooldown = this.initBulletCooldown;
         this.lastBulletTime = 0;
         this.bullets = [];
+
     }
 
 
@@ -39,6 +41,9 @@ export class Bullet extends PIXI.Container {
         bullet.position.set(Manager.player.x - 32, Manager.player.y - 96);
         this.bullets.push(bullet);
         this.addChild(bullet);
+        
+        
+        sound.play('bulletsound', {loop: false, volume: 0.1});
 
         this.lastBulletTime = currentTime;
     }

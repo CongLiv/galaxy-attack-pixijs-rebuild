@@ -739,7 +739,11 @@ const manifest = {
         "bullet": "../../assets/bullet.png",
         "enemy1": "../../assets/enemy1.png",
         "enemy2": "../../assets/enemy2.png",
-        "background": "../../assets/background.png"
+        "background": "../../assets/background.png",
+        "pause": "../../assets/pause-button.png",
+        "playingsound": "../../assets/playingsound.wav",
+        "bulletsound": "../../assets/bulletsound.mp3",
+        "explosionsound": "../../assets/explosionsound.mp3"
       }
     },
     {
@@ -769,6 +773,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
 /* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+
 
 
 class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
@@ -782,6 +788,7 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.bulletCooldown = this.initBulletCooldown;
     this.lastBulletTime = 0;
     this.bullets = [];
+    this.bulletSound = _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.Sound.from("assets/bulletsound");
   }
   fire() {
     if (this.bullets.length >= this.maxBullets) {
@@ -800,6 +807,7 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     bullet.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.x - 32, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.y - 96);
     this.bullets.push(bullet);
     this.addChild(bullet);
+    this.bulletSound.play();
     this.lastBulletTime = currentTime;
   }
   update(delta) {
@@ -943,6 +951,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
 /* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+
 
 
 class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
@@ -991,6 +1001,7 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive06"),
       pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("player-explosive07")
     ];
+    this.explosionSound = _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.Sound.from("assets/explosionsound");
     this.player = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.AnimatedSprite(this.playerTextures);
     this.player.animationSpeed = 0.1;
     this.player.play();
@@ -1037,6 +1048,7 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   update(delta) {
     if (this.died && !this.isKilled) {
       this.kill();
+      this.explosionSound.play();
       console.log("Player died");
       this.isKilled = true;
     }
@@ -1233,6 +1245,10 @@ __publicField(Manager, "state", {
 });
 __publicField(Manager, "gameState", _Manager.state.menu);
 class IScene extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.pausing = false;
+  }
   update(delta) {
   }
 }
@@ -1379,13 +1395,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Scene1: () => (/* binding */ Scene1)
 /* harmony export */ });
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
-/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
-/* harmony import */ var _entity_player_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../entity/player.js */ "./src/js/entity/player.js");
-/* harmony import */ var _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ui/gamePlayingUI.js */ "./src/js/ui/gamePlayingUI.js");
-/* harmony import */ var _entity_bullet_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../entity/bullet.js */ "./src/js/entity/bullet.js");
-/* harmony import */ var _entity_spawner_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../entity/spawner.js */ "./src/js/entity/spawner.js");
-/* harmony import */ var _entity_enemy1_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../entity/enemy1.js */ "./src/js/entity/enemy1.js");
-/* harmony import */ var _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../ui/gameOverUI.js */ "./src/js/ui/gameOverUI.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _entity_player_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../entity/player.js */ "./src/js/entity/player.js");
+/* harmony import */ var _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../ui/gamePlayingUI.js */ "./src/js/ui/gamePlayingUI.js");
+/* harmony import */ var _entity_bullet_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../entity/bullet.js */ "./src/js/entity/bullet.js");
+/* harmony import */ var _entity_spawner_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../entity/spawner.js */ "./src/js/entity/spawner.js");
+/* harmony import */ var _entity_enemy1_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../entity/enemy1.js */ "./src/js/entity/enemy1.js");
+/* harmony import */ var _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../ui/gameOverUI.js */ "./src/js/ui/gameOverUI.js");
+/* harmony import */ var _ui_gamePauseUI_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../ui/gamePauseUI.js */ "./src/js/ui/gamePauseUI.js");
 
 
 
@@ -1395,40 +1413,64 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_1__.IScene {
+
+
+class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_2__.IScene {
   constructor() {
     super();
     this.background = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TilingSprite(
       pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("scene1-background"),
-      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width,
-      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height
+      _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.app.screen.width,
+      _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.app.screen.height
     );
     this.addChild(this.background);
-    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player = new _entity_player_js__WEBPACK_IMPORTED_MODULE_2__.Player();
-    this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player);
-    this.gamePlayingUI = new _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_3__.GamePlayingUI();
+    this.playingSound = _pixi_sound__WEBPACK_IMPORTED_MODULE_1__.Sound.from("assets/playingsound");
+    this.playingSound.play();
+    _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player = new _entity_player_js__WEBPACK_IMPORTED_MODULE_3__.Player();
+    this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player);
+    this.gamePlayingUI = new _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_4__.GamePlayingUI();
     this.addChild(this.gamePlayingUI);
-    this.gameOverUI = new _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_7__.GameOverUI();
-    this.enemySpawner = new _entity_spawner_js__WEBPACK_IMPORTED_MODULE_5__.Spawner(() => new _entity_enemy1_js__WEBPACK_IMPORTED_MODULE_6__.Enemy1());
-    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting = new _entity_bullet_js__WEBPACK_IMPORTED_MODULE_4__.Bullet(this.enemySpawner);
-    this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting);
+    this.gameOverUI = new _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_8__.GameOverUI();
+    this.enemySpawner = new _entity_spawner_js__WEBPACK_IMPORTED_MODULE_6__.Spawner(() => new _entity_enemy1_js__WEBPACK_IMPORTED_MODULE_7__.Enemy1());
+    _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.shooting = new _entity_bullet_js__WEBPACK_IMPORTED_MODULE_5__.Bullet(this.enemySpawner);
+    this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.shooting);
+    this.gamePauseUI = new _ui_gamePauseUI_js__WEBPACK_IMPORTED_MODULE_9__.GamePauseUI();
+    this.addChild(this.gamePauseUI);
+    this.gamePauseUI.visible = false;
     this.sortableChildren = true;
   }
+  // get pausing() {
+  //     return this.pausing;
+  // }
+  // set pausing(value) {
+  //     this.pausing = value;
+  // }
   update(delta) {
-    this.background.tilePosition.y += 1 * delta;
-    this.gamePlayingUI.update(delta);
-    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.update(delta);
-    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting.update(delta);
-    this.enemySpawner.spawns.forEach((enemy) => {
-      enemy.update(delta);
-      this.addChild(enemy);
-    });
-    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died && !this.isGameOverAdded) {
-      console.log("game over");
-      this.addChild(this.gameOverUI);
-      this.isGameOverAdded = true;
+    if (this.pausing == false) {
+      this.gamePauseUI.visible = false;
+      this.background.tilePosition.y += 1 * delta;
+      this.gamePlayingUI.update(delta);
+      _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.update(delta);
+      _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.shooting.update(delta);
+      this.enemySpawner.spawns.forEach((enemy) => {
+        enemy.update(delta);
+        this.addChild(enemy);
+      });
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.died && !this.isGameOverAdded) {
+        console.log("game over");
+        this.addChild(this.gameOverUI);
+        this.isGameOverAdded = true;
+      }
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.died)
+        this.gameOverUI.update(delta);
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.died && !this.removedChild) {
+        this.removeChild(this.gamePlayingUI);
+        this.removedChild = true;
+      }
+    } else {
+      this.gamePauseUI.update(delta);
+      this.gamePauseUI.visible = true;
     }
-    this.gameOverUI.update(delta);
   }
 }
 
@@ -1501,19 +1543,109 @@ class GameOverUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.gameOverBar.addChild(this.gameReloadText);
     this.gameOverBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
     this.gameReloadText.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.playingSound.stop();
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__.Menu());
     });
     this.addChild(this.gameOverBar);
     this.zIndex = 100;
+    this.blinkCounter = 1;
   }
   update(delta) {
-    if (this.counterGameOver > 0) {
-      this.counterGameOver -= delta;
-      if (this.counterGameOver <= 0) {
-        this.gameReloadText.visible = !this.gameReloadText.visible;
-        this.counterGameOver = 250;
-      }
-    }
+    this.blinkCounter += delta * 0.1;
+    this.gameReloadText.alpha = Math.abs(Math.sin(this.blinkCounter));
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/ui/gamePauseUI.js":
+/*!**********************************!*\
+  !*** ./src/js/ui/gamePauseUI.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GamePauseUI: () => (/* binding */ GamePauseUI)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scenes/menu.js */ "./src/js/scenes/menu.js");
+
+
+
+class GamePauseUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.shadowBackground = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
+    this.shadowBackground.beginFill(0, 0.5);
+    this.shadowBackground.drawRect(0, 0, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height);
+    this.shadowBackground.endFill();
+    this.shadowBackground.zIndex = 0;
+    this.shadowBackground.interactive = true;
+    this.shadowBackground.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.pausing = false;
+    });
+    this.addChild(this.shadowBackground);
+    this.gameResumeBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.bigTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 36,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.resumeBottonBar1 = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.resumeBotton1 = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("button"));
+    this.resumeBotton1.anchor.set(0.5);
+    this.resumeBotton1.zIndex = 1;
+    this.resumeBottonBar1.addChild(this.resumeBotton1);
+    this.resumeBottonText1 = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Resume", this.bigTextStyle);
+    this.resumeBottonText1.anchor.set(0.5);
+    this.resumeBottonText1.zIndex = 2;
+    this.resumeBottonBar1.interactive = true;
+    this.resumeBottonBar1.cursor = "pointer";
+    this.resumeBottonBar1.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.pausing = false;
+    });
+    this.resumeBottonBar1.addChild(this.resumeBottonText1);
+    this.resumeBottonBar2 = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.resumeBotton2 = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("button"));
+    this.resumeBotton2.anchor.set(0.5);
+    this.resumeBotton2.zIndex = 1;
+    this.resumeBottonBar2.addChild(this.resumeBotton2);
+    this.resumeBottonText2 = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Quit", this.bigTextStyle);
+    this.resumeBottonText2.anchor.set(0.5);
+    this.resumeBottonText2.zIndex = 2;
+    this.resumeBottonBar2.interactive = true;
+    this.resumeBottonBar2.cursor = "pointer";
+    this.resumeBottonBar2.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__.Menu());
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.pausing = false;
+    });
+    this.resumeBottonBar2.addChild(this.resumeBottonText2);
+    this.gameResumeBar.addChild(this.resumeBottonBar1);
+    this.gameResumeBar.addChild(this.resumeBottonBar2);
+    this.gameResumeBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
+    this.resumeBottonBar1.position.set(0, -60);
+    this.resumeBottonBar2.position.set(0, 60);
+    this.gameResumeBar.sortChildren();
+    this.gameResumeBar.zIndex = 1;
+    this.addChild(this.gameResumeBar);
+    this.zIndex = 100;
+  }
+  update(delta) {
   }
 }
 
@@ -1564,12 +1696,24 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       wordWrapWidth: 440
     });
     this.pointBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
-    this.pointBar.position.set(margin, margin);
+    this.pointBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width - margin, margin);
     this.playerPoint = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Point : " + _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point.toString(), this.textStyle);
-    this.playerPoint.position.set(0, 0);
+    this.playerPoint.anchor.set(1, 0);
     this.pointBar.addChild(this.playerPoint);
     this.pointBar.zIndex = 100;
     this.addChild(this.pointBar);
+    this.pauseButtonBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.pauseButton = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("pause"));
+    this.pauseButton.zIndex = 2;
+    this.pauseButtonBar.addChild(this.pauseButton);
+    this.pauseButtonBar.interactive = true;
+    this.pauseButtonBar.cursor = "pointer";
+    this.pauseButtonBar.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.pausing = true;
+    });
+    this.pauseButtonBar.position.set(margin, margin);
+    this.addChild(this.pauseButtonBar);
+    this.zIndex = 99;
   }
   update(delta) {
     this.healthBar.width = this.healthBar.initalWidth * _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.health / _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.maxHealth;
@@ -1642,7 +1786,7 @@ class MenuUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.playButtonBar.cursor = "pointer";
     this.playButtonBar.on("pointerover", () => {
       this.playButtonText.style.fontSize = 40;
-      this.playButtonText.style.fill = ["#2326e8", "#ffffff"];
+      this.playButtonText.style.fill = ["#60a7b3", "#e4d7bf"];
       this.playButtonBar.scale.set(1.05);
     });
     this.playButtonBar.on("pointerout", () => {
@@ -28337,6 +28481,3429 @@ const isMobile = isMobileCall(globalThis.navigator);
 
 
 //# sourceMappingURL=isMobile.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/Filterable.mjs":
+/*!*****************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/Filterable.mjs ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Filterable: () => (/* binding */ Filterable)
+/* harmony export */ });
+class Filterable {
+  /**
+   * @param input - The source audio node
+   * @param output - The output audio node
+   */
+  constructor(input, output) {
+    this._output = output;
+    this._input = input;
+  }
+  /** The destination output audio node */
+  get destination() {
+    return this._input;
+  }
+  /** The collection of filters. */
+  get filters() {
+    return this._filters;
+  }
+  set filters(filters) {
+    if (this._filters) {
+      this._filters.forEach((filter) => {
+        if (filter) {
+          filter.disconnect();
+        }
+      });
+      this._filters = null;
+      this._input.connect(this._output);
+    }
+    if (filters && filters.length) {
+      this._filters = filters.slice(0);
+      this._input.disconnect();
+      let prevFilter = null;
+      filters.forEach((filter) => {
+        if (prevFilter === null) {
+          this._input.connect(filter.destination);
+        } else {
+          prevFilter.connect(filter.destination);
+        }
+        prevFilter = filter;
+      });
+      prevFilter.connect(this._output);
+    }
+  }
+  /** Cleans up. */
+  destroy() {
+    this.filters = null;
+    this._input = null;
+    this._output = null;
+  }
+}
+
+
+//# sourceMappingURL=Filterable.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/Sound.mjs":
+/*!************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/Sound.mjs ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Sound: () => (/* binding */ Sound)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _htmlaudio_HTMLAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./htmlaudio/HTMLAudioMedia.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioMedia.mjs");
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _SoundSprite_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SoundSprite.mjs */ "./node_modules/@pixi/sound/lib/SoundSprite.mjs");
+/* harmony import */ var _utils_supported_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/supported.mjs */ "./node_modules/@pixi/sound/lib/utils/supported.mjs");
+/* harmony import */ var _webaudio_WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./webaudio/WebAudioMedia.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioMedia.mjs");
+
+
+
+
+
+
+
+const _Sound = class {
+  /**
+   * Create a new sound instance from source.
+   * @param source - Either the path or url to the source file.
+   *        or the object of options to use.
+   * @return Created sound instance.
+   */
+  static from(source) {
+    let options = {};
+    if (typeof source === "string") {
+      options.url = source;
+    } else if (source instanceof ArrayBuffer || source instanceof AudioBuffer || source instanceof HTMLAudioElement) {
+      options.source = source;
+    } else if (Array.isArray(source)) {
+      options.url = source;
+    } else {
+      options = source;
+    }
+    options = {
+      autoPlay: false,
+      singleInstance: false,
+      url: null,
+      source: null,
+      preload: false,
+      volume: 1,
+      speed: 1,
+      complete: null,
+      loaded: null,
+      loop: false,
+      ...options
+    };
+    Object.freeze(options);
+    const media = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_2__.getInstance)().useLegacy ? new _htmlaudio_HTMLAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_1__.HTMLAudioMedia() : new _webaudio_WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_5__.WebAudioMedia();
+    return new _Sound(media, options);
+  }
+  /**
+   * Use `Sound.from`
+   * @ignore
+   */
+  constructor(media, options) {
+    this.media = media;
+    this.options = options;
+    this._instances = [];
+    this._sprites = {};
+    this.media.init(this);
+    const complete = options.complete;
+    this._autoPlayOptions = complete ? { complete } : null;
+    this.isLoaded = false;
+    this._preloadQueue = null;
+    this.isPlaying = false;
+    this.autoPlay = options.autoPlay;
+    this.singleInstance = options.singleInstance;
+    this.preload = options.preload || this.autoPlay;
+    this.url = Array.isArray(options.url) ? this.preferUrl(options.url) : options.url;
+    this.speed = options.speed;
+    this.volume = options.volume;
+    this.loop = options.loop;
+    if (options.sprites) {
+      this.addSprites(options.sprites);
+    }
+    if (this.preload) {
+      this._preload(options.loaded);
+    }
+  }
+  /**
+   * Internal help for resolving which file to use if there are multiple provide
+   * this is especially helpful for working with bundlers (non Assets loading).
+   */
+  preferUrl(urls) {
+    const [{ url }] = urls.map((url2) => ({ url: url2, ext: _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.path.extname(url2).slice(1) })).sort((a, b) => _utils_supported_mjs__WEBPACK_IMPORTED_MODULE_4__.extensions.indexOf(a.ext) - _utils_supported_mjs__WEBPACK_IMPORTED_MODULE_4__.extensions.indexOf(b.ext));
+    return url;
+  }
+  /** Instance of the media context. */
+  get context() {
+    return (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_2__.getInstance)().context;
+  }
+  /** Stops all the instances of this sound from playing. */
+  pause() {
+    this.isPlaying = false;
+    this.paused = true;
+    return this;
+  }
+  /** Resuming all the instances of this sound from playing */
+  resume() {
+    this.isPlaying = this._instances.length > 0;
+    this.paused = false;
+    return this;
+  }
+  /** Stops all the instances of this sound from playing. */
+  get paused() {
+    return this._paused;
+  }
+  set paused(paused) {
+    this._paused = paused;
+    this.refreshPaused();
+  }
+  /** The playback rate. */
+  get speed() {
+    return this._speed;
+  }
+  set speed(speed) {
+    this._speed = speed;
+    this.refresh();
+  }
+  /** Set the filters. Only supported with WebAudio. */
+  get filters() {
+    return this.media.filters;
+  }
+  set filters(filters) {
+    this.media.filters = filters;
+  }
+  /**
+   * @ignore
+   */
+  addSprites(source, data) {
+    if (typeof source === "object") {
+      const results = {};
+      for (const alias in source) {
+        results[alias] = this.addSprites(alias, source[alias]);
+      }
+      return results;
+    }
+    console.assert(!this._sprites[source], `Alias ${source} is already taken`);
+    const sprite = new _SoundSprite_mjs__WEBPACK_IMPORTED_MODULE_3__.SoundSprite(this, data);
+    this._sprites[source] = sprite;
+    return sprite;
+  }
+  /** Destructor, safer to use `SoundLibrary.remove(alias)` to remove this sound. */
+  destroy() {
+    this._removeInstances();
+    this.removeSprites();
+    this.media.destroy();
+    this.media = null;
+    this._sprites = null;
+    this._instances = null;
+  }
+  /**
+   * Remove a sound sprite.
+   * @param alias - The unique name of the sound sprite, if alias is omitted, removes all sprites.
+   */
+  removeSprites(alias) {
+    if (!alias) {
+      for (const name in this._sprites) {
+        this.removeSprites(name);
+      }
+    } else {
+      const sprite = this._sprites[alias];
+      if (sprite !== void 0) {
+        sprite.destroy();
+        delete this._sprites[alias];
+      }
+    }
+    return this;
+  }
+  /** If the current sound is playable (loaded). */
+  get isPlayable() {
+    return this.isLoaded && this.media && this.media.isPlayable;
+  }
+  /** Stops all the instances of this sound from playing. */
+  stop() {
+    if (!this.isPlayable) {
+      this.autoPlay = false;
+      this._autoPlayOptions = null;
+      return this;
+    }
+    this.isPlaying = false;
+    for (let i = this._instances.length - 1; i >= 0; i--) {
+      this._instances[i].stop();
+    }
+    return this;
+  }
+  // Overloaded function
+  play(source, complete) {
+    let options;
+    if (typeof source === "string") {
+      const sprite = source;
+      options = { sprite, loop: this.loop, complete };
+    } else if (typeof source === "function") {
+      options = {};
+      options.complete = source;
+    } else {
+      options = source;
+    }
+    options = {
+      complete: null,
+      loaded: null,
+      sprite: null,
+      end: null,
+      start: 0,
+      volume: 1,
+      speed: 1,
+      muted: false,
+      loop: false,
+      ...options || {}
+    };
+    if (options.sprite) {
+      const alias = options.sprite;
+      console.assert(!!this._sprites[alias], `Alias ${alias} is not available`);
+      const sprite = this._sprites[alias];
+      options.start = sprite.start + (options.start || 0);
+      options.end = sprite.end;
+      options.speed = sprite.speed || 1;
+      options.loop = sprite.loop || options.loop;
+      delete options.sprite;
+    }
+    if (options.offset) {
+      options.start = options.offset;
+    }
+    if (!this.isLoaded) {
+      if (this._preloadQueue) {
+        return new Promise((resolve) => {
+          this._preloadQueue.push(() => {
+            resolve(this.play(options));
+          });
+        });
+      }
+      this._preloadQueue = [];
+      this.autoPlay = true;
+      this._autoPlayOptions = options;
+      return new Promise((resolve, reject) => {
+        this._preload((err, sound, media) => {
+          this._preloadQueue.forEach((resolve2) => resolve2());
+          this._preloadQueue = null;
+          if (err) {
+            reject(err);
+          } else {
+            if (options.loaded) {
+              options.loaded(err, sound, media);
+            }
+            resolve(media);
+          }
+        });
+      });
+    }
+    if (this.singleInstance || options.singleInstance) {
+      this._removeInstances();
+    }
+    const instance = this._createInstance();
+    this._instances.push(instance);
+    this.isPlaying = true;
+    instance.once("end", () => {
+      if (options.complete) {
+        options.complete(this);
+      }
+      this._onComplete(instance);
+    });
+    instance.once("stop", () => {
+      this._onComplete(instance);
+    });
+    instance.play(options);
+    return instance;
+  }
+  /** Internal only, speed, loop, volume change occured. */
+  refresh() {
+    const len = this._instances.length;
+    for (let i = 0; i < len; i++) {
+      this._instances[i].refresh();
+    }
+  }
+  /** Handle changes in paused state. Internal only. */
+  refreshPaused() {
+    const len = this._instances.length;
+    for (let i = 0; i < len; i++) {
+      this._instances[i].refreshPaused();
+    }
+  }
+  /** Gets and sets the volume. */
+  get volume() {
+    return this._volume;
+  }
+  set volume(volume) {
+    this._volume = volume;
+    this.refresh();
+  }
+  /** Gets and sets the muted flag. */
+  get muted() {
+    return this._muted;
+  }
+  set muted(muted) {
+    this._muted = muted;
+    this.refresh();
+  }
+  /** Gets and sets the looping. */
+  get loop() {
+    return this._loop;
+  }
+  set loop(loop) {
+    this._loop = loop;
+    this.refresh();
+  }
+  /** Starts the preloading of sound. */
+  _preload(callback) {
+    this.media.load(callback);
+  }
+  /** Gets the list of instances that are currently being played of this sound. */
+  get instances() {
+    return this._instances;
+  }
+  /** Get the map of sprites. */
+  get sprites() {
+    return this._sprites;
+  }
+  /** Get the duration of the audio in seconds. */
+  get duration() {
+    return this.media.duration;
+  }
+  /** Auto play the first instance. */
+  autoPlayStart() {
+    let instance;
+    if (this.autoPlay) {
+      instance = this.play(this._autoPlayOptions);
+    }
+    return instance;
+  }
+  /** Removes all instances. */
+  _removeInstances() {
+    for (let i = this._instances.length - 1; i >= 0; i--) {
+      this._poolInstance(this._instances[i]);
+    }
+    this._instances.length = 0;
+  }
+  /**
+   * Sound instance completed.
+   * @param instance
+   */
+  _onComplete(instance) {
+    if (this._instances) {
+      const index = this._instances.indexOf(instance);
+      if (index > -1) {
+        this._instances.splice(index, 1);
+      }
+      this.isPlaying = this._instances.length > 0;
+    }
+    this._poolInstance(instance);
+  }
+  /** Create a new instance. */
+  _createInstance() {
+    if (_Sound._pool.length > 0) {
+      const instance = _Sound._pool.pop();
+      instance.init(this.media);
+      return instance;
+    }
+    return this.media.create();
+  }
+  /**
+   * Destroy/recycling the instance object.
+   * @param instance - Instance to recycle
+   */
+  _poolInstance(instance) {
+    instance.destroy();
+    if (_Sound._pool.indexOf(instance) < 0) {
+      _Sound._pool.push(instance);
+    }
+  }
+};
+let Sound = _Sound;
+/** Pool of instances */
+Sound._pool = [];
+
+
+//# sourceMappingURL=Sound.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/SoundLibrary.mjs":
+/*!*******************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/SoundLibrary.mjs ***!
+  \*******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SoundLibrary: () => (/* binding */ SoundLibrary)
+/* harmony export */ });
+/* harmony import */ var _Sound_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Sound.mjs */ "./node_modules/@pixi/sound/lib/Sound.mjs");
+/* harmony import */ var _htmlaudio_HTMLAudioContext_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./htmlaudio/HTMLAudioContext.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioContext.mjs");
+/* harmony import */ var _webaudio_WebAudioContext_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./webaudio/WebAudioContext.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioContext.mjs");
+
+
+
+
+class SoundLibrary {
+  constructor() {
+    this.init();
+  }
+  /**
+   * Re-initialize the sound library, this will
+   * recreate the AudioContext. If there's a hardware-failure
+   * call `close` and then `init`.
+   * @return Sound instance
+   */
+  init() {
+    if (this.supported) {
+      this._webAudioContext = new _webaudio_WebAudioContext_mjs__WEBPACK_IMPORTED_MODULE_2__.WebAudioContext();
+    }
+    this._htmlAudioContext = new _htmlaudio_HTMLAudioContext_mjs__WEBPACK_IMPORTED_MODULE_1__.HTMLAudioContext();
+    this._sounds = {};
+    this.useLegacy = !this.supported;
+    return this;
+  }
+  /**
+   * The global context to use.
+   * @readonly
+   */
+  get context() {
+    return this._context;
+  }
+  /**
+   * Apply filters to all sounds. Can be useful
+   * for setting global planning or global effects.
+   * **Only supported with WebAudio.**
+   * @example
+   * import { sound, filters } from '@pixi/sound';
+   * // Adds a filter to pan all output left
+   * sound.filtersAll = [
+   *     new filters.StereoFilter(-1)
+   * ];
+   */
+  get filtersAll() {
+    if (!this.useLegacy) {
+      return this._context.filters;
+    }
+    return [];
+  }
+  set filtersAll(filtersAll) {
+    if (!this.useLegacy) {
+      this._context.filters = filtersAll;
+    }
+  }
+  /**
+   * `true` if WebAudio is supported on the current browser.
+   */
+  get supported() {
+    return _webaudio_WebAudioContext_mjs__WEBPACK_IMPORTED_MODULE_2__.WebAudioContext.AudioContext !== null;
+  }
+  /**
+   * @ignore
+   */
+  add(source, sourceOptions) {
+    if (typeof source === "object") {
+      const results = {};
+      for (const alias in source) {
+        const options2 = this._getOptions(
+          source[alias],
+          sourceOptions
+        );
+        results[alias] = this.add(alias, options2);
+      }
+      return results;
+    }
+    console.assert(!this._sounds[source], `Sound with alias ${source} already exists.`);
+    if (sourceOptions instanceof _Sound_mjs__WEBPACK_IMPORTED_MODULE_0__.Sound) {
+      this._sounds[source] = sourceOptions;
+      return sourceOptions;
+    }
+    const options = this._getOptions(sourceOptions);
+    const sound = _Sound_mjs__WEBPACK_IMPORTED_MODULE_0__.Sound.from(options);
+    this._sounds[source] = sound;
+    return sound;
+  }
+  /**
+   * Internal methods for getting the options object
+   * @private
+   * @param source - The source options
+   * @param overrides - Override default options
+   * @return The construction options
+   */
+  _getOptions(source, overrides) {
+    let options;
+    if (typeof source === "string") {
+      options = { url: source };
+    } else if (Array.isArray(source)) {
+      options = { url: source };
+    } else if (source instanceof ArrayBuffer || source instanceof AudioBuffer || source instanceof HTMLAudioElement) {
+      options = { source };
+    } else {
+      options = source;
+    }
+    options = { ...options, ...overrides || {} };
+    return options;
+  }
+  /**
+   * Do not use WebAudio, force the use of legacy. This **must** be called before loading any files.
+   */
+  get useLegacy() {
+    return this._useLegacy;
+  }
+  set useLegacy(legacy) {
+    this._useLegacy = legacy;
+    this._context = !legacy && this.supported ? this._webAudioContext : this._htmlAudioContext;
+  }
+  /**
+   * This disables auto-pause all playback when the window blurs (WebAudio only).
+   * This is helpful to keep from playing sounds when the user switches tabs.
+   * However, if you're running content within an iframe, this may be undesirable
+   * and you should disable (set to `true`) this behavior.
+   * @default false
+   */
+  get disableAutoPause() {
+    return !this._webAudioContext.autoPause;
+  }
+  set disableAutoPause(autoPause) {
+    this._webAudioContext.autoPause = !autoPause;
+  }
+  /**
+   * Removes a sound by alias.
+   * @param alias - The sound alias reference.
+   * @return Instance for chaining.
+   */
+  remove(alias) {
+    this.exists(alias, true);
+    this._sounds[alias].destroy();
+    delete this._sounds[alias];
+    return this;
+  }
+  /**
+   * Set the global volume for all sounds. To set per-sound volume see {@link SoundLibrary#volume}.
+   */
+  get volumeAll() {
+    return this._context.volume;
+  }
+  set volumeAll(volume) {
+    this._context.volume = volume;
+    this._context.refresh();
+  }
+  /**
+   * Set the global speed for all sounds. To set per-sound speed see {@link SoundLibrary#speed}.
+   */
+  get speedAll() {
+    return this._context.speed;
+  }
+  set speedAll(speed) {
+    this._context.speed = speed;
+    this._context.refresh();
+  }
+  /**
+   * Toggle paused property for all sounds.
+   * @return `true` if all sounds are paused.
+   */
+  togglePauseAll() {
+    return this._context.togglePause();
+  }
+  /**
+   * Pauses any playing sounds.
+   * @return Instance for chaining.
+   */
+  pauseAll() {
+    this._context.paused = true;
+    this._context.refreshPaused();
+    return this;
+  }
+  /**
+   * Resumes any sounds.
+   * @return Instance for chaining.
+   */
+  resumeAll() {
+    this._context.paused = false;
+    this._context.refreshPaused();
+    return this;
+  }
+  /**
+   * Toggle muted property for all sounds.
+   * @return `true` if all sounds are muted.
+   */
+  toggleMuteAll() {
+    return this._context.toggleMute();
+  }
+  /**
+   * Mutes all playing sounds.
+   * @return Instance for chaining.
+   */
+  muteAll() {
+    this._context.muted = true;
+    this._context.refresh();
+    return this;
+  }
+  /**
+   * Unmutes all playing sounds.
+   * @return Instance for chaining.
+   */
+  unmuteAll() {
+    this._context.muted = false;
+    this._context.refresh();
+    return this;
+  }
+  /**
+   * Stops and removes all sounds. They cannot be used after this.
+   * @return Instance for chaining.
+   */
+  removeAll() {
+    for (const alias in this._sounds) {
+      this._sounds[alias].destroy();
+      delete this._sounds[alias];
+    }
+    return this;
+  }
+  /**
+   * Stops all sounds.
+   * @return Instance for chaining.
+   */
+  stopAll() {
+    for (const alias in this._sounds) {
+      this._sounds[alias].stop();
+    }
+    return this;
+  }
+  /**
+   * Checks if a sound by alias exists.
+   * @param alias - Check for alias.
+   * @param assert - Whether enable console.assert.
+   * @return true if the sound exists.
+   */
+  exists(alias, assert = false) {
+    const exists = !!this._sounds[alias];
+    if (assert) {
+      console.assert(exists, `No sound matching alias '${alias}'.`);
+    }
+    return exists;
+  }
+  /**
+   * Convenience function to check to see if any sound is playing.
+   * @returns `true` if any sound is currently playing.
+   */
+  isPlaying() {
+    for (const alias in this._sounds) {
+      if (this._sounds[alias].isPlaying) {
+        return true;
+      }
+    }
+    return false;
+  }
+  /**
+   * Find a sound by alias.
+   * @param alias - The sound alias reference.
+   * @return Sound object.
+   */
+  find(alias) {
+    this.exists(alias, true);
+    return this._sounds[alias];
+  }
+  /**
+   * Plays a sound.
+   * @method play
+   * @instance
+   * @param {string} alias - The sound alias reference.
+   * @param {string} sprite - The alias of the sprite to play.
+   * @return {IMediaInstance|null} The sound instance, this cannot be reused
+   *         after it is done playing. Returns `null` if the sound has not yet loaded.
+   */
+  /**
+   * Plays a sound.
+   * @param alias - The sound alias reference.
+   * @param {PlayOptions|Function} options - The options or callback when done.
+   * @return The sound instance,
+   *        this cannot be reused after it is done playing. Returns a Promise if the sound
+   *        has not yet loaded.
+   */
+  play(alias, options) {
+    return this.find(alias).play(options);
+  }
+  /**
+   * Stops a sound.
+   * @param alias - The sound alias reference.
+   * @return Sound object.
+   */
+  stop(alias) {
+    return this.find(alias).stop();
+  }
+  /**
+   * Pauses a sound.
+   * @param alias - The sound alias reference.
+   * @return Sound object.
+   */
+  pause(alias) {
+    return this.find(alias).pause();
+  }
+  /**
+   * Resumes a sound.
+   * @param alias - The sound alias reference.
+   * @return Instance for chaining.
+   */
+  resume(alias) {
+    return this.find(alias).resume();
+  }
+  /**
+   * Get or set the volume for a sound.
+   * @param alias - The sound alias reference.
+   * @param volume - Optional current volume to set.
+   * @return The current volume.
+   */
+  volume(alias, volume) {
+    const sound = this.find(alias);
+    if (volume !== void 0) {
+      sound.volume = volume;
+    }
+    return sound.volume;
+  }
+  /**
+   * Get or set the speed for a sound.
+   * @param alias - The sound alias reference.
+   * @param speed - Optional current speed to set.
+   * @return The current speed.
+   */
+  speed(alias, speed) {
+    const sound = this.find(alias);
+    if (speed !== void 0) {
+      sound.speed = speed;
+    }
+    return sound.speed;
+  }
+  /**
+   * Get the length of a sound in seconds.
+   * @param alias - The sound alias reference.
+   * @return The current duration in seconds.
+   */
+  duration(alias) {
+    return this.find(alias).duration;
+  }
+  /**
+   * Closes the sound library. This will release/destroy
+   * the AudioContext(s). Can be used safely if you want to
+   * initialize the sound library later. Use `init` method.
+   */
+  close() {
+    this.removeAll();
+    this._sounds = null;
+    if (this._webAudioContext) {
+      this._webAudioContext.destroy();
+      this._webAudioContext = null;
+    }
+    if (this._htmlAudioContext) {
+      this._htmlAudioContext.destroy();
+      this._htmlAudioContext = null;
+    }
+    this._context = null;
+    return this;
+  }
+}
+
+
+//# sourceMappingURL=SoundLibrary.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/SoundSprite.mjs":
+/*!******************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/SoundSprite.mjs ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SoundSprite: () => (/* binding */ SoundSprite)
+/* harmony export */ });
+class SoundSprite {
+  /**
+   * @param parent - The parent sound
+   * @param options - Data associated with object.
+   */
+  constructor(parent, options) {
+    this.parent = parent;
+    Object.assign(this, options);
+    this.duration = this.end - this.start;
+    console.assert(this.duration > 0, "End time must be after start time");
+  }
+  /**
+   * Play the sound sprite.
+   * @param {Function} [complete] - Function call when complete
+   * @return Sound instance being played.
+   */
+  play(complete) {
+    return this.parent.play({
+      complete,
+      speed: this.speed || this.parent.speed,
+      end: this.end,
+      start: this.start,
+      loop: this.loop
+    });
+  }
+  /** Destroy and don't use after this */
+  destroy() {
+    this.parent = null;
+  }
+}
+
+
+//# sourceMappingURL=SoundSprite.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/DistortionFilter.mjs":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/DistortionFilter.mjs ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DistortionFilter: () => (/* binding */ DistortionFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+class DistortionFilter extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__.Filter {
+  /** @param amount - The amount of distoration from 0 to 1. */
+  constructor(amount = 0) {
+    let distortion;
+    if (!(0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      const { audioContext } = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+      distortion = audioContext.createWaveShaper();
+    }
+    super(distortion);
+    this._distortion = distortion;
+    this.amount = amount;
+  }
+  /** The amount of distortion to set. */
+  set amount(value) {
+    this._amount = value;
+    if ((0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      return;
+    }
+    const scaledValue = value * 1e3;
+    const samples = 44100;
+    const curve = new Float32Array(samples);
+    const deg = Math.PI / 180;
+    let i = 0;
+    let x;
+    for (; i < samples; ++i) {
+      x = i * 2 / samples - 1;
+      curve[i] = (3 + scaledValue) * x * 20 * deg / (Math.PI + scaledValue * Math.abs(x));
+    }
+    this._distortion.curve = curve;
+    this._distortion.oversample = "4x";
+  }
+  get amount() {
+    return this._amount;
+  }
+  destroy() {
+    this._distortion = null;
+    super.destroy();
+  }
+}
+
+
+//# sourceMappingURL=DistortionFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/EqualizerFilter.mjs":
+/*!******************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/EqualizerFilter.mjs ***!
+  \******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EqualizerFilter: () => (/* binding */ EqualizerFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../webaudio/WebAudioUtils.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+
+const _EqualizerFilter = class extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_2__.Filter {
+  /**
+   * @param f32 - Default gain for 32 Hz
+   * @param f64 - Default gain for 64 Hz
+   * @param f125 - Default gain for 125 Hz
+   * @param f250 - Default gain for 250 Hz
+   * @param f500 - Default gain for 500 Hz
+   * @param f1k - Default gain for 1000 Hz
+   * @param f2k - Default gain for 2000 Hz
+   * @param f4k - Default gain for 4000 Hz
+   * @param f8k - Default gain for 8000 Hz
+   * @param f16k - Default gain for 16000 Hz
+   */
+  constructor(f32 = 0, f64 = 0, f125 = 0, f250 = 0, f500 = 0, f1k = 0, f2k = 0, f4k = 0, f8k = 0, f16k = 0) {
+    let bands = [];
+    const equalizerBands = [
+      {
+        f: _EqualizerFilter.F32,
+        type: "lowshelf",
+        gain: f32
+      },
+      {
+        f: _EqualizerFilter.F64,
+        type: "peaking",
+        gain: f64
+      },
+      {
+        f: _EqualizerFilter.F125,
+        type: "peaking",
+        gain: f125
+      },
+      {
+        f: _EqualizerFilter.F250,
+        type: "peaking",
+        gain: f250
+      },
+      {
+        f: _EqualizerFilter.F500,
+        type: "peaking",
+        gain: f500
+      },
+      {
+        f: _EqualizerFilter.F1K,
+        type: "peaking",
+        gain: f1k
+      },
+      {
+        f: _EqualizerFilter.F2K,
+        type: "peaking",
+        gain: f2k
+      },
+      {
+        f: _EqualizerFilter.F4K,
+        type: "peaking",
+        gain: f4k
+      },
+      {
+        f: _EqualizerFilter.F8K,
+        type: "peaking",
+        gain: f8k
+      },
+      {
+        f: _EqualizerFilter.F16K,
+        type: "highshelf",
+        gain: f16k
+      }
+    ];
+    if (!(0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      bands = equalizerBands.map((band) => {
+        const node = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context.audioContext.createBiquadFilter();
+        node.type = band.type;
+        _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(node.Q, 1);
+        node.frequency.value = band.f;
+        _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(node.gain, band.gain);
+        return node;
+      });
+    }
+    super(bands[0], bands[bands.length - 1]);
+    this.bands = bands;
+    this.bandsMap = {};
+    for (let i = 0; i < this.bands.length; i++) {
+      const node = this.bands[i];
+      if (i > 0) {
+        this.bands[i - 1].connect(node);
+      }
+      this.bandsMap[node.frequency.value] = node;
+    }
+  }
+  /**
+   * Set gain on a specific frequency.
+   * @param frequency - The frequency, see EqualizerFilter.F* for bands
+   * @param gain - Recommended -40 to 40.
+   */
+  setGain(frequency, gain = 0) {
+    if (!this.bandsMap[frequency]) {
+      throw new Error(`No band found for frequency ${frequency}`);
+    }
+    _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(this.bandsMap[frequency].gain, gain);
+  }
+  /**
+   * Get gain amount on a specific frequency.
+   * @return The amount of gain set.
+   */
+  getGain(frequency) {
+    if (!this.bandsMap[frequency]) {
+      throw new Error(`No band found for frequency ${frequency}`);
+    }
+    return this.bandsMap[frequency].gain.value;
+  }
+  /**
+   * Gain at 32 Hz frequencey.
+   * @default 0
+   */
+  set f32(value) {
+    this.setGain(_EqualizerFilter.F32, value);
+  }
+  get f32() {
+    return this.getGain(_EqualizerFilter.F32);
+  }
+  /**
+   * Gain at 64 Hz frequencey.
+   * @default 0
+   */
+  set f64(value) {
+    this.setGain(_EqualizerFilter.F64, value);
+  }
+  get f64() {
+    return this.getGain(_EqualizerFilter.F64);
+  }
+  /**
+   * Gain at 125 Hz frequencey.
+   * @default 0
+   */
+  set f125(value) {
+    this.setGain(_EqualizerFilter.F125, value);
+  }
+  get f125() {
+    return this.getGain(_EqualizerFilter.F125);
+  }
+  /**
+   * Gain at 250 Hz frequencey.
+   * @default 0
+   */
+  set f250(value) {
+    this.setGain(_EqualizerFilter.F250, value);
+  }
+  get f250() {
+    return this.getGain(_EqualizerFilter.F250);
+  }
+  /**
+   * Gain at 500 Hz frequencey.
+   * @default 0
+   */
+  set f500(value) {
+    this.setGain(_EqualizerFilter.F500, value);
+  }
+  get f500() {
+    return this.getGain(_EqualizerFilter.F500);
+  }
+  /**
+   * Gain at 1 KHz frequencey.
+   * @default 0
+   */
+  set f1k(value) {
+    this.setGain(_EqualizerFilter.F1K, value);
+  }
+  get f1k() {
+    return this.getGain(_EqualizerFilter.F1K);
+  }
+  /**
+   * Gain at 2 KHz frequencey.
+   * @default 0
+   */
+  set f2k(value) {
+    this.setGain(_EqualizerFilter.F2K, value);
+  }
+  get f2k() {
+    return this.getGain(_EqualizerFilter.F2K);
+  }
+  /**
+   * Gain at 4 KHz frequencey.
+   * @default 0
+   */
+  set f4k(value) {
+    this.setGain(_EqualizerFilter.F4K, value);
+  }
+  get f4k() {
+    return this.getGain(_EqualizerFilter.F4K);
+  }
+  /**
+   * Gain at 8 KHz frequencey.
+   * @default 0
+   */
+  set f8k(value) {
+    this.setGain(_EqualizerFilter.F8K, value);
+  }
+  get f8k() {
+    return this.getGain(_EqualizerFilter.F8K);
+  }
+  /**
+   * Gain at 16 KHz frequencey.
+   * @default 0
+   */
+  set f16k(value) {
+    this.setGain(_EqualizerFilter.F16K, value);
+  }
+  get f16k() {
+    return this.getGain(_EqualizerFilter.F16K);
+  }
+  /** Reset all frequency bands to have gain of 0 */
+  reset() {
+    this.bands.forEach((band) => {
+      _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(band.gain, 0);
+    });
+  }
+  destroy() {
+    this.bands.forEach((band) => {
+      band.disconnect();
+    });
+    this.bands = null;
+    this.bandsMap = null;
+  }
+};
+let EqualizerFilter = _EqualizerFilter;
+/**
+ * Band at 32 Hz
+ * @readonly
+ */
+EqualizerFilter.F32 = 32;
+/**
+ * Band at 64 Hz
+ * @readonly
+ */
+EqualizerFilter.F64 = 64;
+/**
+ * Band at 125 Hz
+ * @readonly
+ */
+EqualizerFilter.F125 = 125;
+/**
+ * Band at 250 Hz
+ * @readonly
+ */
+EqualizerFilter.F250 = 250;
+/**
+ * Band at 500 Hz
+ * @readonly
+ */
+EqualizerFilter.F500 = 500;
+/**
+ * Band at 1000 Hz
+ * @readonly
+ */
+EqualizerFilter.F1K = 1e3;
+/**
+ * Band at 2000 Hz
+ * @readonly
+ */
+EqualizerFilter.F2K = 2e3;
+/**
+ * Band at 4000 Hz
+ * @readonly
+ */
+EqualizerFilter.F4K = 4e3;
+/**
+ * Band at 8000 Hz
+ * @readonly
+ */
+EqualizerFilter.F8K = 8e3;
+/**
+ * Band at 16000 Hz
+ * @readonly
+ */
+EqualizerFilter.F16K = 16e3;
+
+
+//# sourceMappingURL=EqualizerFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/Filter.mjs":
+/*!*********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/Filter.mjs ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Filter: () => (/* binding */ Filter)
+/* harmony export */ });
+class Filter {
+  /**
+   * @param {AudioNode} destination - The audio node to use as the destination for the input AudioNode
+   * @param {AudioNode} [source] - Optional output node, defaults to destination node. This is useful
+   *        when creating filters which contains multiple AudioNode elements chained together.
+   */
+  constructor(destination, source) {
+    this.init(destination, source);
+  }
+  /** Reinitialize */
+  init(destination, source) {
+    this.destination = destination;
+    this.source = source || destination;
+  }
+  /**
+   * Connect to the destination.
+   * @param {AudioNode} destination - The destination node to connect the output to
+   */
+  connect(destination) {
+    this.source?.connect(destination);
+  }
+  /** Completely disconnect filter from destination and source nodes. */
+  disconnect() {
+    this.source?.disconnect();
+  }
+  /** Destroy the filter and don't use after this. */
+  destroy() {
+    this.disconnect();
+    this.destination = null;
+    this.source = null;
+  }
+}
+
+
+//# sourceMappingURL=Filter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/MonoFilter.mjs":
+/*!*************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/MonoFilter.mjs ***!
+  \*************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MonoFilter: () => (/* binding */ MonoFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+class MonoFilter extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__.Filter {
+  constructor() {
+    let merger;
+    let splitter;
+    if (!(0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      const { audioContext } = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+      splitter = audioContext.createChannelSplitter();
+      merger = audioContext.createChannelMerger();
+      merger.connect(splitter);
+    }
+    super(merger, splitter);
+    this._merger = merger;
+  }
+  destroy() {
+    this._merger?.disconnect();
+    this._merger = null;
+    super.destroy();
+  }
+}
+
+
+//# sourceMappingURL=MonoFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/ReverbFilter.mjs":
+/*!***************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/ReverbFilter.mjs ***!
+  \***************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ReverbFilter: () => (/* binding */ ReverbFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+class ReverbFilter extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__.Filter {
+  /**
+   * @param seconds - Seconds for reverb
+   * @param decay - The decay length
+   * @param reverse - Reverse reverb
+   */
+  constructor(seconds = 3, decay = 2, reverse = false) {
+    super(null);
+    this._seconds = this._clamp(seconds, 1, 50);
+    this._decay = this._clamp(decay, 0, 100);
+    this._reverse = reverse;
+    this._rebuild();
+  }
+  /**
+   * Clamp a value
+   * @param value
+   * @param min - Minimum value
+   * @param max - Maximum value
+   * @return Clamped number
+   */
+  _clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+  /**
+   * Length of reverb in seconds from 1 to 50
+   * @default 3
+   */
+  get seconds() {
+    return this._seconds;
+  }
+  set seconds(seconds) {
+    this._seconds = this._clamp(seconds, 1, 50);
+    this._rebuild();
+  }
+  /**
+   * Decay value from 0 to 100
+   * @default 2
+   */
+  get decay() {
+    return this._decay;
+  }
+  set decay(decay) {
+    this._decay = this._clamp(decay, 0, 100);
+    this._rebuild();
+  }
+  /**
+   * Reverse value from 0 to 1
+   * @default false
+   */
+  get reverse() {
+    return this._reverse;
+  }
+  set reverse(reverse) {
+    this._reverse = reverse;
+    this._rebuild();
+  }
+  /**
+   * Utility function for building an impulse response
+   * from the module parameters.
+   */
+  _rebuild() {
+    if ((0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      return;
+    }
+    const { audioContext } = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+    const rate = audioContext.sampleRate;
+    const length = rate * this._seconds;
+    const impulse = audioContext.createBuffer(2, length, rate);
+    const impulseL = impulse.getChannelData(0);
+    const impulseR = impulse.getChannelData(1);
+    let n;
+    for (let i = 0; i < length; i++) {
+      n = this._reverse ? length - i : i;
+      impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, this._decay);
+      impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, this._decay);
+    }
+    const convolver = audioContext.createConvolver();
+    convolver.buffer = impulse;
+    this.init(convolver);
+  }
+}
+
+
+//# sourceMappingURL=ReverbFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/StereoFilter.mjs":
+/*!***************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/StereoFilter.mjs ***!
+  \***************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   StereoFilter: () => (/* binding */ StereoFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../webaudio/WebAudioUtils.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+
+class StereoFilter extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_2__.Filter {
+  /** @param pan - The amount of panning, -1 is left, 1 is right, 0 is centered. */
+  constructor(pan = 0) {
+    let stereo;
+    let panner;
+    let destination;
+    if (!(0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      const { audioContext } = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+      if (audioContext.createStereoPanner) {
+        stereo = audioContext.createStereoPanner();
+        destination = stereo;
+      } else {
+        panner = audioContext.createPanner();
+        panner.panningModel = "equalpower";
+        destination = panner;
+      }
+    }
+    super(destination);
+    this._stereo = stereo;
+    this._panner = panner;
+    this.pan = pan;
+  }
+  /** Set the amount of panning, where -1 is left, 1 is right, and 0 is centered */
+  set pan(value) {
+    this._pan = value;
+    if (this._stereo) {
+      _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(this._stereo.pan, value);
+    } else if (this._panner) {
+      this._panner.setPosition(value, 0, 1 - Math.abs(value));
+    }
+  }
+  get pan() {
+    return this._pan;
+  }
+  destroy() {
+    super.destroy();
+    this._stereo = null;
+    this._panner = null;
+  }
+}
+
+
+//# sourceMappingURL=StereoFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/StreamFilter.mjs":
+/*!***************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/StreamFilter.mjs ***!
+  \***************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   StreamFilter: () => (/* binding */ StreamFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+class StreamFilter extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_1__.Filter {
+  constructor() {
+    let destination;
+    let source;
+    if (!(0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      const { audioContext } = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+      destination = audioContext.createMediaStreamDestination();
+      source = audioContext.createMediaStreamSource(destination.stream);
+    }
+    super(destination, source);
+    this._stream = destination?.stream;
+  }
+  get stream() {
+    return this._stream;
+  }
+  destroy() {
+    this._stream = null;
+    super.destroy();
+  }
+}
+
+
+//# sourceMappingURL=StreamFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/TelephoneFilter.mjs":
+/*!******************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/TelephoneFilter.mjs ***!
+  \******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   TelephoneFilter: () => (/* binding */ TelephoneFilter)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../webaudio/WebAudioUtils.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs");
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+
+
+
+
+class TelephoneFilter extends _Filter_mjs__WEBPACK_IMPORTED_MODULE_2__.Filter {
+  constructor() {
+    let destination;
+    let source;
+    if (!(0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().useLegacy) {
+      const { audioContext } = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+      const lpf1 = audioContext.createBiquadFilter();
+      const lpf2 = audioContext.createBiquadFilter();
+      const hpf1 = audioContext.createBiquadFilter();
+      const hpf2 = audioContext.createBiquadFilter();
+      lpf1.type = "lowpass";
+      _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(lpf1.frequency, 2e3);
+      lpf2.type = "lowpass";
+      _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(lpf2.frequency, 2e3);
+      hpf1.type = "highpass";
+      _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(hpf1.frequency, 500);
+      hpf2.type = "highpass";
+      _webaudio_WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(hpf2.frequency, 500);
+      lpf1.connect(lpf2);
+      lpf2.connect(hpf1);
+      hpf1.connect(hpf2);
+      destination = lpf1;
+      source = hpf2;
+    }
+    super(destination, source);
+  }
+}
+
+
+//# sourceMappingURL=TelephoneFilter.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/filters/index.mjs":
+/*!********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/filters/index.mjs ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DistortionFilter: () => (/* reexport safe */ _DistortionFilter_mjs__WEBPACK_IMPORTED_MODULE_2__.DistortionFilter),
+/* harmony export */   EqualizerFilter: () => (/* reexport safe */ _EqualizerFilter_mjs__WEBPACK_IMPORTED_MODULE_1__.EqualizerFilter),
+/* harmony export */   Filter: () => (/* reexport safe */ _Filter_mjs__WEBPACK_IMPORTED_MODULE_0__.Filter),
+/* harmony export */   MonoFilter: () => (/* reexport safe */ _MonoFilter_mjs__WEBPACK_IMPORTED_MODULE_5__.MonoFilter),
+/* harmony export */   ReverbFilter: () => (/* reexport safe */ _ReverbFilter_mjs__WEBPACK_IMPORTED_MODULE_4__.ReverbFilter),
+/* harmony export */   StereoFilter: () => (/* reexport safe */ _StereoFilter_mjs__WEBPACK_IMPORTED_MODULE_3__.StereoFilter),
+/* harmony export */   StreamFilter: () => (/* reexport safe */ _StreamFilter_mjs__WEBPACK_IMPORTED_MODULE_6__.StreamFilter),
+/* harmony export */   TelephoneFilter: () => (/* reexport safe */ _TelephoneFilter_mjs__WEBPACK_IMPORTED_MODULE_7__.TelephoneFilter)
+/* harmony export */ });
+/* harmony import */ var _Filter_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+/* harmony import */ var _EqualizerFilter_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EqualizerFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/EqualizerFilter.mjs");
+/* harmony import */ var _DistortionFilter_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DistortionFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/DistortionFilter.mjs");
+/* harmony import */ var _StereoFilter_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./StereoFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/StereoFilter.mjs");
+/* harmony import */ var _ReverbFilter_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ReverbFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/ReverbFilter.mjs");
+/* harmony import */ var _MonoFilter_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./MonoFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/MonoFilter.mjs");
+/* harmony import */ var _StreamFilter_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./StreamFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/StreamFilter.mjs");
+/* harmony import */ var _TelephoneFilter_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TelephoneFilter.mjs */ "./node_modules/@pixi/sound/lib/filters/TelephoneFilter.mjs");
+
+
+
+
+
+
+
+
+//# sourceMappingURL=index.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioContext.mjs":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioContext.mjs ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HTMLAudioContext: () => (/* binding */ HTMLAudioContext)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+
+
+class HTMLAudioContext extends _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.EventEmitter {
+  constructor() {
+    super(...arguments);
+    /** Current global speed from 0 to 1 */
+    this.speed = 1;
+    /** Current muted status of the context */
+    this.muted = false;
+    /** Current volume from 0 to 1  */
+    this.volume = 1;
+    /** Current paused status */
+    this.paused = false;
+  }
+  /** Internal trigger when volume, mute or speed changes */
+  refresh() {
+    this.emit("refresh");
+  }
+  /** Internal trigger paused changes */
+  refreshPaused() {
+    this.emit("refreshPaused");
+  }
+  /**
+   * HTML Audio does not support filters, this is non-functional API.
+   */
+  get filters() {
+    console.warn("HTML Audio does not support filters");
+    return null;
+  }
+  set filters(_filters) {
+    console.warn("HTML Audio does not support filters");
+  }
+  /**
+   * HTML Audio does not support `audioContext`
+   * @readonly
+   * @type {AudioContext}
+   */
+  get audioContext() {
+    console.warn("HTML Audio does not support audioContext");
+    return null;
+  }
+  /**
+   * Toggles the muted state.
+   * @return The current muted state.
+   */
+  toggleMute() {
+    this.muted = !this.muted;
+    this.refresh();
+    return this.muted;
+  }
+  /**
+   * Toggles the paused state.
+   * @return The current paused state.
+   */
+  togglePause() {
+    this.paused = !this.paused;
+    this.refreshPaused();
+    return this.paused;
+  }
+  /** Destroy and don't use after this */
+  destroy() {
+    this.removeAllListeners();
+  }
+}
+
+
+//# sourceMappingURL=HTMLAudioContext.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioInstance.mjs":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioInstance.mjs ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HTMLAudioInstance: () => (/* binding */ HTMLAudioInstance)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+
+
+let id = 0;
+const _HTMLAudioInstance = class extends _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.EventEmitter {
+  /** @param parent - Parent element */
+  constructor(parent) {
+    super();
+    this.id = id++;
+    this.init(parent);
+  }
+  /**
+   * Set a property by name, this makes it easy to chain values
+   * @param name - Name of the property to set
+   * @param value - Value to set property to
+   */
+  set(name, value) {
+    if (this[name] === void 0) {
+      throw new Error(`Property with name ${name} does not exist.`);
+    } else {
+      switch (name) {
+        case "speed":
+          this.speed = value;
+          break;
+        case "volume":
+          this.volume = value;
+          break;
+        case "paused":
+          this.paused = value;
+          break;
+        case "loop":
+          this.loop = value;
+          break;
+        case "muted":
+          this.muted = value;
+          break;
+      }
+    }
+    return this;
+  }
+  /** The current playback progress from 0 to 1. */
+  get progress() {
+    const { currentTime } = this._source;
+    return currentTime / this._duration;
+  }
+  /** Pauses the sound. */
+  get paused() {
+    return this._paused;
+  }
+  set paused(paused) {
+    this._paused = paused;
+    this.refreshPaused();
+  }
+  /**
+   * Reference: http://stackoverflow.com/a/40370077
+   * @private
+   */
+  _onPlay() {
+    this._playing = true;
+  }
+  /**
+   * Reference: http://stackoverflow.com/a/40370077
+   * @private
+   */
+  _onPause() {
+    this._playing = false;
+  }
+  /**
+   * Initialize the instance.
+   * @param {htmlaudio.HTMLAudioMedia} media - Same as constructor
+   */
+  init(media) {
+    this._playing = false;
+    this._duration = media.source.duration;
+    const source = this._source = media.source.cloneNode(false);
+    source.src = media.parent.url;
+    source.onplay = this._onPlay.bind(this);
+    source.onpause = this._onPause.bind(this);
+    media.context.on("refresh", this.refresh, this);
+    media.context.on("refreshPaused", this.refreshPaused, this);
+    this._media = media;
+  }
+  /**
+   * Stop the sound playing
+   * @private
+   */
+  _internalStop() {
+    if (this._source && this._playing) {
+      this._source.onended = null;
+      this._source.pause();
+    }
+  }
+  /** Stop the sound playing */
+  stop() {
+    this._internalStop();
+    if (this._source) {
+      this.emit("stop");
+    }
+  }
+  /** Set the instance speed from 0 to 1 */
+  get speed() {
+    return this._speed;
+  }
+  set speed(speed) {
+    this._speed = speed;
+    this.refresh();
+  }
+  /** Get the set the volume for this instance from 0 to 1 */
+  get volume() {
+    return this._volume;
+  }
+  set volume(volume) {
+    this._volume = volume;
+    this.refresh();
+  }
+  /** If the sound instance should loop playback */
+  get loop() {
+    return this._loop;
+  }
+  set loop(loop) {
+    this._loop = loop;
+    this.refresh();
+  }
+  /** `true` if the sound is muted */
+  get muted() {
+    return this._muted;
+  }
+  set muted(muted) {
+    this._muted = muted;
+    this.refresh();
+  }
+  /**
+   * HTML Audio does not support filters, this is non-functional API.
+   */
+  get filters() {
+    console.warn("HTML Audio does not support filters");
+    return null;
+  }
+  set filters(_filters) {
+    console.warn("HTML Audio does not support filters");
+  }
+  /** Call whenever the loop, speed or volume changes */
+  refresh() {
+    const global = this._media.context;
+    const sound = this._media.parent;
+    this._source.loop = this._loop || sound.loop;
+    const globalVolume = global.volume * (global.muted ? 0 : 1);
+    const soundVolume = sound.volume * (sound.muted ? 0 : 1);
+    const instanceVolume = this._volume * (this._muted ? 0 : 1);
+    this._source.volume = instanceVolume * globalVolume * soundVolume;
+    this._source.playbackRate = this._speed * global.speed * sound.speed;
+  }
+  /** Handle changes in paused state, either globally or sound or instance */
+  refreshPaused() {
+    const global = this._media.context;
+    const sound = this._media.parent;
+    const pausedReal = this._paused || sound.paused || global.paused;
+    if (pausedReal !== this._pausedReal) {
+      this._pausedReal = pausedReal;
+      if (pausedReal) {
+        this._internalStop();
+        this.emit("paused");
+      } else {
+        this.emit("resumed");
+        this.play({
+          start: this._source.currentTime,
+          end: this._end,
+          volume: this._volume,
+          speed: this._speed,
+          loop: this._loop
+        });
+      }
+      this.emit("pause", pausedReal);
+    }
+  }
+  /** Start playing the sound/ */
+  play(options) {
+    const { start, end, speed, loop, volume, muted } = options;
+    if (end) {
+      console.assert(end > start, "End time is before start time");
+    }
+    this._speed = speed;
+    this._volume = volume;
+    this._loop = !!loop;
+    this._muted = muted;
+    this.refresh();
+    if (this.loop && end !== null) {
+      console.warn('Looping not support when specifying an "end" time');
+      this.loop = false;
+    }
+    this._start = start;
+    this._end = end || this._duration;
+    this._start = Math.max(0, this._start - _HTMLAudioInstance.PADDING);
+    this._end = Math.min(this._end + _HTMLAudioInstance.PADDING, this._duration);
+    this._source.onloadedmetadata = () => {
+      if (this._source) {
+        this._source.currentTime = start;
+        this._source.onloadedmetadata = null;
+        this.emit("progress", start, this._duration);
+        _pixi_core__WEBPACK_IMPORTED_MODULE_0__.Ticker.shared.add(this._onUpdate, this);
+      }
+    };
+    this._source.onended = this._onComplete.bind(this);
+    this._source.play();
+    this.emit("start");
+  }
+  /**
+   * Handle time update on sound.
+   * @private
+   */
+  _onUpdate() {
+    this.emit("progress", this.progress, this._duration);
+    if (this._source.currentTime >= this._end && !this._source.loop) {
+      this._onComplete();
+    }
+  }
+  /**
+   * Callback when completed.
+   * @private
+   */
+  _onComplete() {
+    _pixi_core__WEBPACK_IMPORTED_MODULE_0__.Ticker.shared.remove(this._onUpdate, this);
+    this._internalStop();
+    this.emit("progress", 1, this._duration);
+    this.emit("end", this);
+  }
+  /** Don't use after this. */
+  destroy() {
+    _pixi_core__WEBPACK_IMPORTED_MODULE_0__.Ticker.shared.remove(this._onUpdate, this);
+    this.removeAllListeners();
+    const source = this._source;
+    if (source) {
+      source.onended = null;
+      source.onplay = null;
+      source.onpause = null;
+      this._internalStop();
+    }
+    this._source = null;
+    this._speed = 1;
+    this._volume = 1;
+    this._loop = false;
+    this._end = null;
+    this._start = 0;
+    this._duration = 0;
+    this._playing = false;
+    this._pausedReal = false;
+    this._paused = false;
+    this._muted = false;
+    if (this._media) {
+      this._media.context.off("refresh", this.refresh, this);
+      this._media.context.off("refreshPaused", this.refreshPaused, this);
+      this._media = null;
+    }
+  }
+  /**
+   * To string method for instance.
+   * @return The string representation of instance.
+   */
+  toString() {
+    return `[HTMLAudioInstance id=${this.id}]`;
+  }
+};
+let HTMLAudioInstance = _HTMLAudioInstance;
+/** Extra padding, in seconds, to deal with low-latecy of HTMLAudio. */
+HTMLAudioInstance.PADDING = 0.1;
+
+
+//# sourceMappingURL=HTMLAudioInstance.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioMedia.mjs":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioMedia.mjs ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HTMLAudioMedia: () => (/* binding */ HTMLAudioMedia)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _HTMLAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./HTMLAudioInstance.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioInstance.mjs");
+
+
+
+class HTMLAudioMedia extends _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.EventEmitter {
+  init(parent) {
+    this.parent = parent;
+    this._source = parent.options.source || new Audio();
+    if (parent.url) {
+      this._source.src = parent.url;
+    }
+  }
+  // Implement create
+  create() {
+    return new _HTMLAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__.HTMLAudioInstance(this);
+  }
+  /**
+   * If the audio media is playable (ready).
+   * @readonly
+   */
+  get isPlayable() {
+    return !!this._source && this._source.readyState === 4;
+  }
+  /**
+   * THe duration of the media in seconds.
+   * @readonly
+   */
+  get duration() {
+    return this._source.duration;
+  }
+  /**
+   * Reference to the context.
+   * @readonly
+   */
+  get context() {
+    return this.parent.context;
+  }
+  /** The collection of filters, does not apply to HTML Audio. */
+  get filters() {
+    return null;
+  }
+  set filters(_filters) {
+    console.warn("HTML Audio does not support filters");
+  }
+  // Override the destroy
+  destroy() {
+    this.removeAllListeners();
+    this.parent = null;
+    if (this._source) {
+      this._source.src = "";
+      this._source.load();
+      this._source = null;
+    }
+  }
+  /**
+   * Get the audio source element.
+   * @type {HTMLAudioElement}
+   * @readonly
+   */
+  get source() {
+    return this._source;
+  }
+  // Implement the method to being preloading
+  load(callback) {
+    const source = this._source;
+    const sound = this.parent;
+    if (source.readyState === 4) {
+      sound.isLoaded = true;
+      const instance = sound.autoPlayStart();
+      if (callback) {
+        setTimeout(() => {
+          callback(null, sound, instance);
+        }, 0);
+      }
+      return;
+    }
+    if (!sound.url) {
+      callback(new Error("sound.url or sound.source must be set"));
+      return;
+    }
+    source.src = sound.url;
+    const onLoad = () => {
+      removeListeners();
+      sound.isLoaded = true;
+      const instance = sound.autoPlayStart();
+      if (callback) {
+        callback(null, sound, instance);
+      }
+    };
+    const onAbort = () => {
+      removeListeners();
+      if (callback) {
+        callback(new Error("Sound loading has been aborted"));
+      }
+    };
+    const onError = () => {
+      removeListeners();
+      const message = `Failed to load audio element (code: ${source.error.code})`;
+      if (callback) {
+        callback(new Error(message));
+      } else {
+        console.error(message);
+      }
+    };
+    const removeListeners = () => {
+      source.removeEventListener("canplaythrough", onLoad);
+      source.removeEventListener("load", onLoad);
+      source.removeEventListener("abort", onAbort);
+      source.removeEventListener("error", onError);
+    };
+    source.addEventListener("canplaythrough", onLoad, false);
+    source.addEventListener("load", onLoad, false);
+    source.addEventListener("abort", onAbort, false);
+    source.addEventListener("error", onError, false);
+    source.load();
+  }
+}
+
+
+//# sourceMappingURL=HTMLAudioMedia.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/htmlaudio/index.mjs":
+/*!**********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/htmlaudio/index.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HTMLAudioContext: () => (/* reexport safe */ _HTMLAudioContext_mjs__WEBPACK_IMPORTED_MODULE_2__.HTMLAudioContext),
+/* harmony export */   HTMLAudioInstance: () => (/* reexport safe */ _HTMLAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__.HTMLAudioInstance),
+/* harmony export */   HTMLAudioMedia: () => (/* reexport safe */ _HTMLAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_0__.HTMLAudioMedia)
+/* harmony export */ });
+/* harmony import */ var _HTMLAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HTMLAudioMedia.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioMedia.mjs");
+/* harmony import */ var _HTMLAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./HTMLAudioInstance.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioInstance.mjs");
+/* harmony import */ var _HTMLAudioContext_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./HTMLAudioContext.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/HTMLAudioContext.mjs");
+
+
+
+//# sourceMappingURL=index.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/index.mjs":
+/*!************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/index.mjs ***!
+  \************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Filter: () => (/* reexport safe */ _filters_Filter_mjs__WEBPACK_IMPORTED_MODULE_9__.Filter),
+/* harmony export */   Filterable: () => (/* reexport safe */ _Filterable_mjs__WEBPACK_IMPORTED_MODULE_8__.Filterable),
+/* harmony export */   Sound: () => (/* reexport safe */ _Sound_mjs__WEBPACK_IMPORTED_MODULE_6__.Sound),
+/* harmony export */   SoundLibrary: () => (/* reexport safe */ _SoundLibrary_mjs__WEBPACK_IMPORTED_MODULE_1__.SoundLibrary),
+/* harmony export */   SoundSprite: () => (/* reexport safe */ _SoundSprite_mjs__WEBPACK_IMPORTED_MODULE_10__.SoundSprite),
+/* harmony export */   filters: () => (/* reexport module object */ _filters_index_mjs__WEBPACK_IMPORTED_MODULE_3__),
+/* harmony export */   htmlaudio: () => (/* reexport module object */ _htmlaudio_index_mjs__WEBPACK_IMPORTED_MODULE_2__),
+/* harmony export */   sound: () => (/* binding */ sound),
+/* harmony export */   soundAsset: () => (/* reexport safe */ _soundAsset_mjs__WEBPACK_IMPORTED_MODULE_7__.soundAsset),
+/* harmony export */   utils: () => (/* reexport module object */ _utils_index_mjs__WEBPACK_IMPORTED_MODULE_5__),
+/* harmony export */   webaudio: () => (/* reexport module object */ _webaudio_index_mjs__WEBPACK_IMPORTED_MODULE_4__)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+/* harmony import */ var _SoundLibrary_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SoundLibrary.mjs */ "./node_modules/@pixi/sound/lib/SoundLibrary.mjs");
+/* harmony import */ var _htmlaudio_index_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./htmlaudio/index.mjs */ "./node_modules/@pixi/sound/lib/htmlaudio/index.mjs");
+/* harmony import */ var _filters_index_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./filters/index.mjs */ "./node_modules/@pixi/sound/lib/filters/index.mjs");
+/* harmony import */ var _webaudio_index_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./webaudio/index.mjs */ "./node_modules/@pixi/sound/lib/webaudio/index.mjs");
+/* harmony import */ var _utils_index_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/index.mjs */ "./node_modules/@pixi/sound/lib/utils/index.mjs");
+/* harmony import */ var _Sound_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Sound.mjs */ "./node_modules/@pixi/sound/lib/Sound.mjs");
+/* harmony import */ var _soundAsset_mjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./soundAsset.mjs */ "./node_modules/@pixi/sound/lib/soundAsset.mjs");
+/* harmony import */ var _Filterable_mjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Filterable.mjs */ "./node_modules/@pixi/sound/lib/Filterable.mjs");
+/* harmony import */ var _filters_Filter_mjs__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./filters/Filter.mjs */ "./node_modules/@pixi/sound/lib/filters/Filter.mjs");
+/* harmony import */ var _SoundSprite_mjs__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./SoundSprite.mjs */ "./node_modules/@pixi/sound/lib/SoundSprite.mjs");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const sound = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.setInstance)(new _SoundLibrary_mjs__WEBPACK_IMPORTED_MODULE_1__.SoundLibrary());
+
+
+//# sourceMappingURL=index.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/instance.mjs":
+/*!***************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/instance.mjs ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getInstance: () => (/* binding */ getInstance),
+/* harmony export */   instance: () => (/* binding */ instance),
+/* harmony export */   setInstance: () => (/* binding */ setInstance)
+/* harmony export */ });
+let instance;
+function setInstance(sound) {
+  instance = sound;
+  return sound;
+}
+function getInstance() {
+  return instance;
+}
+
+
+//# sourceMappingURL=instance.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/soundAsset.mjs":
+/*!*****************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/soundAsset.mjs ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   soundAsset: () => (/* binding */ soundAsset)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _pixi_assets__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pixi/assets */ "./node_modules/@pixi/assets/lib/index.mjs");
+/* harmony import */ var _utils_supported_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/supported.mjs */ "./node_modules/@pixi/sound/lib/utils/supported.mjs");
+/* harmony import */ var _Sound_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Sound.mjs */ "./node_modules/@pixi/sound/lib/Sound.mjs");
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+
+
+
+
+
+
+const getAlias = (asset) => {
+  const url = asset.src;
+  return asset?.alias?.[0] ?? _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.path.basename(url, _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.path.extname(url));
+};
+const soundAsset = {
+  extension: _pixi_core__WEBPACK_IMPORTED_MODULE_0__.ExtensionType.Asset,
+  detection: {
+    test: async () => true,
+    add: async (formats) => [...formats, ..._utils_supported_mjs__WEBPACK_IMPORTED_MODULE_2__.extensions.filter((ext) => _utils_supported_mjs__WEBPACK_IMPORTED_MODULE_2__.supported[ext])],
+    remove: async (formats) => formats.filter((ext) => formats.includes(ext))
+  },
+  loader: {
+    extension: {
+      type: [_pixi_core__WEBPACK_IMPORTED_MODULE_0__.ExtensionType.LoadParser],
+      priority: _pixi_assets__WEBPACK_IMPORTED_MODULE_1__.LoaderParserPriority.High
+    },
+    /** Should we attempt to load this file? */
+    test(url) {
+      const ext = _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.path.extname(url).slice(1);
+      return !!_utils_supported_mjs__WEBPACK_IMPORTED_MODULE_2__.supported[ext] || _utils_supported_mjs__WEBPACK_IMPORTED_MODULE_2__.mimes.some((mime) => url.startsWith(`data:${mime}`));
+    },
+    /** Load the sound file, this is mostly handled by Sound.from() */
+    async load(url, asset) {
+      const sound = await new Promise((resolve, reject) => _Sound_mjs__WEBPACK_IMPORTED_MODULE_3__.Sound.from({
+        ...asset.data,
+        url,
+        preload: true,
+        loaded(err, sound2) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(sound2);
+          }
+          asset.data?.loaded?.(err, sound2);
+        }
+      }));
+      (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_4__.getInstance)().add(getAlias(asset), sound);
+      return sound;
+    },
+    /** Remove the sound from the library */
+    async unload(_sound, asset) {
+      (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_4__.getInstance)().remove(getAlias(asset));
+    }
+  }
+};
+_pixi_core__WEBPACK_IMPORTED_MODULE_0__.extensions.add(soundAsset);
+
+
+//# sourceMappingURL=soundAsset.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/utils/index.mjs":
+/*!******************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/utils/index.mjs ***!
+  \******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PLAY_ID: () => (/* reexport safe */ _playOnce_mjs__WEBPACK_IMPORTED_MODULE_0__.PLAY_ID),
+/* harmony export */   extensions: () => (/* reexport safe */ _supported_mjs__WEBPACK_IMPORTED_MODULE_3__.extensions),
+/* harmony export */   mimes: () => (/* reexport safe */ _supported_mjs__WEBPACK_IMPORTED_MODULE_3__.mimes),
+/* harmony export */   playOnce: () => (/* reexport safe */ _playOnce_mjs__WEBPACK_IMPORTED_MODULE_0__.playOnce),
+/* harmony export */   render: () => (/* reexport safe */ _render_mjs__WEBPACK_IMPORTED_MODULE_1__.render),
+/* harmony export */   sineTone: () => (/* reexport safe */ _sineTone_mjs__WEBPACK_IMPORTED_MODULE_2__.sineTone),
+/* harmony export */   supported: () => (/* reexport safe */ _supported_mjs__WEBPACK_IMPORTED_MODULE_3__.supported),
+/* harmony export */   validateFormats: () => (/* reexport safe */ _supported_mjs__WEBPACK_IMPORTED_MODULE_3__.validateFormats)
+/* harmony export */ });
+/* harmony import */ var _playOnce_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./playOnce.mjs */ "./node_modules/@pixi/sound/lib/utils/playOnce.mjs");
+/* harmony import */ var _render_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render.mjs */ "./node_modules/@pixi/sound/lib/utils/render.mjs");
+/* harmony import */ var _sineTone_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sineTone.mjs */ "./node_modules/@pixi/sound/lib/utils/sineTone.mjs");
+/* harmony import */ var _supported_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./supported.mjs */ "./node_modules/@pixi/sound/lib/utils/supported.mjs");
+
+
+
+
+//# sourceMappingURL=index.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/utils/playOnce.mjs":
+/*!*********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/utils/playOnce.mjs ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PLAY_ID: () => (/* binding */ PLAY_ID),
+/* harmony export */   playOnce: () => (/* binding */ playOnce)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+
+
+let PLAY_ID = 0;
+function playOnce(url, callback) {
+  const alias = `alias${PLAY_ID++}`;
+  (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().add(alias, {
+    url,
+    preload: true,
+    autoPlay: true,
+    loaded: (err) => {
+      if (err) {
+        console.error(err);
+        (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().remove(alias);
+        if (callback) {
+          callback(err);
+        }
+      }
+    },
+    complete: () => {
+      (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().remove(alias);
+      if (callback) {
+        callback(null);
+      }
+    }
+  });
+  return alias;
+}
+
+
+//# sourceMappingURL=playOnce.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/utils/render.mjs":
+/*!*******************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/utils/render.mjs ***!
+  \*******************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _webaudio_WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../webaudio/WebAudioMedia.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioMedia.mjs");
+
+
+
+function render(sound, options) {
+  const canvas = document.createElement("canvas");
+  options = {
+    width: 512,
+    height: 128,
+    fill: "black",
+    ...options || {}
+  };
+  canvas.width = options.width;
+  canvas.height = options.height;
+  const baseTexture = _pixi_core__WEBPACK_IMPORTED_MODULE_0__.BaseTexture.from(canvas);
+  if (!(sound.media instanceof _webaudio_WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioMedia)) {
+    return baseTexture;
+  }
+  const media = sound.media;
+  console.assert(!!media.buffer, "No buffer found, load first");
+  const context = canvas.getContext("2d");
+  context.fillStyle = options.fill;
+  const data = media.buffer.getChannelData(0);
+  const step = Math.ceil(data.length / options.width);
+  const amp = options.height / 2;
+  for (let i = 0; i < options.width; i++) {
+    let min = 1;
+    let max = -1;
+    for (let j = 0; j < step; j++) {
+      const datum = data[i * step + j];
+      if (datum < min) {
+        min = datum;
+      }
+      if (datum > max) {
+        max = datum;
+      }
+    }
+    context.fillRect(i, (1 + min) * amp, 1, Math.max(1, (max - min) * amp));
+  }
+  return baseTexture;
+}
+
+
+//# sourceMappingURL=render.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/utils/sineTone.mjs":
+/*!*********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/utils/sineTone.mjs ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   sineTone: () => (/* binding */ sineTone)
+/* harmony export */ });
+/* harmony import */ var _Sound_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Sound.mjs */ "./node_modules/@pixi/sound/lib/Sound.mjs");
+/* harmony import */ var _webaudio_WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../webaudio/WebAudioMedia.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioMedia.mjs");
+
+
+
+function sineTone(hertz = 200, seconds = 1) {
+  const sound = _Sound_mjs__WEBPACK_IMPORTED_MODULE_0__.Sound.from({
+    singleInstance: true
+  });
+  if (!(sound.media instanceof _webaudio_WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioMedia)) {
+    return sound;
+  }
+  const media = sound.media;
+  const context = sound.context;
+  const nChannels = 1;
+  const sampleRate = 48e3;
+  const amplitude = 2;
+  const buffer = context.audioContext.createBuffer(
+    nChannels,
+    seconds * sampleRate,
+    sampleRate
+  );
+  const fArray = buffer.getChannelData(0);
+  for (let i = 0; i < fArray.length; i++) {
+    const time = i / buffer.sampleRate;
+    const angle = hertz * time * Math.PI;
+    fArray[i] = Math.sin(angle) * amplitude;
+  }
+  media.buffer = buffer;
+  sound.isLoaded = true;
+  return sound;
+}
+
+
+//# sourceMappingURL=sineTone.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/utils/supported.mjs":
+/*!**********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/utils/supported.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extensions: () => (/* binding */ extensions),
+/* harmony export */   mimes: () => (/* binding */ mimes),
+/* harmony export */   supported: () => (/* binding */ supported),
+/* harmony export */   validateFormats: () => (/* binding */ validateFormats)
+/* harmony export */ });
+const extensions = [
+  "ogg",
+  "oga",
+  "opus",
+  "m4a",
+  "mp3",
+  "mpeg",
+  "wav",
+  "aiff",
+  "wma",
+  "mid",
+  "caf"
+];
+const mimes = [
+  "audio/mpeg",
+  "audio/ogg"
+];
+const supported = {};
+function validateFormats(typeOverrides) {
+  const overrides = {
+    m4a: "audio/mp4",
+    oga: "audio/ogg",
+    opus: 'audio/ogg; codecs="opus"',
+    caf: 'audio/x-caf; codecs="opus"',
+    ...typeOverrides || {}
+  };
+  const audio = document.createElement("audio");
+  const formats = {};
+  const no = /^no$/;
+  extensions.forEach((ext) => {
+    const canByExt = audio.canPlayType(`audio/${ext}`).replace(no, "");
+    const canByType = overrides[ext] ? audio.canPlayType(overrides[ext]).replace(no, "") : "";
+    formats[ext] = !!canByExt || !!canByType;
+  });
+  Object.assign(supported, formats);
+}
+validateFormats();
+
+
+//# sourceMappingURL=supported.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/webaudio/WebAudioContext.mjs":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/webaudio/WebAudioContext.mjs ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WebAudioContext: () => (/* binding */ WebAudioContext)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _Filterable_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Filterable.mjs */ "./node_modules/@pixi/sound/lib/Filterable.mjs");
+
+
+
+class WebAudioContext extends _Filterable_mjs__WEBPACK_IMPORTED_MODULE_1__.Filterable {
+  constructor() {
+    const win = window;
+    const ctx = new WebAudioContext.AudioContext();
+    const compressor = ctx.createDynamicsCompressor();
+    const analyser = ctx.createAnalyser();
+    analyser.connect(compressor);
+    compressor.connect(ctx.destination);
+    super(analyser, compressor);
+    /** Set to false ignore suspending when window is blurred */
+    this.autoPause = true;
+    this._ctx = ctx;
+    this._offlineCtx = new WebAudioContext.OfflineAudioContext(
+      1,
+      2,
+      win.OfflineAudioContext ? Math.max(8e3, Math.min(96e3, ctx.sampleRate)) : 44100
+    );
+    this.compressor = compressor;
+    this.analyser = analyser;
+    this.events = new _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.EventEmitter();
+    this.volume = 1;
+    this.speed = 1;
+    this.muted = false;
+    this.paused = false;
+    this._locked = ctx.state === "suspended" && ("ontouchstart" in globalThis || "onclick" in globalThis);
+    if (this._locked) {
+      this._unlock();
+      this._unlock = this._unlock.bind(this);
+      document.addEventListener("mousedown", this._unlock, true);
+      document.addEventListener("touchstart", this._unlock, true);
+      document.addEventListener("touchend", this._unlock, true);
+    }
+    this.onFocus = this.onFocus.bind(this);
+    this.onBlur = this.onBlur.bind(this);
+    globalThis.addEventListener("focus", this.onFocus);
+    globalThis.addEventListener("blur", this.onBlur);
+  }
+  /** Handle mobile WebAudio context resume */
+  onFocus() {
+    const state = this._ctx.state;
+    if (state === "suspended" || state === "interrupted" || !this._locked) {
+      this.paused = this._pausedOnBlur;
+      this.refreshPaused();
+    }
+  }
+  /** Handle mobile WebAudio context suspend */
+  onBlur() {
+    if (!this._locked && this.autoPause) {
+      this._pausedOnBlur = this._paused;
+      this.paused = true;
+      this.refreshPaused();
+    }
+  }
+  /**
+   * Try to unlock audio on iOS. This is triggered from either WebAudio plugin setup (which will work if inside of
+   * a `mousedown` or `touchend` event stack), or the first document touchend/mousedown event. If it fails (touchend
+   * will fail if the user presses for too long, indicating a scroll event instead of a click event.
+   *
+   * Note that earlier versions of iOS supported `touchstart` for this, but iOS9 removed this functionality. Adding
+   * a `touchstart` event to support older platforms may preclude a `mousedown` even from getting fired on iOS9, so we
+   * stick with `mousedown` and `touchend`.
+   */
+  _unlock() {
+    if (!this._locked) {
+      return;
+    }
+    this.playEmptySound();
+    if (this._ctx.state === "running") {
+      document.removeEventListener("mousedown", this._unlock, true);
+      document.removeEventListener("touchend", this._unlock, true);
+      document.removeEventListener("touchstart", this._unlock, true);
+      this._locked = false;
+    }
+  }
+  /**
+   * Plays an empty sound in the web audio context.  This is used to enable web audio on iOS devices, as they
+   * require the first sound to be played inside of a user initiated event (touch/click).
+   */
+  playEmptySound() {
+    const source = this._ctx.createBufferSource();
+    source.buffer = this._ctx.createBuffer(1, 1, 22050);
+    source.connect(this._ctx.destination);
+    source.start(0, 0, 0);
+    if (source.context.state === "suspended") {
+      source.context.resume();
+    }
+  }
+  /**
+   * Get AudioContext class, if not supported returns `null`
+   * @type {AudioContext}
+   * @readonly
+   */
+  static get AudioContext() {
+    const win = window;
+    return win.AudioContext || win.webkitAudioContext || null;
+  }
+  /**
+   * Get OfflineAudioContext class, if not supported returns `null`
+   * @type {OfflineAudioContext}
+   * @readonly
+   */
+  static get OfflineAudioContext() {
+    const win = window;
+    return win.OfflineAudioContext || win.webkitOfflineAudioContext || null;
+  }
+  /** Destroy this context. */
+  destroy() {
+    super.destroy();
+    const ctx = this._ctx;
+    if (typeof ctx.close !== "undefined") {
+      ctx.close();
+    }
+    globalThis.removeEventListener("focus", this.onFocus);
+    globalThis.removeEventListener("blur", this.onBlur);
+    this.events.removeAllListeners();
+    this.analyser.disconnect();
+    this.compressor.disconnect();
+    this.analyser = null;
+    this.compressor = null;
+    this.events = null;
+    this._offlineCtx = null;
+    this._ctx = null;
+  }
+  /**
+   * The WebAudio API AudioContext object.
+   * @readonly
+   * @type {AudioContext}
+   */
+  get audioContext() {
+    return this._ctx;
+  }
+  /**
+   * The WebAudio API OfflineAudioContext object.
+   * @readonly
+   * @type {OfflineAudioContext}
+   */
+  get offlineContext() {
+    return this._offlineCtx;
+  }
+  /**
+   * Pauses all sounds, even though we handle this at the instance
+   * level, we'll also pause the audioContext so that the
+   * time used to compute progress isn't messed up.
+   * @default false
+   */
+  set paused(paused) {
+    if (paused && this._ctx.state === "running") {
+      this._ctx.suspend();
+    } else if (!paused && this._ctx.state === "suspended") {
+      this._ctx.resume();
+    }
+    this._paused = paused;
+  }
+  get paused() {
+    return this._paused;
+  }
+  /** Emit event when muted, volume or speed changes */
+  refresh() {
+    this.events.emit("refresh");
+  }
+  /** Emit event when muted, volume or speed changes */
+  refreshPaused() {
+    this.events.emit("refreshPaused");
+  }
+  /**
+   * Toggles the muted state.
+   * @return The current muted state.
+   */
+  toggleMute() {
+    this.muted = !this.muted;
+    this.refresh();
+    return this.muted;
+  }
+  /**
+   * Toggles the paused state.
+   * @return The current muted state.
+   */
+  togglePause() {
+    this.paused = !this.paused;
+    this.refreshPaused();
+    return this._paused;
+  }
+  /**
+   * Decode the audio data
+   * @param arrayBuffer - Buffer from loader
+   * @param callback - When completed, error and audioBuffer are parameters.
+   */
+  decode(arrayBuffer, callback) {
+    const handleError = (err) => {
+      callback(new Error(err?.message || "Unable to decode file"));
+    };
+    const result = this._offlineCtx.decodeAudioData(
+      arrayBuffer,
+      (buffer) => {
+        callback(null, buffer);
+      },
+      handleError
+    );
+    if (result) {
+      result.catch(handleError);
+    }
+  }
+}
+
+
+//# sourceMappingURL=WebAudioContext.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/webaudio/WebAudioInstance.mjs":
+/*!********************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/webaudio/WebAudioInstance.mjs ***!
+  \********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WebAudioInstance: () => (/* binding */ WebAudioInstance)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./WebAudioUtils.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs");
+
+
+
+let id = 0;
+class WebAudioInstance extends _pixi_core__WEBPACK_IMPORTED_MODULE_0__.utils.EventEmitter {
+  constructor(media) {
+    super();
+    this.id = id++;
+    this._media = null;
+    this._paused = false;
+    this._muted = false;
+    this._elapsed = 0;
+    this.init(media);
+  }
+  /**
+   * Set a property by name, this makes it easy to chain values
+   * @param name - Name of the property to set.
+   * @param value - Value to set property to.
+   */
+  set(name, value) {
+    if (this[name] === void 0) {
+      throw new Error(`Property with name ${name} does not exist.`);
+    } else {
+      switch (name) {
+        case "speed":
+          this.speed = value;
+          break;
+        case "volume":
+          this.volume = value;
+          break;
+        case "muted":
+          this.muted = value;
+          break;
+        case "loop":
+          this.loop = value;
+          break;
+        case "paused":
+          this.paused = value;
+          break;
+      }
+    }
+    return this;
+  }
+  /** Stops the instance, don't use after this. */
+  stop() {
+    if (this._source) {
+      this._internalStop();
+      this.emit("stop");
+    }
+  }
+  /** Set the instance speed from 0 to 1 */
+  get speed() {
+    return this._speed;
+  }
+  set speed(speed) {
+    this._speed = speed;
+    this.refresh();
+    this._update(true);
+  }
+  /** Get the set the volume for this instance from 0 to 1 */
+  get volume() {
+    return this._volume;
+  }
+  set volume(volume) {
+    this._volume = volume;
+    this.refresh();
+  }
+  /** `true` if the sound is muted */
+  get muted() {
+    return this._muted;
+  }
+  set muted(muted) {
+    this._muted = muted;
+    this.refresh();
+  }
+  /** If the sound instance should loop playback */
+  get loop() {
+    return this._loop;
+  }
+  set loop(loop) {
+    this._loop = loop;
+    this.refresh();
+  }
+  /** The collection of filters. */
+  get filters() {
+    return this._filters;
+  }
+  set filters(filters) {
+    if (this._filters) {
+      this._filters?.filter((filter) => filter).forEach((filter) => filter.disconnect());
+      this._filters = null;
+      this._source.connect(this._gain);
+    }
+    this._filters = filters?.length ? filters.slice(0) : null;
+    this.refresh();
+  }
+  /** Refresh loop, volume and speed based on changes to parent */
+  refresh() {
+    if (!this._source) {
+      return;
+    }
+    const global = this._media.context;
+    const sound = this._media.parent;
+    this._source.loop = this._loop || sound.loop;
+    const globalVolume = global.volume * (global.muted ? 0 : 1);
+    const soundVolume = sound.volume * (sound.muted ? 0 : 1);
+    const instanceVolume = this._volume * (this._muted ? 0 : 1);
+    _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(this._gain.gain, instanceVolume * soundVolume * globalVolume);
+    _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(this._source.playbackRate, this._speed * sound.speed * global.speed);
+    this.applyFilters();
+  }
+  /** Connect filters nodes to audio context */
+  applyFilters() {
+    if (this._filters?.length) {
+      this._source.disconnect();
+      let source = this._source;
+      this._filters.forEach((filter) => {
+        source.connect(filter.destination);
+        source = filter;
+      });
+      source.connect(this._gain);
+    }
+  }
+  /** Handle changes in paused state, either globally or sound or instance */
+  refreshPaused() {
+    const global = this._media.context;
+    const sound = this._media.parent;
+    const pausedReal = this._paused || sound.paused || global.paused;
+    if (pausedReal !== this._pausedReal) {
+      this._pausedReal = pausedReal;
+      if (pausedReal) {
+        this._internalStop();
+        this.emit("paused");
+      } else {
+        this.emit("resumed");
+        this.play({
+          start: this._elapsed % this._duration,
+          end: this._end,
+          speed: this._speed,
+          loop: this._loop,
+          volume: this._volume
+        });
+      }
+      this.emit("pause", pausedReal);
+    }
+  }
+  /**
+   * Plays the sound.
+   * @param options - Play options.
+   */
+  play(options) {
+    const { start, end, speed, loop, volume, muted, filters } = options;
+    if (end) {
+      console.assert(end > start, "End time is before start time");
+    }
+    this._paused = false;
+    const { source, gain } = this._media.nodes.cloneBufferSource();
+    this._source = source;
+    this._gain = gain;
+    this._speed = speed;
+    this._volume = volume;
+    this._loop = !!loop;
+    this._muted = muted;
+    this._filters = filters;
+    this.refresh();
+    const duration = this._source.buffer.duration;
+    this._duration = duration;
+    this._end = end;
+    this._lastUpdate = this._now();
+    this._elapsed = start;
+    this._source.onended = this._onComplete.bind(this);
+    if (this._loop) {
+      this._source.loopEnd = end;
+      this._source.loopStart = start;
+      this._source.start(0, start);
+    } else if (end) {
+      this._source.start(0, start, end - start);
+    } else {
+      this._source.start(0, start);
+    }
+    this.emit("start");
+    this._update(true);
+    this.enableTicker(true);
+  }
+  /** Start the update progress. */
+  enableTicker(enabled) {
+    _pixi_core__WEBPACK_IMPORTED_MODULE_0__.Ticker.shared.remove(this._updateListener, this);
+    if (enabled) {
+      _pixi_core__WEBPACK_IMPORTED_MODULE_0__.Ticker.shared.add(this._updateListener, this);
+    }
+  }
+  /** The current playback progress from 0 to 1. */
+  get progress() {
+    return this._progress;
+  }
+  /** Pauses the sound. */
+  get paused() {
+    return this._paused;
+  }
+  set paused(paused) {
+    this._paused = paused;
+    this.refreshPaused();
+  }
+  /** Don't use after this. */
+  destroy() {
+    this.removeAllListeners();
+    this._internalStop();
+    if (this._gain) {
+      this._gain.disconnect();
+      this._gain = null;
+    }
+    if (this._media) {
+      this._media.context.events.off("refresh", this.refresh, this);
+      this._media.context.events.off("refreshPaused", this.refreshPaused, this);
+      this._media = null;
+    }
+    this._filters?.forEach((filter) => filter.disconnect());
+    this._filters = null;
+    this._end = null;
+    this._speed = 1;
+    this._volume = 1;
+    this._loop = false;
+    this._elapsed = 0;
+    this._duration = 0;
+    this._paused = false;
+    this._muted = false;
+    this._pausedReal = false;
+  }
+  /**
+   * To string method for instance.
+   * @return The string representation of instance.
+   */
+  toString() {
+    return `[WebAudioInstance id=${this.id}]`;
+  }
+  /**
+   * Get the current time in seconds.
+   * @return Seconds since start of context
+   */
+  _now() {
+    return this._media.context.audioContext.currentTime;
+  }
+  /** Callback for update listener */
+  _updateListener() {
+    this._update();
+  }
+  /** Internal update the progress. */
+  _update(force = false) {
+    if (this._source) {
+      const now = this._now();
+      const delta = now - this._lastUpdate;
+      if (delta > 0 || force) {
+        const speed = this._source.playbackRate.value;
+        this._elapsed += delta * speed;
+        this._lastUpdate = now;
+        const duration = this._duration;
+        let progress;
+        if (this._source.loopStart) {
+          const soundLength = this._source.loopEnd - this._source.loopStart;
+          progress = (this._source.loopStart + this._elapsed % soundLength) / duration;
+        } else {
+          progress = this._elapsed % duration / duration;
+        }
+        this._progress = progress;
+        this.emit("progress", this._progress, duration);
+      }
+    }
+  }
+  /** Initializes the instance. */
+  init(media) {
+    this._media = media;
+    media.context.events.on("refresh", this.refresh, this);
+    media.context.events.on("refreshPaused", this.refreshPaused, this);
+  }
+  /** Stops the instance. */
+  _internalStop() {
+    if (this._source) {
+      this.enableTicker(false);
+      this._source.onended = null;
+      this._source.stop(0);
+      this._source.disconnect();
+      try {
+        this._source.buffer = null;
+      } catch (err) {
+        console.warn("Failed to set AudioBufferSourceNode.buffer to null:", err);
+      }
+      this._source = null;
+    }
+  }
+  /** Callback when completed. */
+  _onComplete() {
+    if (this._source) {
+      this.enableTicker(false);
+      this._source.onended = null;
+      this._source.disconnect();
+      try {
+        this._source.buffer = null;
+      } catch (err) {
+        console.warn("Failed to set AudioBufferSourceNode.buffer to null:", err);
+      }
+    }
+    this._source = null;
+    this._progress = 1;
+    this.emit("progress", 1, this._duration);
+    this.emit("end", this);
+  }
+}
+
+
+//# sourceMappingURL=WebAudioInstance.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/webaudio/WebAudioMedia.mjs":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/webaudio/WebAudioMedia.mjs ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WebAudioMedia: () => (/* binding */ WebAudioMedia)
+/* harmony export */ });
+/* harmony import */ var _pixi_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/core */ "./node_modules/@pixi/core/lib/index.mjs");
+/* harmony import */ var _WebAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./WebAudioInstance.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioInstance.mjs");
+/* harmony import */ var _WebAudioNodes_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WebAudioNodes.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioNodes.mjs");
+
+
+
+
+class WebAudioMedia {
+  /**
+   * Re-initialize without constructing.
+   * @param parent - - Instance of parent Sound container
+   */
+  init(parent) {
+    this.parent = parent;
+    this._nodes = new _WebAudioNodes_mjs__WEBPACK_IMPORTED_MODULE_2__.WebAudioNodes(this.context);
+    this._source = this._nodes.bufferSource;
+    this.source = parent.options.source;
+  }
+  /** Destructor, safer to use `SoundLibrary.remove(alias)` to remove this sound. */
+  destroy() {
+    this.parent = null;
+    this._nodes.destroy();
+    this._nodes = null;
+    try {
+      this._source.buffer = null;
+    } catch (err) {
+      console.warn("Failed to set AudioBufferSourceNode.buffer to null:", err);
+    }
+    this._source = null;
+    this.source = null;
+  }
+  // Implement create
+  create() {
+    return new _WebAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioInstance(this);
+  }
+  // Implement context
+  get context() {
+    return this.parent.context;
+  }
+  // Implement isPlayable
+  get isPlayable() {
+    return !!this._source && !!this._source.buffer;
+  }
+  // Implement filters
+  get filters() {
+    return this._nodes.filters;
+  }
+  set filters(filters) {
+    this._nodes.filters = filters;
+  }
+  // Implements duration
+  get duration() {
+    console.assert(this.isPlayable, "Sound not yet playable, no duration");
+    return this._source.buffer.duration;
+  }
+  /** Gets and sets the buffer. */
+  get buffer() {
+    return this._source.buffer;
+  }
+  set buffer(buffer) {
+    this._source.buffer = buffer;
+  }
+  /** Get the current chained nodes object */
+  get nodes() {
+    return this._nodes;
+  }
+  // Implements load
+  load(callback) {
+    if (this.source) {
+      this._decode(this.source, callback);
+    } else if (this.parent.url) {
+      this._loadUrl(callback);
+    } else if (callback) {
+      callback(new Error("sound.url or sound.source must be set"));
+    } else {
+      console.error("sound.url or sound.source must be set");
+    }
+  }
+  /** Loads a sound using XHMLHttpRequest object. */
+  async _loadUrl(callback) {
+    const url = this.parent.url;
+    const response = await _pixi_core__WEBPACK_IMPORTED_MODULE_0__.settings.ADAPTER.fetch(url);
+    this._decode(await response.arrayBuffer(), callback);
+  }
+  /**
+   * Decodes the array buffer.
+   * @param arrayBuffer - From load.
+   * @param {Function} callback - Callback optional
+   */
+  _decode(arrayBuffer, callback) {
+    const audioBufferReadyFn = (err, buffer) => {
+      if (err) {
+        if (callback) {
+          callback(err);
+        }
+      } else {
+        this.parent.isLoaded = true;
+        this.buffer = buffer;
+        const instance = this.parent.autoPlayStart();
+        if (callback) {
+          callback(null, this.parent, instance);
+        }
+      }
+    };
+    if (arrayBuffer instanceof AudioBuffer) {
+      audioBufferReadyFn(null, arrayBuffer);
+    } else {
+      const context = this.parent.context;
+      context.decode(arrayBuffer, audioBufferReadyFn);
+    }
+  }
+}
+
+
+//# sourceMappingURL=WebAudioMedia.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/webaudio/WebAudioNodes.mjs":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/webaudio/WebAudioNodes.mjs ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WebAudioNodes: () => (/* binding */ WebAudioNodes)
+/* harmony export */ });
+/* harmony import */ var _Filterable_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Filterable.mjs */ "./node_modules/@pixi/sound/lib/Filterable.mjs");
+/* harmony import */ var _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./WebAudioUtils.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs");
+
+
+
+const _WebAudioNodes = class extends _Filterable_mjs__WEBPACK_IMPORTED_MODULE_0__.Filterable {
+  /**
+   * @param context - The audio context.
+   */
+  constructor(context) {
+    const audioContext = context.audioContext;
+    const bufferSource = audioContext.createBufferSource();
+    const gain = audioContext.createGain();
+    const analyser = audioContext.createAnalyser();
+    bufferSource.connect(analyser);
+    analyser.connect(gain);
+    gain.connect(context.destination);
+    super(analyser, gain);
+    this.context = context;
+    this.bufferSource = bufferSource;
+    this.gain = gain;
+    this.analyser = analyser;
+  }
+  /**
+   * Get the script processor node.
+   * @readonly
+   */
+  get script() {
+    if (!this._script) {
+      this._script = this.context.audioContext.createScriptProcessor(_WebAudioNodes.BUFFER_SIZE);
+      this._script.connect(this.context.destination);
+    }
+    return this._script;
+  }
+  /** Cleans up. */
+  destroy() {
+    super.destroy();
+    this.bufferSource.disconnect();
+    if (this._script) {
+      this._script.disconnect();
+    }
+    this.gain.disconnect();
+    this.analyser.disconnect();
+    this.bufferSource = null;
+    this._script = null;
+    this.gain = null;
+    this.analyser = null;
+    this.context = null;
+  }
+  /**
+   * Clones the bufferSource. Used just before playing a sound.
+   * @returns {SourceClone} The clone AudioBufferSourceNode.
+   */
+  cloneBufferSource() {
+    const orig = this.bufferSource;
+    const source = this.context.audioContext.createBufferSource();
+    source.buffer = orig.buffer;
+    _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioUtils.setParamValue(source.playbackRate, orig.playbackRate.value);
+    source.loop = orig.loop;
+    const gain = this.context.audioContext.createGain();
+    source.connect(gain);
+    gain.connect(this.destination);
+    return { source, gain };
+  }
+  /**
+   * Get buffer size of `ScriptProcessorNode`.
+   * @readonly
+   */
+  get bufferSize() {
+    return this.script.bufferSize;
+  }
+};
+let WebAudioNodes = _WebAudioNodes;
+/**
+ * The buffer size for script processor, default is `0` which auto-detects. If you plan to use
+ * script node on iOS, you'll need to provide a non-zero amount.
+ * @default 0
+ */
+WebAudioNodes.BUFFER_SIZE = 0;
+
+
+//# sourceMappingURL=WebAudioNodes.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WebAudioUtils: () => (/* binding */ WebAudioUtils)
+/* harmony export */ });
+/* harmony import */ var _instance_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../instance.mjs */ "./node_modules/@pixi/sound/lib/instance.mjs");
+
+
+class WebAudioUtils {
+  /**
+   * Dezippering is removed in the future Web Audio API, instead
+   * we use the `setValueAtTime` method, however, this is not available
+   * in all environments (e.g., Android webview), so we fallback to the `value` setter.
+   * @param param - AudioNode parameter object
+   * @param value - Value to set
+   * @return The value set
+   */
+  static setParamValue(param, value) {
+    if (param.setValueAtTime) {
+      const context = (0,_instance_mjs__WEBPACK_IMPORTED_MODULE_0__.getInstance)().context;
+      param.setValueAtTime(value, context.audioContext.currentTime);
+    } else {
+      param.value = value;
+    }
+    return value;
+  }
+}
+
+
+//# sourceMappingURL=WebAudioUtils.mjs.map
+
+
+/***/ }),
+
+/***/ "./node_modules/@pixi/sound/lib/webaudio/index.mjs":
+/*!*********************************************************!*\
+  !*** ./node_modules/@pixi/sound/lib/webaudio/index.mjs ***!
+  \*********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WebAudioContext: () => (/* reexport safe */ _WebAudioContext_mjs__WEBPACK_IMPORTED_MODULE_3__.WebAudioContext),
+/* harmony export */   WebAudioInstance: () => (/* reexport safe */ _WebAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__.WebAudioInstance),
+/* harmony export */   WebAudioMedia: () => (/* reexport safe */ _WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_0__.WebAudioMedia),
+/* harmony export */   WebAudioNodes: () => (/* reexport safe */ _WebAudioNodes_mjs__WEBPACK_IMPORTED_MODULE_2__.WebAudioNodes),
+/* harmony export */   WebAudioUtils: () => (/* reexport safe */ _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_4__.WebAudioUtils)
+/* harmony export */ });
+/* harmony import */ var _WebAudioMedia_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./WebAudioMedia.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioMedia.mjs");
+/* harmony import */ var _WebAudioInstance_mjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./WebAudioInstance.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioInstance.mjs");
+/* harmony import */ var _WebAudioNodes_mjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WebAudioNodes.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioNodes.mjs");
+/* harmony import */ var _WebAudioContext_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WebAudioContext.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioContext.mjs");
+/* harmony import */ var _WebAudioUtils_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./WebAudioUtils.mjs */ "./node_modules/@pixi/sound/lib/webaudio/WebAudioUtils.mjs");
+
+
+
+
+
+//# sourceMappingURL=index.mjs.map
 
 
 /***/ }),
