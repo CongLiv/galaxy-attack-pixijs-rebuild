@@ -75,11 +75,11 @@ export class GameOverUI extends PIXI.Container {
 
     update(delta) {
 
-
         this.blinkCounter += delta * 0.1;
         this.gameReloadText.alpha = Math.abs(Math.sin(this.blinkCounter));
 
-
     }
+
+    
 }
 

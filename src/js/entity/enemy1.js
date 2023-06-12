@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
+import { Healing } from "../buffer/healing.js";
 
 export class Enemy1 extends PIXI.Container {
     constructor() {
@@ -58,6 +59,7 @@ export class Enemy1 extends PIXI.Container {
     kill() {
 
         Manager.player.point = Manager.player.point + 1;
+        this.drop();
         this.destroy();
 
     }
@@ -90,5 +92,11 @@ export class Enemy1 extends PIXI.Container {
         let randNum = Math.floor(Math.random() * 4);
         let spawnPointX = 64 + randNum * 128;
         return spawnPointX;
+    }
+
+    drop() {
+        const buff = new Healing();
+        buff.position.set(this.x, this.y);
+        Manager.bufferHandle.addBuff(buff);
     }
 }

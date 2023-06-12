@@ -24,6 +24,7 @@ export class Bullet extends PIXI.Container {
         if (this.bullets.length >= this.maxBullets) {
             let b = this.bullets.shift();
             this.removeChild(b);
+            b.destroy();
         }
 
         this.bullets.forEach((bullet) => this.removeChild(bullet));

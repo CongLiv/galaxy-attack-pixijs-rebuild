@@ -9,6 +9,8 @@ import { Spawner } from "../entity/spawner.js";
 import { Enemy1 } from "../entity/enemy1.js";
 import { GameOverUI } from "../ui/gameOverUI.js";
 import { GamePauseUI } from "../ui/gamePauseUI.js";
+import { Healing } from "../buffer/healing.js";
+import { BufferHandle } from "../buffer/bufferHandle.js";
 
 export class Scene1 extends IScene {
 
@@ -34,12 +36,15 @@ export class Scene1 extends IScene {
         Manager.shooting = new Bullet(this.enemySpawner);
         this.addChild(Manager.shooting);
 
+        Manager.bufferHandle = new BufferHandle();
+
 
         this.gamePauseUI = new GamePauseUI();
         this.addChild(this.gamePauseUI);
         this.gamePauseUI.visible = false;
 
         this.sortableChildren = true;
+
 
     }
 
@@ -53,10 +58,16 @@ export class Scene1 extends IScene {
             this.gamePlayingUI.update(delta);
             Manager.player.update(delta);
             Manager.shooting.update(delta);
+            
 
             this.enemySpawner.spawns.forEach((enemy) => {
                 enemy.update(delta);
                 this.addChild(enemy);
+            });
+
+            Manager.bufferHandle.buffs.forEach((buff) => {
+                buff.update(delta);
+                this.addChild(buff);
             });
 
             if (Manager.player.died && !this.isGameOverAdded) {
@@ -71,6 +82,7 @@ export class Scene1 extends IScene {
                 this.removeChild(this.gamePlayingUI);
                 this.removedChild = true;
             }
+
         }
 
         else {

@@ -3,6 +3,7 @@ import { IScene } from "../manager.js";
 import { Manager } from "../manager.js";
 import { MenuUI } from "../ui/menuUI.js";
 import { Sound, sound } from "@pixi/sound";
+import { Healing } from "../buffer/healing.js";
 
 export class Menu extends IScene {
 
@@ -18,7 +19,7 @@ export class Menu extends IScene {
 
         this.menuUI = new MenuUI();
         this.addChild(this.menuUI);
-        this.sortChildren();
+        this.sortChildren();       
 
     }
 

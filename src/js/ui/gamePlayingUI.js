@@ -69,6 +69,8 @@ export class GamePlayingUI extends PIXI.Container{
         // this.bgSound.play();
         
         sound.play('playingsound', {loop: true, volume: 0.5})
+
+       
     }
 
     update(delta){

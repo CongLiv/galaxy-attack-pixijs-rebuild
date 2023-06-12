@@ -72,6 +72,7 @@ export class MenuUI extends PIXI.Container {
         this.sortChildren();
 
         sound.play('menusound', { loop: true, volume: 0.1});
+        
     }
 
     update(delta) {

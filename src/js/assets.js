@@ -25,6 +25,22 @@ export const manifest = {
                 "explosive05": "../../assets/explosive005.png",
                 "explosive06": "../../assets/explosive006.png",
                 "explosive07": "../../assets/explosive007.png",
+                "healing01": "../../assets/healing001.png",
+                "healing02": "../../assets/healing002.png",
+                "healing03": "../../assets/healing003.png",
+                "healing04": "../../assets/healing004.png",
+                "healing05": "../../assets/healing005.png",
+                "healing06": "../../assets/healing006.png",
+                "healing07": "../../assets/healing007.png",
+                "healing08": "../../assets/healing008.png",
+                "healing09": "../../assets/healing009.png",
+                "healing10": "../../assets/healing010.png",
+                "healing11": "../../assets/healing011.png",
+                "healing12": "../../assets/healing012.png",
+                "healing13": "../../assets/healing013.png",
+                "healing14": "../../assets/healing014.png",
+                "healing15": "../../assets/healing015.png",
+                
             }
         },
 
@@ -36,6 +52,7 @@ export const manifest = {
                 "enemy2": "../../assets/enemy2.png",
                 "background": "../../assets/background.png",
                 "pause": "../../assets/pause-button.png",
+                "healing": "../../assets/healing.png",
             }
 
         },

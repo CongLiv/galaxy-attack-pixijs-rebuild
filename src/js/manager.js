@@ -15,6 +15,7 @@ export class Manager {
     // player and shooting are read-only after creation (for now)
     static player;
     static shooting;
+    static bufferHandle;
 
 
     // state of the game

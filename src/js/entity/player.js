@@ -66,9 +66,10 @@ export class Player extends PIXI.Container {
 
         this.explosionSound = Sound.from('assets/explosionsound.mp3');
 
-        // Tạo đối tượng player
+        // Tạo sprite cho player
 
         this.playerSprite = new PIXI.AnimatedSprite(this.playerTextures);
+        this.playerSprite.zIndex = 1;
         this.playerSprite.animationSpeed = 0.1;
         this.playerSprite.play();
         this.playerSprite.anchor.set(0.5);
@@ -77,12 +78,40 @@ export class Player extends PIXI.Container {
         this.y = Manager.width / 2 + playerSize * 5;
 
 
+        // tạo healing sprite
+        
+        this.healingTexture = [
+            PIXI.Texture.from('healing01'),
+            PIXI.Texture.from('healing02'),
+            PIXI.Texture.from('healing03'),
+            PIXI.Texture.from('healing04'),
+            PIXI.Texture.from('healing05'),
+            PIXI.Texture.from('healing06'),
+            PIXI.Texture.from('healing07'),
+            PIXI.Texture.from('healing08'),
+            PIXI.Texture.from('healing09'),
+            PIXI.Texture.from('healing10'),
+            PIXI.Texture.from('healing11'),
+            PIXI.Texture.from('healing12'),
+            PIXI.Texture.from('healing13'),
+            PIXI.Texture.from('healing14'),
+            PIXI.Texture.from('healing15')
+        ]
+        this.healingSprite = new PIXI.AnimatedSprite(this.healingTexture);
+        this.healingSprite.zIndex = 2;
+        this.healingSprite.anchor.set(0.5);
+        this.healingSprite.scale.set(2);
+        this.healingSprite.loop = false;
+        this.healingSprite.visible = false;
+        this.healingSprite.animationSpeed = 0.3;
+        this.addChild(this.healingSprite);
+
         // Thuộc tính 
         this.zIndex = 1;
         this.died = false;
         this.point = 0;
         this.level = 1;
-        this.maxHealth = 10;
+        this.maxHealth = 50;
         this.health = this.maxHealth;
 
 
@@ -97,7 +126,7 @@ export class Player extends PIXI.Container {
         this.on('pointermove', this.onDragMove);
 
         this.addChild(this.playerSprite);
-
+        this.sortChildren();
         this.lastPosition = this.position.clone();
         this.counterUpdatePosition = 0;
 
@@ -230,5 +259,16 @@ export class Player extends PIXI.Container {
             this.dragTarget.alpha = 1;
             this.dragTarget = null;
         }
+    }
+
+
+    heal(){
+        this.health = this.maxHealth + 10 > this.maxHealth ? this.maxHealth : this.health + 10;
+        this.healingSprite.visible = true;
+        this.healingSprite.play();
+        this.healingSprite.onComplete = () => {
+            this.healingSprite.visible = false;
+        }
+        
     }
 }
