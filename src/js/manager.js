@@ -16,7 +16,6 @@ export class Manager {
     static player;
     static shooting;
     static bufferHandle;
-    static playerEffect;
 
 
     // state of the game

@@ -72,7 +72,7 @@ export class Enemy1 extends PIXI.Container {
             this.attacking = false;
         }
 
-        if (this.rectsIntersect({ a: Manager.player, b: this })) {
+        if (this.rectsIntersect({ a: Manager.player.playerSprite, b: this })) {
             this.attack();
             return;
         }
@@ -96,7 +96,20 @@ export class Enemy1 extends PIXI.Container {
     }
 
     drop() {
-        const buff = new Healing();
+        let buff = null;
+        // 10% chance to drop healing or boost
+        let randNum = Math.floor(Math.random() * 10);
+        if (randNum < 5){
+            let randNum2 = Math.floor(Math.random() * 2);
+            if (randNum2 == 0){
+                buff = new Healing();
+            }
+            else{
+                buff = new Boost();
+            }
+
+        }
+        if (buff == null) return;
         buff.position.set(this.x, this.y);
         Manager.bufferHandle.addChild(buff);
         Manager.bufferHandle.addBuff(buff);

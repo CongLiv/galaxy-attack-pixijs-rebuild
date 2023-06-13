@@ -26,7 +26,7 @@ export class Healing extends PIXI.Container {
             // Cập nhật vị trí y của sprite theo tốc độ rơi
             this.y += this.fallSpeed * delta;
 
-            if (this.rectsIntersect({a: Manager.player, b: this})) {
+            if (this.rectsIntersect({a: Manager.player.playerSprite, b: this})) {
                 console.log("Healing");
                 Manager.player.heal();
                 this.used = true;
