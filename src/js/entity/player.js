@@ -282,7 +282,8 @@ export class Player extends PIXI.Container {
 
 
     heal() {
-        this.health = this.maxHealth + 10 > this.maxHealth ? this.maxHealth : this.health + 10;
+        if (this.health + 10 <= this.maxHealth) {this.health += 10;}
+        else {this.health = this.maxHealth;}
         this.healingSprite.visible = true;
         this.healingSprite.gotoAndPlay(0);
         this.healingSprite.loop = false;

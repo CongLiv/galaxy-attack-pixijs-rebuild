@@ -7,7 +7,7 @@ export class Bullet extends PIXI.Container {
     constructor(spawner) {
         super();
         this.spawner = spawner;
-        this.maxBullets = 20;
+        this.maxBullets = 30;
         this.initBulletSpeed = 20;
         this.initBulletCooldown = 250;
         this.bulletSpeed = this.initBulletSpeed;
