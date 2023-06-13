@@ -57,7 +57,7 @@ export class Scene1 extends IScene {
             this.background.tilePosition.y += 1 * delta;
 
             this.gamePlayingUI.update(delta);
-            Manager.player.update(delta);
+            if (Manager.player.isKilled == false) Manager.player.update(delta);
             Manager.shooting.update(delta);
             Manager.bufferHandle.update(delta);
 

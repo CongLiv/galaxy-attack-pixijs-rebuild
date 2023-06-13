@@ -6,12 +6,12 @@ import { Boost } from "../buffer/boost.js";
 export class Enemy1 extends PIXI.Container {
     constructor() {
         super();
-        this.enemySize = 100;
+
         const enemyTexture = PIXI.Texture.from('enemy1');
         this.enemySprite = new PIXI.Sprite(enemyTexture);
         this.enemySprite.anchor.set(0.5);
         this.addChild(this.enemySprite);
-        this.position.set(this.randomSpawnPoint(), 0); 
+        this.position.set(this.randomSpawnPoint(), 0);
         this.speed = 4;
         this.maxHealth = 20;
         this.health = this.maxHealth;
@@ -81,10 +81,10 @@ export class Enemy1 extends PIXI.Container {
     rectsIntersect({ a, b }) {
         // Kiểm tra xem hai hình chữ nhật có giao nhau hay không
         return (
-            a.position.x - 64 + a.width > b.position.x - 50 &&
-            a.position.x - 64 < b.position.x - 50 + b.width &&
-            a.position.y - 64 + a.height > b.position.y - 50 &&
-            a.position.y - 64 < b.position.y + b.height - 50
+            a.getGlobalPosition().x - 64 + a.width > b.position.x - b.width / 2 &&
+            a.getGlobalPosition().x - 64 < b.position.x - b.width / 2 + b.width &&
+            a.getGlobalPosition().y - 64 + a.height > b.position.y - b.height / 2 &&
+            a.getGlobalPosition().y - 64 < b.position.y + b.height - b.height / 2
         );
     }
 
@@ -99,12 +99,12 @@ export class Enemy1 extends PIXI.Container {
         let buff = null;
         // 10% chance to drop healing or boost
         let randNum = Math.floor(Math.random() * 10);
-        if (randNum < 5){
+        if (randNum == 0) {
             let randNum2 = Math.floor(Math.random() * 2);
-            if (randNum2 == 0){
+            if (randNum2 == 0) {
                 buff = new Healing();
             }
-            else{
+            else {
                 buff = new Boost();
             }
 

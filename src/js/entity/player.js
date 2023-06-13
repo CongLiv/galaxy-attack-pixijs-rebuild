@@ -129,7 +129,7 @@ export class Player extends PIXI.Container {
         this.maxHealth = 50;
         this.health = this.maxHealth;
         this.boostCounter = 0;
-
+        this.isKilled = false; // to destroy after explosion animation
 
         // this.died = false;
         this.interactive = true;
@@ -162,8 +162,8 @@ export class Player extends PIXI.Container {
         }
     }
 
-    kill(){
-    
+    kill() {
+
         this.cursor = 'default';
         this.playerSprite.textures = this.playerExplosiveTextures;
         this.playerSprite.loop = false;
@@ -172,13 +172,14 @@ export class Player extends PIXI.Container {
         this.playerSprite.onComplete = () => {
             this.playerSprite.stop();
             this.visible = false;
-           
+            this.isKilled = true;
+            this.destroy();
         }
     }
 
 
     update(delta) {
-        
+
         console.log(this.width, this.height)
         if (this.died && !this.isKilled) {
             this.kill();
@@ -212,8 +213,7 @@ export class Player extends PIXI.Container {
 
             // change sprite texture while move
 
-            if (this.dragTarget) 
-            {
+            if (this.dragTarget) {
                 this.triggerChangeTexture = false;
                 const deltaX = this.dragTarget.x - this.lastPosition.x;
                 const deltaY = this.dragTarget.y - this.lastPosition.y;
@@ -281,7 +281,7 @@ export class Player extends PIXI.Container {
     }
 
 
-    heal(){
+    heal() {
         this.health = this.maxHealth + 10 > this.maxHealth ? this.maxHealth : this.health + 10;
         this.healingSprite.visible = true;
         this.healingSprite.gotoAndPlay(0);
@@ -290,10 +290,10 @@ export class Player extends PIXI.Container {
             this.healingSprite.visible = false;
             this.healingSprite.stop();
         }
-        
+
     }
 
-    boost(){    
+    boost() {
         this.boostCounter = 300;
         this.boostSprite.visible = true;
         this.boostSprite.play();

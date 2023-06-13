@@ -98,10 +98,10 @@ export class Bullet extends PIXI.Container {
     rectsIntersect({ a, b }) {
         // Kiểm tra xem hai hình chữ nhật có giao nhau hay không
         return (
-            a.position.x + a.width > b.position.x - 50 &&
-            a.position.x < b.position.x - 50 + b.width &&
-            a.position.y + a.height > b.position.y - 50 &&
-            a.position.y < b.position.y + b.height - 50
+            a.position.x + a.width > b.position.x - b.width / 2 &&
+            a.position.x < b.position.x - b.width / 2 + b.width &&
+            a.position.y + a.height > b.position.y - b.height / 2 &&
+            a.position.y < b.position.y + b.height - b.height / 2
         );
     }
 

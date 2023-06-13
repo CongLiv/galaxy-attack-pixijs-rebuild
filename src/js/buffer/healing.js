@@ -45,10 +45,10 @@ export class Healing extends PIXI.Container {
     rectsIntersect({ a, b }) {
         // Kiểm tra xem hai hình chữ nhật có giao nhau hay không
         return (
-            a.position.x - 64 + a.width > b.position.x - 35 &&
-            a.position.x - 64 < b.position.x - 35 + b.width &&
-            a.position.y - 64 + a.height > b.position.y - 35 &&
-            a.position.y - 64 < b.position.y + b.height - 35
+            a.getGlobalPosition().x - 64 + a.width > b.position.x - 35 &&
+            a.getGlobalPosition().x - 64 < b.position.x - 35 + b.width &&
+            a.getGlobalPosition().y - 64 + a.height > b.position.y - 35 &&
+            a.getGlobalPosition().y - 64 < b.position.y + b.height - 35
         );
     }
     
