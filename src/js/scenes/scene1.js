@@ -11,6 +11,7 @@ import { GameOverUI } from "../ui/gameOverUI.js";
 import { GamePauseUI } from "../ui/gamePauseUI.js";
 import { Healing } from "../buffer/healing.js";
 import { BufferHandle } from "../buffer/bufferHandle.js";
+import { Enemy2 } from "../entity/enemy2.js";
 
 export class Scene1 extends IScene {
 
@@ -31,7 +32,8 @@ export class Scene1 extends IScene {
 
         this.gameOverUI = new GameOverUI();
 
-        this.enemySpawner = new Spawner(() => new Enemy1());
+        this.enemySpawner = new Spawner();
+   
 
         Manager.shooting = new Bullet(this.enemySpawner);
         this.addChild(Manager.shooting);
@@ -65,7 +67,6 @@ export class Scene1 extends IScene {
                 enemy.update(delta);
                 this.addChild(enemy);
             });
-
 
             if (Manager.player.died && !this.isGameOverAdded) {
                 console.log("game over");

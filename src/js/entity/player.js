@@ -130,6 +130,7 @@ export class Player extends PIXI.Container {
         this.health = this.maxHealth;
         this.boostCounter = 0;
         this.isKilled = false; // to destroy after explosion animation
+        this.levelUp = false; // for play level up animation
 
         // this.died = false;
         this.interactive = true;
@@ -180,7 +181,13 @@ export class Player extends PIXI.Container {
 
     update(delta) {
 
-        console.log(this.width, this.height)
+        
+        if (this.point == 10) {
+            this.level = 2;
+            this.maxHealth = 60;
+            this.levelUp = true;        
+        }
+
         if (this.died && !this.isKilled) {
             this.kill();
             this.explosionSound.play();

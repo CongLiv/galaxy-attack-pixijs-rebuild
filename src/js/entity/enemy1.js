@@ -97,8 +97,8 @@ export class Enemy1 extends PIXI.Container {
 
     drop() {
         let buff = null;
-        // 10% chance to drop healing or boost
-        let randNum = Math.floor(Math.random() * 10);
+        // 5% chance to drop healing or boost
+        let randNum = Math.floor(Math.random() * 20);
         if (randNum == 0) {
             let randNum2 = Math.floor(Math.random() * 2);
             if (randNum2 == 0) {
