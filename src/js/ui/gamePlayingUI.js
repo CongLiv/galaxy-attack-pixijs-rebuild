@@ -70,6 +70,26 @@ export class GamePlayingUI extends PIXI.Container{
         
         sound.play('playingsound', {loop: true, volume: 0.5})
 
+
+         this.healingTexture = [
+            PIXI.Texture.from('healing01'),
+            PIXI.Texture.from('healing02'),
+            PIXI.Texture.from('healing03'),
+            PIXI.Texture.from('healing04'),
+            PIXI.Texture.from('healing05'),
+            PIXI.Texture.from('healing06'),
+            PIXI.Texture.from('healing07'),
+            PIXI.Texture.from('healing08'),
+            PIXI.Texture.from('healing09'),
+            PIXI.Texture.from('healing10'),
+            PIXI.Texture.from('healing11'),
+            PIXI.Texture.from('healing12'),
+            PIXI.Texture.from('healing13'),
+            PIXI.Texture.from('healing14'),
+            PIXI.Texture.from('healing15')
+        ];
+
+
        
     }
 

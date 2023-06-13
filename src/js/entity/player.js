@@ -78,33 +78,48 @@ export class Player extends PIXI.Container {
         this.y = Manager.width / 2 + playerSize * 5;
 
 
-        // tạo healing sprite
+        // // tạo healing sprite
         
-        this.healingTexture = [
-            PIXI.Texture.from('healing01'),
-            PIXI.Texture.from('healing02'),
-            PIXI.Texture.from('healing03'),
-            PIXI.Texture.from('healing04'),
-            PIXI.Texture.from('healing05'),
-            PIXI.Texture.from('healing06'),
-            PIXI.Texture.from('healing07'),
-            PIXI.Texture.from('healing08'),
-            PIXI.Texture.from('healing09'),
-            PIXI.Texture.from('healing10'),
-            PIXI.Texture.from('healing11'),
-            PIXI.Texture.from('healing12'),
-            PIXI.Texture.from('healing13'),
-            PIXI.Texture.from('healing14'),
-            PIXI.Texture.from('healing15')
-        ]
-        this.healingSprite = new PIXI.AnimatedSprite(this.healingTexture);
-        this.healingSprite.zIndex = 2;
-        this.healingSprite.anchor.set(0.5);
-        this.healingSprite.scale.set(2);
-        this.healingSprite.loop = false;
-        this.healingSprite.visible = false;
-        this.healingSprite.animationSpeed = 0.3;
-        this.addChild(this.healingSprite);
+        // // this.healingTexture = [
+        // //     PIXI.Texture.from('healing01'),
+        // //     PIXI.Texture.from('healing02'),
+        // //     PIXI.Texture.from('healing03'),
+        // //     PIXI.Texture.from('healing04'),
+        // //     PIXI.Texture.from('healing05'),
+        // //     PIXI.Texture.from('healing06'),
+        // //     PIXI.Texture.from('healing07'),
+        // //     PIXI.Texture.from('healing08'),
+        // //     PIXI.Texture.from('healing09'),
+        // //     PIXI.Texture.from('healing10'),
+        // //     PIXI.Texture.from('healing11'),
+        // //     PIXI.Texture.from('healing12'),
+        // //     PIXI.Texture.from('healing13'),
+        // //     PIXI.Texture.from('healing14'),
+        // //     PIXI.Texture.from('healing15')
+        // // ]
+        // // this.healingSprite = new PIXI.AnimatedSprite(this.healingTexture);
+        // // this.healingSprite.zIndex = 2;
+        // // this.healingSprite.anchor.set(0.5);
+        // // // this.healingSprite.scale.set(1.5);
+        // // this.healingSprite.visible = false;
+        // // this.healingSprite.animationSpeed = 0.5;
+        // // this.addChild(this.healingSprite);
+
+
+        // this.boostTexture = [
+        //     PIXI.Texture.from('aura01'),
+        //     PIXI.Texture.from('aura02'),
+        //     PIXI.Texture.from('aura03'),
+        //     PIXI.Texture.from('aura04'),
+        // ]
+        // this.boostSprite = new PIXI.AnimatedSprite(this.boostTexture);
+        // this.boostSprite.zIndex = 2;
+        // this.boostSprite.anchor.set(0.5);
+        // // this.boostSprite.scale.set(1.6);
+        // this.boostSprite.visible = false;
+        // this.boostSprite.animationSpeed = 0.5;
+        // this.addChild(this.boostSprite);
+        // this.boostSprite.position.set(-10, -40);
 
         // Thuộc tính 
         this.zIndex = 1;
@@ -113,6 +128,7 @@ export class Player extends PIXI.Container {
         this.level = 1;
         this.maxHealth = 50;
         this.health = this.maxHealth;
+        this.boostCounter = 0;
 
 
         // this.died = false;
@@ -162,7 +178,8 @@ export class Player extends PIXI.Container {
 
 
     update(delta) {
-    
+        
+        console.log(this.width, this.height)
         if (this.died && !this.isKilled) {
             this.kill();
             this.explosionSound.play();
@@ -170,12 +187,14 @@ export class Player extends PIXI.Container {
             this.isKilled = true;
         }
 
-        if (this.point == 10) {
-            this.level = 2;
-        }
 
-        if (this.point == 50) {
-            this.level = 3;
+        if (this.boostCounter > 0) {
+            this.boostCounter -= delta;
+            Manager.shooting.bulletCooldown = 100;
+        } else {
+            Manager.shooting.bulletCooldown = Manager.shooting.initBulletCooldown;
+            this.boostCounter = 0;
+            Manager.playerEffect.boostSprite.visible = false;
         }
 
 
@@ -264,11 +283,20 @@ export class Player extends PIXI.Container {
 
     heal(){
         this.health = this.maxHealth + 10 > this.maxHealth ? this.maxHealth : this.health + 10;
-        this.healingSprite.visible = true;
-        this.healingSprite.play();
-        this.healingSprite.onComplete = () => {
-            this.healingSprite.visible = false;
+        Manager.playerEffect.healingSprite.visible = true;
+        Manager.playerEffect.healingSprite.gotoAndPlay(0);
+        Manager.playerEffect.healingSprite.loop = false;
+        Manager.playerEffect.healingSprite.onComplete = () => {
+            Manager.playerEffect.healingSprite.visible = false;
+            Manager.playerEffect.healingSprite.stop();
         }
         
     }
+
+    boost(){    
+        this.boostCounter = 200;
+        Manager.playerEffect.boostSprite.visible = true;
+        Manager.playerEffect.boostSprite.play();
+    }
+
 }

@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Manager } from "../manager.js";
 import { Healing } from "../buffer/healing.js";
+import { Boost } from "../buffer/boost.js";
 
 export class Enemy1 extends PIXI.Container {
     constructor() {

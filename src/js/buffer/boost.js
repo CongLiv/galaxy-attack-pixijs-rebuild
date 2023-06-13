@@ -6,38 +6,37 @@ export class Boost extends PIXI.Container {
     constructor() {
         super();
         this.type = 'boost';
-        this.healingSprite = new PIXI.Sprite(PIXI.Texture.from('healing'));
-        this.healingSprite.anchor.set(0.5);
-        this.addChild(this.healingSprite);
+        this.boostSprite = new PIXI.Sprite(PIXI.Texture.from('boost'));
+        this.boostSprite.anchor.set(0.5);
+        this.addChild(this.boostSprite);
         this.position.set(Manager.app.screen.width / 2, Manager.app.screen.height / 2);
         this.fallSpeed = 2.5; // Tốc độ rơi
         this.blinkCounter = 1;
+        this.used = false;
 
     }
 
     update(delta) {
 
-        this.blinkCounter += delta * 0.1;
-        this.healingSprite.scale = new PIXI.Point(1 + Math.sin(this.blinkCounter) * 0.1, 1 + Math.sin(this.blinkCounter) * 0.1);
-        
+        if (!this.used){
+            this.blinkCounter += delta * 0.1;
+            this.boostSprite.scale = new PIXI.Point(1 + Math.sin(this.blinkCounter) * 0.1, 1 + Math.sin(this.blinkCounter) * 0.1);
+            
+    
+            // Cập nhật vị trí y của sprite theo tốc độ rơi
+            this.y += this.fallSpeed * delta;
 
-        // Cập nhật vị trí y của sprite theo tốc độ rơi
-        this.y += this.fallSpeed * delta;
-
-        // Kiểm tra nếu sprite đã vượt quá đáy màn hình
-        if (this.healingSprite.y > Manager.app.screen.height) {
-            // Xóa đối tượng healing khỏi scene
+            if (this.rectsIntersect({a: Manager.player, b: this})) {
+                console.log("Boost");
+                Manager.player.boost();
+                this.used = true;
+               
+            }
         }
 
-
-        // if (this.rectsIntersect({ a: Manager.player, b: this })) {
-        //     this.attack();
-        //     return;
-        // }
-
-        if (this.rectsIntersect({a: Manager.player, b: this})) {
-            Manager.player.heal();
-            Manager.app.stage.removeChild(this);
+        if (this.used || (this.boostSprite.y > Manager.app.screen.height)) {
+            Manager.bufferHandle.removeChild(this);
+            this.destroy();
         }
         
     }

@@ -11,6 +11,7 @@ import { GameOverUI } from "../ui/gameOverUI.js";
 import { GamePauseUI } from "../ui/gamePauseUI.js";
 import { Healing } from "../buffer/healing.js";
 import { BufferHandle } from "../buffer/bufferHandle.js";
+import { PlayerEffect } from "../playerEffect.js";
 
 export class Scene1 extends IScene {
 
@@ -25,6 +26,9 @@ export class Scene1 extends IScene {
 
         Manager.player = new Player();
         this.addChild(Manager.player);
+
+        Manager.playerEffect = new PlayerEffect();
+        this.addChild(Manager.playerEffect);
 
         this.gamePlayingUI = new GamePlayingUI();
         this.addChild(this.gamePlayingUI);
@@ -42,6 +46,7 @@ export class Scene1 extends IScene {
         this.gamePauseUI = new GamePauseUI();
         this.addChild(this.gamePauseUI);
         this.gamePauseUI.visible = false;
+    
 
         this.sortableChildren = true;
 
@@ -57,6 +62,7 @@ export class Scene1 extends IScene {
 
             this.gamePlayingUI.update(delta);
             Manager.player.update(delta);
+            Manager.playerEffect.update(delta);
             Manager.shooting.update(delta);
             Manager.bufferHandle.update(delta);
 

@@ -40,6 +40,10 @@ export const manifest = {
                 "healing13": "../../assets/healing013.png",
                 "healing14": "../../assets/healing014.png",
                 "healing15": "../../assets/healing015.png",
+                "aura01": "../../assets/aura001.png",
+                "aura02": "../../assets/aura002.png",
+                "aura03": "../../assets/aura003.png",
+                "aura04": "../../assets/aura004.png",
                 
             }
         },
@@ -53,6 +57,7 @@ export const manifest = {
                 "background": "../../assets/background.png",
                 "pause": "../../assets/pause-button.png",
                 "healing": "../../assets/healing.png",
+                "boost": "../../assets/boost.png",
             }
 
         },

@@ -27,6 +27,7 @@ export class Healing extends PIXI.Container {
             this.y += this.fallSpeed * delta;
 
             if (this.rectsIntersect({a: Manager.player, b: this})) {
+                console.log("Healing");
                 Manager.player.heal();
                 this.used = true;
                
