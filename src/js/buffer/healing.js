@@ -12,30 +12,30 @@ export class Healing extends PIXI.Container {
         this.position.set(Manager.app.screen.width / 2, Manager.app.screen.height / 2);
         this.fallSpeed = 2.5; // Tốc độ rơi
         this.blinkCounter = 1;
+        this.used = false;
 
     }
 
     update(delta) {
 
-        this.blinkCounter += delta * 0.1;
-        this.healingSprite.scale = new PIXI.Point(1 + Math.sin(this.blinkCounter) * 0.1, 1 + Math.sin(this.blinkCounter) * 0.1);
-        
+        if (!this.used){
+            this.blinkCounter += delta * 0.1;
+            this.healingSprite.scale = new PIXI.Point(1 + Math.sin(this.blinkCounter) * 0.1, 1 + Math.sin(this.blinkCounter) * 0.1);
+            
+    
+            // Cập nhật vị trí y của sprite theo tốc độ rơi
+            this.y += this.fallSpeed * delta;
 
-        // Cập nhật vị trí y của sprite theo tốc độ rơi
-        this.y += this.fallSpeed * delta;
-
-        // Kiểm tra nếu sprite đã vượt quá đáy màn hình
-        if (this.healingSprite.y > Manager.app.screen.height) {
-            // Xóa đối tượng healing khỏi scene
-            this.destroy();
+            if (this.rectsIntersect({a: Manager.player, b: this})) {
+                Manager.player.heal();
+                this.used = true;
+               
+            }
         }
 
-
-
-        if (this.rectsIntersect({a: Manager.player, b: this})) {
-            Manager.player.heal();
+        if (this.used || (this.healingSprite.y > Manager.app.screen.height)) {
+            Manager.bufferHandle.removeChild(this);
             this.destroy();
-            this.visible = false;
         }
         
     }

@@ -97,6 +97,7 @@ export class Enemy1 extends PIXI.Container {
     drop() {
         const buff = new Healing();
         buff.position.set(this.x, this.y);
+        Manager.bufferHandle.addChild(buff);
         Manager.bufferHandle.addBuff(buff);
     }
 }

@@ -37,7 +37,7 @@ export class Scene1 extends IScene {
         this.addChild(Manager.shooting);
 
         Manager.bufferHandle = new BufferHandle();
-
+        this.addChild(Manager.bufferHandle);
 
         this.gamePauseUI = new GamePauseUI();
         this.addChild(this.gamePauseUI);
@@ -58,17 +58,13 @@ export class Scene1 extends IScene {
             this.gamePlayingUI.update(delta);
             Manager.player.update(delta);
             Manager.shooting.update(delta);
-            
+            Manager.bufferHandle.update(delta);
 
             this.enemySpawner.spawns.forEach((enemy) => {
                 enemy.update(delta);
                 this.addChild(enemy);
             });
 
-            Manager.bufferHandle.buffs.forEach((buff) => {
-                buff.update(delta);
-                this.addChild(buff);
-            });
 
             if (Manager.player.died && !this.isGameOverAdded) {
                 console.log("game over");
