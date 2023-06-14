@@ -20,7 +20,7 @@ export class Spawner {
                 const spawn = new Enemy1();
                 this.spawns.push(spawn);
             }
-            else if (Manager.player.level == 2)
+            else if (Manager.player.level >= 2)
             {   
                 const spawn = new Enemy2();
                 this.spawns.push(spawn);

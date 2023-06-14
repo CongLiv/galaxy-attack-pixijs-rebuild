@@ -52,6 +52,7 @@ export const manifest = {
             name: "scene1",
             assets: {
                 "bullet": "../../assets/bullet.png",
+                "boostbullet": "../../assets/boostbullet.png",
                 "enemy1": "../../assets/enemy1.png",
                 "enemy2": "../../assets/enemy2.png",
                 "background": "../../assets/background.png",
@@ -79,6 +80,7 @@ export const manifest = {
                 "playingsound": "../../assets/playingsound.mp3",
                 "bulletsound": "../../assets/bulletsound.mp3",
                 "explosionsound": "../../assets/explosionsound.mp3",
+                "levelupsound": "../../assets/levelup.mp3",
             }
         },
 

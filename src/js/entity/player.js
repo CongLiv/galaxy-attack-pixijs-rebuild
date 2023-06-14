@@ -130,7 +130,7 @@ export class Player extends PIXI.Container {
         this.health = this.maxHealth;
         this.boostCounter = 0;
         this.isKilled = false; // to destroy after explosion animation
-        this.levelUp = false; // for play level up animation
+        this.isLevelUp = false; // for play level up animation
 
         // this.died = false;
         this.interactive = true;
@@ -182,11 +182,7 @@ export class Player extends PIXI.Container {
     update(delta) {
 
         
-        if (this.point == 10) {
-            this.level = 2;
-            this.maxHealth = 60;
-            this.levelUp = true;        
-        }
+        
 
         if (this.died && !this.isKilled) {
             this.kill();
@@ -199,8 +195,10 @@ export class Player extends PIXI.Container {
         if (this.boostCounter > 0) {
             this.boostCounter -= delta;
             Manager.shooting.bulletCooldown = 100;
+            Manager.shooting.bulletTexture = PIXI.Texture.from('boostbullet');
         } else {
             Manager.shooting.bulletCooldown = Manager.shooting.initBulletCooldown;
+            Manager.shooting.bulletTexture = PIXI.Texture.from('bullet');
             this.boostCounter = 0;
             this.boostSprite.visible = false;
         }
@@ -212,7 +210,25 @@ export class Player extends PIXI.Container {
             this.counterUpdatePosition = 0;
         }
 
+        this.checkLevelUp();
+
     }
+
+    checkLevelUp() {    
+
+        if (this.point == 10) {
+            this.level = 2;
+            this.maxHealth = 60;
+            this.isLevelUp = true;        
+        }
+
+        if (this.point == 20) {
+            this.level = 3;
+            this.maxHealth = 70;
+            this.isLevelUp = true;
+        }
+    }
+
 
     onDragMove(event) {
         if (this.dragTarget && this.died == false) {

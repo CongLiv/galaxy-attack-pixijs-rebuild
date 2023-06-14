@@ -14,6 +14,7 @@ export class Bullet extends PIXI.Container {
         this.bulletCooldown = this.initBulletCooldown;
         this.lastBulletTime = 0;
         this.bullets = [];
+        this.bulletTexture = PIXI.Texture.from('bullet');
 
     }
 
@@ -37,8 +38,7 @@ export class Bullet extends PIXI.Container {
             return; // Kiểm tra nếu chưa đủ thời gian giữa các lần bắn đạn
         }
 
-        const bulletTexture = PIXI.Texture.from('bullet');
-        const bullet = new PIXI.Sprite(bulletTexture);
+        const bullet = new PIXI.Sprite(this.bulletTexture);
         bullet.position.set(Manager.player.x - 32, Manager.player.y - 96);
         this.bullets.push(bullet);
         this.addChild(bullet);
@@ -87,7 +87,7 @@ export class Bullet extends PIXI.Container {
 
                     this.bullets.splice(bulletIndex, 1);
                     this.removeChild(bullet);
-                    console.log("Point: " + Manager.player.point);
+                    // console.log("Point: " + Manager.player.point);
 
                     
                 }

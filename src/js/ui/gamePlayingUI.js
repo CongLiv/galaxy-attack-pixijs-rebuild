@@ -36,6 +36,7 @@ export class GamePlayingUI extends PIXI.Container {
             wordWrapWidth: 440,
         });
 
+
         this.pointBar = new PIXI.Container();
         this.pointBar.position.set(Manager.width - margin, margin);
         this.playerPoint = new PIXI.Text("Point : " + Manager.player.point.toString(), this.textStyle);
@@ -71,14 +72,31 @@ export class GamePlayingUI extends PIXI.Container {
         sound.play('playingsound', { loop: true, volume: 0.5 })
 
 
+
+        this.bigTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Arial Black',
+            fontSize: 60,
+            // fontStyle: 'italic',
+            fontWeight: 'bold',
+            fill: ['#878180', '#ffffff'],
+            stroke: '#4a1850',
+            strokeThickness: 5,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 440,
+        });
         // Level up 
-        this.levelUpText = new PIXI.Text("Level up!", this.textStyle);
+        this.levelUpText = new PIXI.Text("Level up!", this.bigTextStyle);
         this.levelUpText.anchor.set(0.5);
         this.levelUpText.position.set(Manager.width / 2, Manager.height / 2);
         this.levelUpText.visible = false;
         this.addChild(this.levelUpText);
 
-
+        this.blinkCounter = 1;
 
     }
 
@@ -95,19 +113,28 @@ export class GamePlayingUI extends PIXI.Container {
             this.levelUpText.alpha = Math.abs(Math.sin(this.blinkCounter));
         }
 
-        if (Manager.player.levelUp) {
+        if (Manager.player.isLevelUp) {
+            console.log("call to play level up");
             this.playLevelUp();
-            
         }
 
     }
 
     playLevelUp() {
         this.levelUpText.visible = true;
+        // play sound level up only 1 time
+        
+        if (Manager.player.isLevelUp && !this.soundPlayed){
+            sound.play('levelupsound', {loop: false});
+            this.soundPlayed = true;
+        }
+
         setTimeout(() => {
+            Manager.player.isLevelUp = false;
+            console.log("level up finish");
             this.levelUpText.visible = false;
-            Manager.player.levelUp = false;
-        }, 10000);
+            this.soundPlayed = false;
+        }, 2000);
 
     }
 }
