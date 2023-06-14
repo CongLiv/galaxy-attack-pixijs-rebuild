@@ -10,7 +10,7 @@ export class Utils{
         return (
             a.getGlobalPosition().x - a.width / 2 < b.getGlobalPosition().x + b.width / 2 &&
             a.getGlobalPosition().x  + a.width / 2 > b.getGlobalPosition().x - b.width / 2 &&
-            a.getGlobalPosition().y - a.height < b.getGlobalPosition().y + b.height / 2 &&
+            a.getGlobalPosition().y - a.height / 2 < b.getGlobalPosition().y + b.height / 2 &&
             a.getGlobalPosition().y + a.width / 2 > b.getGlobalPosition().y - b.height / 2
         );
     }
