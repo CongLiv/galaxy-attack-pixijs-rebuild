@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "webpack serve --env env=dev --open",
+    "server": "webpack serve --env env=dev --open",
     "build": "webpack --env env=preview",
     "deploy": "gh-pages -d dist"
   },
