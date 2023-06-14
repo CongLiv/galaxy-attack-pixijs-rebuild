@@ -30,7 +30,6 @@ export class Spawner {
                 const spawn = new Boss();
                 this.maxSpawns = 1;
                 this.spawns.push(spawn);
-                Manager.currentScene.addChild(spawn.bossBullet);
             }
         }
 

@@ -17,7 +17,8 @@ export class Boss extends PIXI.Container {
         this.addChild(this.enemySprite);
 
         this.bossBullet = new BossBullet(this);
-        this.bossBullet.zIndex = 5;
+        this.bossBullet.zIndex = 2;
+        Manager.currentScene.addChild(this.bossBullet);
 
         this.speed = 1;
         this.maxHealth = 1000;
@@ -27,7 +28,7 @@ export class Boss extends PIXI.Container {
         this.position.set(Manager.width / 2, 0);
 
         this.changeDirectionCounter = 0;
-        this.directionX = 1;
+        this.directionX = 0;
 
     }
 
@@ -38,8 +39,8 @@ export class Boss extends PIXI.Container {
             this.y = Manager.height / 4;
             // random move left or right per 3 seconds
             this.changeDirectionCounter += delta * 0.1;
-            if (this.changeDirectionCounter > 3) {
-                this.directionX += Math.random() > 0.5 ? 1 : -1;
+            if (this.changeDirectionCounter > 20) {
+                this.directionX = Math.random() > 0.5 ? 1 : -1;
                 this.changeDirectionCounter = 0;
             }
             this.x += this.directionX * this.speed * delta;

@@ -45,7 +45,6 @@ export class Scene1 extends IScene {
         this.addChild(this.gamePauseUI);
         this.gamePauseUI.visible = false;
     
-
         this.sortableChildren = true;
 
 

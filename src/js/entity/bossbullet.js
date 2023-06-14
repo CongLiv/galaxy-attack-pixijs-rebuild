@@ -9,7 +9,7 @@ export class BossBullet extends PIXI.Container {
         this.boss = boss;
         this.maxBullets = 30;
         this.initBulletSpeed = 4;
-        this.initBulletCooldown = 400;
+        this.initBulletCooldown = 1000;
         this.bulletSpeed = this.initBulletSpeed;
         this.bulletCooldown = this.initBulletCooldown;
         this.lastBulletTime = 0;
@@ -31,7 +31,7 @@ export class BossBullet extends PIXI.Container {
         }
 
         this.bullets.forEach((bullet) => this.removeChild(bullet));
-        this.bullets = this.bullets.filter(bullet => this.getGlobalPosition().y < Manager.height && this.getGlobalPosition().x < Manager.width && this.getGlobalPosition().x > 0);
+        this.bullets = this.bullets.filter(bullet => bullet.y < Manager.height && bullet.x < Manager.width && bullet.x > 0);
         this.bullets.forEach((bullet) => this.addChild(bullet));
 
         // Cooldown giữa các lần bắn đạn
@@ -46,7 +46,7 @@ export class BossBullet extends PIXI.Container {
         this.bullets.push(bullet);
 
         this.addChild(bullet);
-        bullet.position.set(0, 0);
+        bullet.position.set(this.boss.x, this.boss.y + 50);
 
 
         // sound.play('bulletsound', { loop: false, volume: 0.1 });
@@ -57,7 +57,7 @@ export class BossBullet extends PIXI.Container {
 
 
     update(delta) {
-     
+        // console.log(this.bullets.length);
         if (Manager.player.died) {
             // remove all bullet
             this.bullets.forEach((bullet) => {
@@ -69,7 +69,7 @@ export class BossBullet extends PIXI.Container {
         this.fire();
         this.bullets.forEach((bullet) => {
             bullet.y += this.bulletSpeed * delta;
-            console.log("bullet move");
+
         });
 
         this.collisionDetection();
