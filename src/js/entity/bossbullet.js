@@ -8,13 +8,14 @@ export class BossBullet extends PIXI.Container {
         super();
         this.boss = boss;
         this.maxBullets = 30;
-        this.initBulletSpeed = 20;
-        this.initBulletCooldown = 250;
+        this.initBulletSpeed = 4;
+        this.initBulletCooldown = 400;
         this.bulletSpeed = this.initBulletSpeed;
         this.bulletCooldown = this.initBulletCooldown;
         this.lastBulletTime = 0;
         this.bullets = [];
         this.bulletTexture = PIXI.Texture.from('bossbullet');
+ 
 
     }
 
@@ -24,12 +25,13 @@ export class BossBullet extends PIXI.Container {
         // Kiểm tra nếu đạn đã đủ nhiều thì xóa đi
         if (this.bullets.length >= this.maxBullets) {
             let b = this.bullets.shift();
+            console.log("bullet removed");
             this.removeChild(b);
             b.destroy();
         }
 
         this.bullets.forEach((bullet) => this.removeChild(bullet));
-        this.bullets = this.bullets.filter(bullet => this.y < Manager.height && this.x < Manager.width && this.x > 0);
+        this.bullets = this.bullets.filter(bullet => this.getGlobalPosition().y < Manager.height && this.getGlobalPosition().x < Manager.width && this.getGlobalPosition().x > 0);
         this.bullets.forEach((bullet) => this.addChild(bullet));
 
         // Cooldown giữa các lần bắn đạn
@@ -39,9 +41,12 @@ export class BossBullet extends PIXI.Container {
         }
 
         const bullet = new PIXI.Sprite(this.bulletTexture);
-        bullet.position.set(this.boss.x + 32, this.boss.y + 96);
+        bullet.anchor.set(0.5);
+       
         this.bullets.push(bullet);
+
         this.addChild(bullet);
+        bullet.position.set(0, 0);
 
 
         sound.play('bulletsound', { loop: false, volume: 0.1 });
@@ -52,7 +57,7 @@ export class BossBullet extends PIXI.Container {
 
 
     update(delta) {
-
+     
         if (Manager.player.died) {
             // remove all bullet
             this.bullets.forEach((bullet) => {
@@ -60,12 +65,11 @@ export class BossBullet extends PIXI.Container {
             });
             return;
         }
+
         this.fire();
         this.bullets.forEach((bullet) => {
-            bullet.position.set(
-                bullet.position.x,
-                bullet.position.y + this.bulletSpeed * delta
-            );
+            bullet.y += this.bulletSpeed * delta;
+            console.log("bullet move");
         });
 
         this.collisionDetection();
@@ -81,7 +85,6 @@ export class BossBullet extends PIXI.Container {
                 Manager.player.attacked();
                 this.bullets.splice(bulletIndex, 1);
                 this.removeChild(bullet);
-
 
             }
 

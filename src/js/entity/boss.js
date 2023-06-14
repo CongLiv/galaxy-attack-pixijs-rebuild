@@ -9,22 +9,31 @@ export class Boss extends PIXI.Container{
     constructor(){
         super();
         this.type = 'boss';
+        this.sortableChildren = true;
         const enemySprite = PIXI.Texture.from('boss');
         this.enemySprite = new PIXI.Sprite(enemySprite);
+        this.enemySprite.zIndex = 1;
         this.enemySprite.anchor.set(0.5);
         this.addChild(this.enemySprite);
-        this.position.set(Manager.width / 2, 0);
+        
+        this.bossBullet = new BossBullet(this);
+        this.bossBullet.zIndex = 2;
+        this.addChild(this.bossBullet);
+
+        this.speed = 1;
         this.maxHealth = 1000;
         this.health = this.maxHealth;
+        this.attacking = false;
+        this.zIndex  = 1;
+        this.position.set(Manager.width / 2, 0);
 
-        this.bossBullet = new BossBullet(this);
-        this.addChild(this.bossBullet);
+        
 
     }
 
     update(delta){
         
-        this.y += 1 * delta;
+        this.y += this.speed * delta;
         if (this.y > Manager.height / 4){
             this.y = Manager.height / 4;
         }
@@ -44,8 +53,9 @@ export class Boss extends PIXI.Container{
         console.log("Boss attacked");
         this.interval = setInterval(() => {
             Manager.player.attacked();
+            this.attacking = false;
             clearInterval(this.interval); // Dừng việc giảm health sau một khoảng thời gian 
-        }, 200);
+        }, 500);
 
     }
 
@@ -58,10 +68,8 @@ export class Boss extends PIXI.Container{
     }
 
     kill() {
-
         Manager.player.point = Manager.player.point + 1;
         this.destroy();
-
     }
 
 }

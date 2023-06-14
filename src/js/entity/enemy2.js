@@ -31,6 +31,7 @@ export class Enemy2 extends PIXI.Container {
         console.log("Enemy2 attacked");
         this.interval = setInterval(() => {
             Manager.player.attacked();
+            this.attacking = false;
             clearInterval(this.interval); // Dừng việc giảm health sau một khoảng thời gian 
         }, 200);
 
@@ -68,7 +69,7 @@ export class Enemy2 extends PIXI.Container {
             this.velocity.set(0, 1); // Reset velocity when enemy respawns
         }
 
-        if (Manager.Utils.rectsIntersect({ a: Manager.player.playerSprite, b: this })) {
+        if (Manager.Utils.rectsIntersect({ a: Manager.player.playerSprite, b: this.enemySprite })) {
             this.attack();
             return;
         }

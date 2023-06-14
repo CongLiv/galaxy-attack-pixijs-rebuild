@@ -39,7 +39,8 @@ export class Bullet extends PIXI.Container {
         }
 
         const bullet = new PIXI.Sprite(this.bulletTexture);
-        bullet.position.set(Manager.player.x - 32, Manager.player.y - 96);
+        bullet.anchor.set(0.5);
+        bullet.position.set(Manager.player.x, Manager.player.y - 50);
         this.bullets.push(bullet);
         this.addChild(bullet);
         
@@ -53,6 +54,7 @@ export class Bullet extends PIXI.Container {
 
     update(delta) {
 
+        console.log(this.bullets.length);
         if (Manager.player.died) {
             // remove all bullet
             this.bullets.forEach((bullet) => {
