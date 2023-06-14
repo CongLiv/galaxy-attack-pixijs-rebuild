@@ -125,7 +125,7 @@ export class Player extends PIXI.Container {
         this.zIndex = 1;
         this.died = false;
         this.point = 0;
-        this.level = 1;
+        this.level = 3;
         this.maxHealth = 50;
         this.health = this.maxHealth;
         this.boostCounter = 0;

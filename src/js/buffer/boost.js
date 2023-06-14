@@ -26,7 +26,7 @@ export class Boost extends PIXI.Container {
             // Cập nhật vị trí y của sprite theo tốc độ rơi
             this.y += this.fallSpeed * delta;
 
-            if (this.rectsIntersect({a: Manager.player.playerSprite, b: this})) {
+            if (Manager.Utils.rectsIntersect({a: Manager.player.playerSprite, b: this})) {
                 console.log("Boost");
                 Manager.player.boost();
                 this.used = true;
@@ -42,15 +42,6 @@ export class Boost extends PIXI.Container {
     }
 
 
-    rectsIntersect({ a, b }) {
-        // Kiểm tra xem hai hình chữ nhật có giao nhau hay không
-        return (
-            a.getGlobalPosition().x - 64 + a.width > b.position.x - 35 &&
-            a.getGlobalPosition().x - 64 < b.position.x - 35 + b.width &&
-            a.getGlobalPosition().y - 64 + a.height > b.position.y - 35 &&
-            a.getGlobalPosition().y - 64 < b.position.y + b.height - 35
-        );
-    }
     
 
 

@@ -3,10 +3,10 @@ import { Manager } from "../manager.js";
 import { sound } from "@pixi/sound";
 
 
-export class Bullet extends PIXI.Container {
-    constructor(spawner) {
+export class BossBullet extends PIXI.Container {
+    constructor(boss) {
         super();
-        this.spawner = spawner;
+        this.boss = boss;
         this.maxBullets = 30;
         this.initBulletSpeed = 20;
         this.initBulletCooldown = 250;
@@ -14,7 +14,7 @@ export class Bullet extends PIXI.Container {
         this.bulletCooldown = this.initBulletCooldown;
         this.lastBulletTime = 0;
         this.bullets = [];
-        this.bulletTexture = PIXI.Texture.from('bullet');
+        this.bulletTexture = PIXI.Texture.from('bossbullet');
 
     }
 
@@ -29,7 +29,7 @@ export class Bullet extends PIXI.Container {
         }
 
         this.bullets.forEach((bullet) => this.removeChild(bullet));
-        this.bullets = this.bullets.filter(bullet => Math.abs(bullet.position.y - Manager.player.y) < 512 * 2);
+        this.bullets = this.bullets.filter(bullet => this.y < Manager.height && this.x < Manager.width && this.x > 0);
         this.bullets.forEach((bullet) => this.addChild(bullet));
 
         // Cooldown giữa các lần bắn đạn
@@ -39,12 +39,12 @@ export class Bullet extends PIXI.Container {
         }
 
         const bullet = new PIXI.Sprite(this.bulletTexture);
-        bullet.position.set(Manager.player.x - 32, Manager.player.y - 96);
+        bullet.position.set(this.boss.x + 32, this.boss.y + 96);
         this.bullets.push(bullet);
         this.addChild(bullet);
-        
-        
-        sound.play('bulletsound', {loop: false, volume: 0.1});
+
+
+        sound.play('bulletsound', { loop: false, volume: 0.1 });
 
         this.lastBulletTime = currentTime;
     }
@@ -64,37 +64,29 @@ export class Bullet extends PIXI.Container {
         this.bullets.forEach((bullet) => {
             bullet.position.set(
                 bullet.position.x,
-                bullet.position.y - this.bulletSpeed * delta
+                bullet.position.y + this.bulletSpeed * delta
             );
         });
 
         this.collisionDetection();
-       
+
 
     }
 
     collisionDetection() {
         this.bullets.forEach((bullet, bulletIndex) => {
-            this.spawner.spawns.forEach((enemy, enemyIndex) => {
-                if (Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
 
-                    enemy.attacked();
+            if (Manager.Utils.rectsIntersect({ a: bullet, b: Manager.player.playerSprite })) {
 
-                    if (enemy.health <= 0) {
-                        this.spawner.spawns.splice(enemyIndex, 1);
-                        enemy.kill();
-                    }
+                Manager.player.attacked();
+                this.bullets.splice(bulletIndex, 1);
+                this.removeChild(bullet);
 
-                    this.bullets.splice(bulletIndex, 1);
-                    this.removeChild(bullet);
-                    // console.log("Point: " + Manager.player.point);
 
-                    
-                }
-            });
+            }
+
         });
     }
-
 
 
 

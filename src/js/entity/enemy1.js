@@ -72,21 +72,12 @@ export class Enemy1 extends PIXI.Container {
             this.attacking = false;
         }
 
-        if (this.rectsIntersect({ a: Manager.player.playerSprite, b: this })) {
+        if (Manager.Utils.rectsIntersect({ a: Manager.player.playerSprite, b: this })) {
             this.attack();
             return;
         }
     }
 
-    rectsIntersect({ a, b }) {
-        // Kiểm tra xem hai hình chữ nhật có giao nhau hay không
-        return (
-            a.getGlobalPosition().x - 64 + a.width > b.position.x - b.width / 2 &&
-            a.getGlobalPosition().x - 64 < b.position.x - b.width / 2 + b.width &&
-            a.getGlobalPosition().y - 64 + a.height > b.position.y - b.height / 2 &&
-            a.getGlobalPosition().y - 64 < b.position.y + b.height - b.height / 2
-        );
-    }
 
 
     randomSpawnPoint() {

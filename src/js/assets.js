@@ -55,6 +55,8 @@ export const manifest = {
                 "boostbullet": "../../assets/boostbullet.png",
                 "enemy1": "../../assets/enemy1.png",
                 "enemy2": "../../assets/enemy2.png",
+                "boss": "../../assets/boss.png",
+                "bossbullet": "../../assets/bossbullet.png",
                 "background": "../../assets/background.png",
                 "pause": "../../assets/pause-button.png",
                 "healing": "../../assets/healing.png",

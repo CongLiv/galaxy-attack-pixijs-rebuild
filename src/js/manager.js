@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { Utils } from "./utils.js";
 
 export class Manager {
 
@@ -7,6 +8,7 @@ export class Manager {
     // Safely store variables for our game
     static app;
     static currentScene;
+    static Utils;
 
     // Width and Height are read-only after creation (for now)
     static width;
@@ -50,6 +52,9 @@ export class Manager {
         // store our width and height
         Manager.width = width;
         Manager.height = height;
+
+        // create our utils
+        Manager.Utils = new Utils();
 
         // Create our pixi app
         Manager.app = new PIXI.Application({
