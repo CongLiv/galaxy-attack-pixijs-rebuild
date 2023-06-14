@@ -44,7 +44,6 @@ export class Enemy1 extends PIXI.Container {
         console.log("Enemy attacked");
         this.interval = setInterval(() => {
             Manager.player.attacked();
-            this.attacking = false;
             clearInterval(this.interval); // Dừng việc giảm health sau một khoảng thời gian 
         }, 200);
 

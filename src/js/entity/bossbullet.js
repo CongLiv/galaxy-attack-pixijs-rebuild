@@ -49,7 +49,7 @@ export class BossBullet extends PIXI.Container {
         bullet.position.set(0, 0);
 
 
-        sound.play('bulletsound', { loop: false, volume: 0.1 });
+        // sound.play('bulletsound', { loop: false, volume: 0.1 });
 
         this.lastBulletTime = currentTime;
     }

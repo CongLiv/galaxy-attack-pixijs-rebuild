@@ -756,8 +756,11 @@ const manifest = {
       name: "scene1",
       assets: {
         "bullet": "../../assets/bullet.png",
+        "boostbullet": "../../assets/boostbullet.png",
         "enemy1": "../../assets/enemy1.png",
         "enemy2": "../../assets/enemy2.png",
+        "boss": "../../assets/boss.png",
+        "bossbullet": "../../assets/bossbullet.png",
         "background": "../../assets/background.png",
         "pause": "../../assets/pause-button.png",
         "healing": "../../assets/healing.png",
@@ -778,7 +781,8 @@ const manifest = {
         "menusound": "../../assets/menusound.mp3",
         "playingsound": "../../assets/playingsound.mp3",
         "bulletsound": "../../assets/bulletsound.mp3",
-        "explosionsound": "../../assets/explosionsound.mp3"
+        "explosionsound": "../../assets/explosionsound.mp3",
+        "levelupsound": "../../assets/levelup.mp3"
       }
     }
   ]
@@ -821,7 +825,7 @@ class Boost extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.blinkCounter += delta * 0.1;
       this.boostSprite.scale = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(1 + Math.sin(this.blinkCounter) * 0.1, 1 + Math.sin(this.blinkCounter) * 0.1);
       this.y += this.fallSpeed * delta;
-      if (this.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this })) {
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this })) {
         console.log("Boost");
         _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.boost();
         this.used = true;
@@ -831,9 +835,6 @@ class Boost extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.bufferHandle.removeChild(this);
       this.destroy();
     }
-  }
-  rectsIntersect({ a, b }) {
-    return a.getGlobalPosition().x - 64 + a.width > b.position.x - 35 && a.getGlobalPosition().x - 64 < b.position.x - 35 + b.width && a.getGlobalPosition().y - 64 + a.height > b.position.y - 35 && a.getGlobalPosition().y - 64 < b.position.y + b.height - 35;
   }
 }
 
@@ -909,7 +910,7 @@ class Healing extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.blinkCounter += delta * 0.1;
       this.healingSprite.scale = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(1 + Math.sin(this.blinkCounter) * 0.1, 1 + Math.sin(this.blinkCounter) * 0.1);
       this.y += this.fallSpeed * delta;
-      if (this.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this })) {
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this })) {
         console.log("Healing");
         _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.heal();
         this.used = true;
@@ -920,8 +921,163 @@ class Healing extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.destroy();
     }
   }
-  rectsIntersect({ a, b }) {
-    return a.getGlobalPosition().x - 64 + a.width > b.position.x - 35 && a.getGlobalPosition().x - 64 < b.position.x - 35 + b.width && a.getGlobalPosition().y - 64 + a.height > b.position.y - 35 && a.getGlobalPosition().y - 64 < b.position.y + b.height - 35;
+}
+
+
+/***/ }),
+
+/***/ "./src/js/entity/boss.js":
+/*!*******************************!*\
+  !*** ./src/js/entity/boss.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Boss: () => (/* binding */ Boss)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _buffer_healing_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../buffer/healing.js */ "./src/js/buffer/healing.js");
+/* harmony import */ var _buffer_boost_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../buffer/boost.js */ "./src/js/buffer/boost.js");
+/* harmony import */ var _bossbullet_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./bossbullet.js */ "./src/js/entity/bossbullet.js");
+
+
+
+
+
+class Boss extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.type = "boss";
+    this.sortableChildren = true;
+    const enemySprite = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("boss");
+    this.enemySprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(enemySprite);
+    this.enemySprite.zIndex = 1;
+    this.enemySprite.anchor.set(0.5);
+    this.addChild(this.enemySprite);
+    this.bossBullet = new _bossbullet_js__WEBPACK_IMPORTED_MODULE_4__.BossBullet(this);
+    this.bossBullet.zIndex = 2;
+    this.addChild(this.bossBullet);
+    this.speed = 1;
+    this.maxHealth = 1e3;
+    this.health = this.maxHealth;
+    this.attacking = false;
+    this.zIndex = 1;
+    this.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2, 0);
+  }
+  update(delta) {
+    this.y += this.speed * delta;
+    if (this.y > _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height / 4) {
+      this.y = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height / 4;
+    }
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this.enemySprite })) {
+      this.attack();
+    }
+    this.bossBullet.update(delta);
+  }
+  attack() {
+    if (this.attacking)
+      return;
+    this.attacking = true;
+    console.log("Boss attacked");
+    this.interval = setInterval(() => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
+      this.attacking = false;
+      clearInterval(this.interval);
+    }, 500);
+  }
+  attacked() {
+    this.health -= 10;
+    this.alpha = 0.7;
+    setTimeout(() => {
+      this.alpha = 1;
+    }, 300);
+  }
+  kill() {
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point + 1;
+    this.destroy();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/entity/bossbullet.js":
+/*!*************************************!*\
+  !*** ./src/js/entity/bossbullet.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BossBullet: () => (/* binding */ BossBullet)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+
+
+
+class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor(boss) {
+    super();
+    this.boss = boss;
+    this.maxBullets = 30;
+    this.initBulletSpeed = 4;
+    this.initBulletCooldown = 400;
+    this.bulletSpeed = this.initBulletSpeed;
+    this.bulletCooldown = this.initBulletCooldown;
+    this.lastBulletTime = 0;
+    this.bullets = [];
+    this.bulletTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("bossbullet");
+  }
+  fire() {
+    if (this.bullets.length >= this.maxBullets) {
+      let b = this.bullets.shift();
+      console.log("bullet removed");
+      this.removeChild(b);
+      b.destroy();
+    }
+    this.bullets.forEach((bullet2) => this.removeChild(bullet2));
+    this.bullets = this.bullets.filter((bullet2) => this.getGlobalPosition().y < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height && this.getGlobalPosition().x < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width && this.getGlobalPosition().x > 0);
+    this.bullets.forEach((bullet2) => this.addChild(bullet2));
+    const currentTime = Date.now();
+    if (currentTime - this.lastBulletTime < this.bulletCooldown) {
+      return;
+    }
+    const bullet = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(this.bulletTexture);
+    bullet.anchor.set(0.5);
+    this.bullets.push(bullet);
+    this.addChild(bullet);
+    bullet.position.set(0, 0);
+    _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.sound.play("bulletsound", { loop: false, volume: 0.1 });
+    this.lastBulletTime = currentTime;
+  }
+  update(delta) {
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died) {
+      this.bullets.forEach((bullet) => {
+        this.removeChild(bullet);
+      });
+      return;
+    }
+    this.fire();
+    this.bullets.forEach((bullet) => {
+      bullet.y += this.bulletSpeed * delta;
+      console.log("bullet move");
+    });
+    this.collisionDetection();
+  }
+  collisionDetection() {
+    this.bullets.forEach((bullet, bulletIndex) => {
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: bullet, b: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite })) {
+        _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
+        this.bullets.splice(bulletIndex, 1);
+        this.removeChild(bullet);
+      }
+    });
   }
 }
 
@@ -956,6 +1112,7 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.bulletCooldown = this.initBulletCooldown;
     this.lastBulletTime = 0;
     this.bullets = [];
+    this.bulletTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("bullet");
   }
   fire() {
     if (this.bullets.length >= this.maxBullets) {
@@ -970,15 +1127,16 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     if (currentTime - this.lastBulletTime < this.bulletCooldown) {
       return;
     }
-    const bulletTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("bullet");
-    const bullet = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(bulletTexture);
-    bullet.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.x - 32, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.y - 96);
+    const bullet = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(this.bulletTexture);
+    bullet.anchor.set(0.5);
+    bullet.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.x, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.y - 50);
     this.bullets.push(bullet);
     this.addChild(bullet);
     _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.sound.play("bulletsound", { loop: false, volume: 0.1 });
     this.lastBulletTime = currentTime;
   }
   update(delta) {
+    console.log(this.bullets.length);
     if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died) {
       this.bullets.forEach((bullet) => {
         this.removeChild(bullet);
@@ -997,7 +1155,7 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   collisionDetection() {
     this.bullets.forEach((bullet, bulletIndex) => {
       this.spawner.spawns.forEach((enemy, enemyIndex) => {
-        if (this.rectsIntersect({ a: bullet, b: enemy })) {
+        if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
           enemy.attacked();
           if (enemy.health <= 0) {
             this.spawner.spawns.splice(enemyIndex, 1);
@@ -1005,13 +1163,9 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
           }
           this.bullets.splice(bulletIndex, 1);
           this.removeChild(bullet);
-          console.log("Point: " + _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point);
         }
       });
     });
-  }
-  rectsIntersect({ a, b }) {
-    return a.position.x + a.width > b.position.x - b.width / 2 && a.position.x < b.position.x - b.width / 2 + b.width && a.position.y + a.height > b.position.y - b.height / 2 && a.position.y < b.position.y + b.height - b.height / 2;
   }
 }
 
@@ -1070,6 +1224,7 @@ class Enemy1 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     console.log("Enemy attacked");
     this.interval = setInterval(() => {
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
+      this.attacking = false;
       clearInterval(this.interval);
     }, 200);
   }
@@ -1092,13 +1247,10 @@ class Enemy1 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.x = this.randomSpawnPoint();
       this.attacking = false;
     }
-    if (this.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this })) {
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this.enemySprite })) {
       this.attack();
       return;
     }
-  }
-  rectsIntersect({ a, b }) {
-    return a.getGlobalPosition().x - 64 + a.width > b.position.x - b.width / 2 && a.getGlobalPosition().x - 64 < b.position.x - b.width / 2 + b.width && a.getGlobalPosition().y - 64 + a.height > b.position.y - b.height / 2 && a.getGlobalPosition().y - 64 < b.position.y + b.height - b.height / 2;
   }
   randomSpawnPoint() {
     let randNum = Math.floor(Math.random() * 4);
@@ -1169,6 +1321,7 @@ class Enemy2 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     console.log("Enemy2 attacked");
     this.interval = setInterval(() => {
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
+      this.attacking = false;
       clearInterval(this.interval);
     }, 200);
   }
@@ -1195,7 +1348,7 @@ class Enemy2 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.attacking = false;
       this.velocity.set(0, 1);
     }
-    if (this.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this })) {
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this.enemySprite })) {
       this.attack();
       return;
     }
@@ -1215,9 +1368,6 @@ class Enemy2 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.velocity.set(Math.random() * randomDirection, 1);
       this.changeVelocityCounter = 0;
     }
-  }
-  rectsIntersect({ a, b }) {
-    return a.getGlobalPosition().x - 64 + a.width > b.position.x - b.width / 2 && a.getGlobalPosition().x - 64 < b.position.x - b.width / 2 + b.width && a.getGlobalPosition().y - 64 + a.height > b.position.y - b.height / 2 && a.getGlobalPosition().y - 64 < b.position.y + b.height - b.height / 2;
   }
   randomSpawnPoint() {
     let randNum = Math.floor(Math.random() * 4);
@@ -1359,11 +1509,12 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.zIndex = 1;
     this.died = false;
     this.point = 0;
-    this.level = 1;
+    this.level = 3;
     this.maxHealth = 50;
     this.health = this.maxHealth;
     this.boostCounter = 0;
     this.isKilled = false;
+    this.isLevelUp = false;
     this.interactive = true;
     this.cursor = "pointer";
     this.onDragStart = this.onDragStart.bind(this);
@@ -1399,7 +1550,6 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     };
   }
   update(delta) {
-    console.log(this.width, this.height);
     if (this.died && !this.isKilled) {
       this.kill();
       this.explosionSound.play();
@@ -1409,8 +1559,10 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     if (this.boostCounter > 0) {
       this.boostCounter -= delta;
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting.bulletCooldown = 100;
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting.bulletTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("boostbullet");
     } else {
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting.bulletCooldown = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting.initBulletCooldown;
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.shooting.bulletTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("bullet");
       this.boostCounter = 0;
       this.boostSprite.visible = false;
     }
@@ -1418,6 +1570,19 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     if (this.counterUpdatePosition >= 160) {
       this.lastPosition = this.position.clone();
       this.counterUpdatePosition = 0;
+    }
+    this.checkLevelUp();
+  }
+  checkLevelUp() {
+    if (this.point == 10) {
+      this.level = 2;
+      this.maxHealth = 60;
+      this.isLevelUp = true;
+    }
+    if (this.point == 20) {
+      this.level = 3;
+      this.maxHealth = 70;
+      this.isLevelUp = true;
     }
   }
   onDragMove(event) {
@@ -1504,18 +1669,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Spawner: () => (/* binding */ Spawner)
 /* harmony export */ });
+/* harmony import */ var _manager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../manager */ "./src/js/manager.js");
+/* harmony import */ var _boss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./boss */ "./src/js/entity/boss.js");
+/* harmony import */ var _enemy1__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./enemy1 */ "./src/js/entity/enemy1.js");
+/* harmony import */ var _enemy2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./enemy2 */ "./src/js/entity/enemy2.js");
+
+
+
+
 class Spawner {
-  constructor(create) {
+  constructor() {
     const spawnInterval = 500;
     this.maxSpawns = 5;
-    this.create = create;
     this.spawns = [];
     setInterval(() => this.spawn(), spawnInterval);
   }
   spawn() {
     if (this.spawns.length < this.maxSpawns) {
-      const spawn = this.create();
-      this.spawns.push(spawn);
+      if (_manager__WEBPACK_IMPORTED_MODULE_0__.Manager.player.level == 1) {
+        const spawn = new _enemy1__WEBPACK_IMPORTED_MODULE_2__.Enemy1();
+        this.spawns.push(spawn);
+      } else if (_manager__WEBPACK_IMPORTED_MODULE_0__.Manager.player.level == 2) {
+        const spawn = new _enemy2__WEBPACK_IMPORTED_MODULE_3__.Enemy2();
+        this.spawns.push(spawn);
+      } else {
+        const spawn = new _boss__WEBPACK_IMPORTED_MODULE_1__.Boss();
+        this.maxSpawns = 1;
+        this.spawns.push(spawn);
+      }
     }
   }
 }
@@ -1536,12 +1717,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Manager: () => (/* binding */ Manager)
 /* harmony export */ });
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _utils_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils.js */ "./src/js/utils.js");
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
+
 
 const _Manager = class {
   constructor() {
@@ -1560,6 +1743,7 @@ const _Manager = class {
   static initialize(width, height, background) {
     _Manager.width = width;
     _Manager.height = height;
+    _Manager.Utils = new _utils_js__WEBPACK_IMPORTED_MODULE_1__.Utils();
     _Manager.app = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Application({
       resolution: window.devicePixelRatio || 1,
       autoDensity: true,
@@ -1605,6 +1789,7 @@ let Manager = _Manager;
 // Safely store variables for our game
 __publicField(Manager, "app");
 __publicField(Manager, "currentScene");
+__publicField(Manager, "Utils");
 // Width and Height are read-only after creation (for now)
 __publicField(Manager, "width");
 __publicField(Manager, "height");
@@ -1815,7 +2000,7 @@ class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_2__.IScene {
     this.gamePlayingUI = new _ui_gamePlayingUI_js__WEBPACK_IMPORTED_MODULE_4__.GamePlayingUI();
     this.addChild(this.gamePlayingUI);
     this.gameOverUI = new _ui_gameOverUI_js__WEBPACK_IMPORTED_MODULE_8__.GameOverUI();
-    this.enemySpawner = new _entity_spawner_js__WEBPACK_IMPORTED_MODULE_6__.Spawner(() => new _entity_enemy2_js__WEBPACK_IMPORTED_MODULE_12__.Enemy2());
+    this.enemySpawner = new _entity_spawner_js__WEBPACK_IMPORTED_MODULE_6__.Spawner();
     _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.shooting = new _entity_bullet_js__WEBPACK_IMPORTED_MODULE_5__.Bullet(this.enemySpawner);
     this.addChild(_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.shooting);
     _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.bufferHandle = new _buffer_bufferHandle_js__WEBPACK_IMPORTED_MODULE_11__.BufferHandle();
@@ -2127,23 +2312,28 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.addChild(this.pauseButtonBar);
     this.zIndex = 99;
     _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.sound.play("playingsound", { loop: true, volume: 0.5 });
-    this.healingTexture = [
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing01"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing02"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing03"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing04"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing05"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing06"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing07"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing08"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing09"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing10"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing11"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing12"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing13"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing14"),
-      pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("healing15")
-    ];
+    this.bigTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 60,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.levelUpText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Level up!", this.bigTextStyle);
+    this.levelUpText.anchor.set(0.5);
+    this.levelUpText.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height / 2);
+    this.levelUpText.visible = false;
+    this.addChild(this.levelUpText);
+    this.blinkCounter = 1;
   }
   update(delta) {
     this.healthBar.width = this.healthBar.initalWidth * _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.health / _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.maxHealth;
@@ -2151,6 +2341,27 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     if (this.health <= 0) {
       this.player.died = true;
     }
+    if (this.levelUpText.visible == true) {
+      this.blinkCounter += delta * 0.1;
+      this.levelUpText.alpha = Math.abs(Math.sin(this.blinkCounter));
+    }
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp) {
+      console.log("call to play level up");
+      this.playLevelUp();
+    }
+  }
+  playLevelUp() {
+    this.levelUpText.visible = true;
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp && !this.soundPlayed) {
+      _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.sound.play("levelupsound", { loop: false });
+      this.soundPlayed = true;
+    }
+    setTimeout(() => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp = false;
+      console.log("level up finish");
+      this.levelUpText.visible = false;
+      this.soundPlayed = false;
+    }, 2e3);
   }
 }
 
@@ -2246,6 +2457,28 @@ class MenuUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       }
       this.logo.position.y -= 4 * delta;
     }
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/utils.js":
+/*!*************************!*\
+  !*** ./src/js/utils.js ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Utils: () => (/* binding */ Utils)
+/* harmony export */ });
+class Utils {
+  constructor() {
+  }
+  rectsIntersect({ a, b }) {
+    return a.getGlobalPosition().x + a.width > b.getGlobalPosition().x - b.width / 2 && a.getGlobalPosition().x < b.getGlobalPosition().x - b.width / 2 + b.width && a.getGlobalPosition().y + a.height > b.getGlobalPosition().y - b.height / 2 && a.getGlobalPosition().y < b.getGlobalPosition().y + b.height - b.height / 2;
   }
 }
 

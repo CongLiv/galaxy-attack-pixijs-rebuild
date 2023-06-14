@@ -44,7 +44,6 @@ export class Bullet extends PIXI.Container {
         this.bullets.push(bullet);
         this.addChild(bullet);
         
-        
         sound.play('bulletsound', {loop: false, volume: 0.1});
 
         this.lastBulletTime = currentTime;
@@ -54,7 +53,7 @@ export class Bullet extends PIXI.Container {
 
     update(delta) {
 
-        console.log(this.bullets.length);
+        
         if (Manager.player.died) {
             // remove all bullet
             this.bullets.forEach((bullet) => {

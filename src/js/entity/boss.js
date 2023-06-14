@@ -4,9 +4,9 @@ import { Healing } from "../buffer/healing.js";
 import { Boost } from "../buffer/boost.js";
 import { BossBullet } from "./bossbullet.js";
 
-export class Boss extends PIXI.Container{
+export class Boss extends PIXI.Container {
 
-    constructor(){
+    constructor() {
         super();
         this.type = 'boss';
         this.sortableChildren = true;
@@ -15,30 +15,40 @@ export class Boss extends PIXI.Container{
         this.enemySprite.zIndex = 1;
         this.enemySprite.anchor.set(0.5);
         this.addChild(this.enemySprite);
-        
+
         this.bossBullet = new BossBullet(this);
-        this.bossBullet.zIndex = 2;
-        this.addChild(this.bossBullet);
+        this.bossBullet.zIndex = 5;
 
         this.speed = 1;
         this.maxHealth = 1000;
         this.health = this.maxHealth;
         this.attacking = false;
-        this.zIndex  = 1;
+        this.zIndex = 1;
         this.position.set(Manager.width / 2, 0);
 
-        
+        this.changeDirectionCounter = 0;
+        this.directionX = 1;
 
     }
 
-    update(delta){
-        
+    update(delta) {
+
         this.y += this.speed * delta;
-        if (this.y > Manager.height / 4){
+        if (this.y > Manager.height / 4) {
             this.y = Manager.height / 4;
+            // random move left or right per 3 seconds
+            this.changeDirectionCounter += delta * 0.1;
+            if (this.changeDirectionCounter > 3) {
+                this.directionX += Math.random() > 0.5 ? 1 : -1;
+                this.changeDirectionCounter = 0;
+            }
+            this.x += this.directionX * this.speed * delta;
+            if (this.x < this.enemySprite.width / 2) this.x = this.enemySprite.width / 2;
+            if (this.x > Manager.width - this.enemySprite.width / 2) this.x = Manager.width - this.enemySprite.width / 2;
+
         }
 
-        if (Manager.Utils.rectsIntersect({a: Manager.player.playerSprite, b: this.enemySprite})) {
+        if (Manager.Utils.rectsIntersect({ a: Manager.player.playerSprite, b: this.enemySprite })) {
             this.attack();
         }
 
@@ -61,9 +71,9 @@ export class Boss extends PIXI.Container{
 
     attacked() {
         this.health -= 10;
-        this.alpha = 0.7;
+        this.enemySprite.alpha = 0.7;
         setTimeout(() => {
-            this.alpha = 1;
+            this.enemySprite.alpha = 1;
         }, 300);
     }
 

@@ -125,7 +125,7 @@ export class Player extends PIXI.Container {
         this.zIndex = 1;
         this.died = false;
         this.point = 0;
-        this.level = 3;
+        this.level = 1;
         this.maxHealth = 50;
         this.health = this.maxHealth;
         this.boostCounter = 0;
@@ -151,11 +151,11 @@ export class Player extends PIXI.Container {
 
     attacked() {
         this.health -= 10;
-        this.alpha = 0.5;
+        this.playerSprite.alpha = 0.5;
 
         // code to reverse the alpha of player
         setTimeout(() => {
-            this.alpha = 1;
+            this.playerSprite.alpha = 1;
         }, 200);
 
         if (this.health <= 0) {
