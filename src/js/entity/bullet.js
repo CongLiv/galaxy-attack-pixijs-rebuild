@@ -24,6 +24,7 @@ export class Bullet extends PIXI.Container {
         // Kiểm tra nếu đạn đã đủ nhiều thì xóa đi
         if (this.bullets.length >= this.maxBullets) {
             let b = this.bullets.shift();
+            b.visible = false;
             this.removeChild(b);
             b.destroy();
         }
@@ -79,15 +80,16 @@ export class Bullet extends PIXI.Container {
             this.spawner.spawns.forEach((enemy, enemyIndex) => {
                 if (Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
 
+                    bullet.visible = false;
+                    this.removeChild(bullet);
+                    this.bullets.splice(bulletIndex, 1);
                     enemy.attacked();
 
                     if (enemy.health <= 0) {
                         this.spawner.spawns.splice(enemyIndex, 1);
                         enemy.kill();
                     }
-
-                    this.bullets.splice(bulletIndex, 1);
-                    this.removeChild(bullet);
+                                        
                     // console.log("Point: " + Manager.player.point);
 
                     
@@ -95,8 +97,6 @@ export class Bullet extends PIXI.Container {
             });
         });
     }
-
-
 
 
 }

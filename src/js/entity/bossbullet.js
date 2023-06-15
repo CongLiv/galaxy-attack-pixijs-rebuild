@@ -165,8 +165,8 @@ export class BossBullet extends PIXI.Container {
 
             if (Manager.Utils.rectsIntersect({ a: bullet, b: Manager.player.playerSprite })) {
 
-                if (this.fireType == this.normalFireType) Manager.player.attacked(10);
-                else if (this.fireType == this.laserFireType) Manager.player.attacked(0.05);
+                if (this.fireType == this.normalFireType) Manager.player.attacked(15);
+                else if (this.fireType == this.laserFireType) Manager.player.attacked(0.1);
 
                 if (this.fireType != this.laserFireType) {
                     this.bullets.splice(bulletIndex, 1);

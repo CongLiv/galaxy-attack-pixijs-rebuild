@@ -64,7 +64,7 @@ export class GameWinUI extends PIXI.Container {
 
         this.gameReloadText.on('pointerdown', () => {
             Manager.changeScene(new Menu());
-            sound.stop('playingsound');
+            sound.stopAll();
         });
 
         this.addChild(this.gameOverBar);

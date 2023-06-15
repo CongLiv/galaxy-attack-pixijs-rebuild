@@ -24,7 +24,8 @@ export class Spawner {
             }
             else if (Manager.player.level == 2) {
                 //random spawn enemy1 or enemy2
-                const random = Math.floor(Math.random() * 2);
+                this.maxSpawns = 7;
+                const random = Math.floor(Math.random() * 3);
                 if (random == 0) {
                     const enemy1 = new Enemy1();
                     this.spawns.push(enemy1);

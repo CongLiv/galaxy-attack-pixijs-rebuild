@@ -93,7 +93,7 @@ export class GamePauseUI extends PIXI.Container {
         this.resumeBottonBar3.on('pointerdown', () => {
             Manager.changeScene(new Menu());
             Manager.currentScene.pausing = false;
-            sound.stop('playingsound');
+            sound.stopAll();
         });
         this.resumeBottonBar3.addChild(this.resumeBottonText3);
 
