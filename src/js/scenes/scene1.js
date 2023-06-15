@@ -12,6 +12,7 @@ import { GamePauseUI } from "../ui/gamePauseUI.js";
 import { Healing } from "../buffer/healing.js";
 import { BufferHandle } from "../buffer/bufferHandle.js";
 import { Enemy2 } from "../entity/enemy2.js";
+import { GameWinUI } from "../ui/gameWinUI.js";
 
 export class Scene1 extends IScene {
 
@@ -48,6 +49,8 @@ export class Scene1 extends IScene {
         this.sortableChildren = true;
 
 
+        this.gameWinUI = new GameWinUI();
+        this.won = false;
     }
 
 
@@ -58,7 +61,7 @@ export class Scene1 extends IScene {
             this.background.tilePosition.y += 1 * delta;
 
             this.gamePlayingUI.update(delta);
-            if (Manager.player.isKilled == false) Manager.player.update(delta);
+            if (Manager.player.isKilled == false && this.won == false) Manager.player.update(delta);
             Manager.shooting.update(delta);
             Manager.bufferHandle.update(delta);
 
@@ -68,13 +71,20 @@ export class Scene1 extends IScene {
             });
 
             if (Manager.player.died && !this.isGameOverAdded) {
-                console.log("game over");
+                // console.log("game over");
                 this.addChild(this.gameOverUI);
                 this.isGameOverAdded = true;
             }
 
-            if (Manager.player.died) this.gameOverUI.update(delta);
+            if (this.won && !this.isGameWinAdded){
+                this.addChild(this.gameWinUI);
+                this.isGameOverAdded = true;
+                this.removeChild(this.gamePlayingUI);
+            }
 
+            if (Manager.player.died) this.gameOverUI.update(delta);
+            if (this.won) this.gameWinUI.update(delta);
+            
             if (Manager.player.died && !this.removedChild) {
                 this.removeChild(this.gamePlayingUI);
                 this.removedChild = true;

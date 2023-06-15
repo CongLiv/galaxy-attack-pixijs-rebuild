@@ -32,7 +32,7 @@ export class Boss extends PIXI.Container {
         this.changeDirectionCounter = 0;
         this.directionX = 0;
         this.changeFireTypeCounter = 0;
-        this.fireType = 2;
+        this.fireType = 1;
         this.noneFireType = 0;
         this.normalFireType = 1;
         this.laserFireType = 2;
@@ -128,6 +128,8 @@ export class Boss extends PIXI.Container {
     kill() {
         Manager.player.point = Manager.player.point + 1;
         this.destroy();
+        Manager.currentScene.removeChild(this.bossBullet);
+        Manager.currentScene.won = true;
     }
 
 
