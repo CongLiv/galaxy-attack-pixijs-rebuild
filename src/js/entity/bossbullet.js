@@ -15,10 +15,10 @@ export class BossBullet extends PIXI.Container {
         this.lastBulletTime = 0;
         this.bullets = [];
         this.bulletTexture = PIXI.Texture.from('bossbullet');
- 
+
+
 
     }
-
 
     fire() {
 
@@ -42,7 +42,7 @@ export class BossBullet extends PIXI.Container {
 
         const bullet = new PIXI.Sprite(this.bulletTexture);
         bullet.anchor.set(0.5);
-       
+
         this.bullets.push(bullet);
 
         this.addChild(bullet);
@@ -55,6 +55,16 @@ export class BossBullet extends PIXI.Container {
     }
 
 
+    radiate() {
+        // radiate bullet
+    }
+
+
+    cleanShooting() {
+        
+
+    }
+
 
     update(delta) {
         // console.log(this.bullets.length);
@@ -66,11 +76,13 @@ export class BossBullet extends PIXI.Container {
             return;
         }
 
-        this.fire();
-        this.bullets.forEach((bullet) => {
-            bullet.y += this.bulletSpeed * delta;
+        if (this.bullets.length > 0) {
+            this.bullets.forEach((bullet) => {
+                bullet.y += this.bulletSpeed * delta;
 
-        });
+            });
+        }
+
 
         this.collisionDetection();
 

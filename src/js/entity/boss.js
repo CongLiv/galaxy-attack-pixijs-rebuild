@@ -27,8 +27,13 @@ export class Boss extends PIXI.Container {
         this.zIndex = 1;
         this.position.set(Manager.width / 2, 0);
 
+
         this.changeDirectionCounter = 0;
         this.directionX = 0;
+        this.changFireTypeCounter = 0;
+        this.fireType = 2;
+        this.normalFireType = 1;
+        this.radiateFireType = 2;
 
     }
 
@@ -37,24 +42,47 @@ export class Boss extends PIXI.Container {
         this.y += this.speed * delta;
         if (this.y > Manager.height / 4) {
             this.y = Manager.height / 4;
-            // random move left or right per 3 seconds
-            this.changeDirectionCounter += delta * 0.1;
-            if (this.changeDirectionCounter > 20) {
-                this.directionX = Math.random() > 0.5 ? 1 : -1;
-                this.changeDirectionCounter = 0;
-            }
-            this.x += this.directionX * this.speed * delta;
-            if (this.x < this.enemySprite.width / 2) this.x = this.enemySprite.width / 2;
-            if (this.x > Manager.width - this.enemySprite.width / 2) this.x = Manager.width - this.enemySprite.width / 2;
-
+            this.randomMove(delta);
         }
 
         if (Manager.Utils.rectsIntersect({ a: Manager.player.playerSprite, b: this.enemySprite })) {
             this.attack();
         }
 
+        this.randomFire(delta);
+
         this.bossBullet.update(delta);
 
+    }
+
+    randomMove(delta){
+        // random move left or right per 5 seconds
+        this.changeDirectionCounter += delta;
+        if (this.changeDirectionCounter > 300) {
+            this.directionX = Math.random() > 0.5 ? 1 : -1;
+            this.changeDirectionCounter = 0;
+            console.log("Boss changed direction");
+        }
+        this.x += this.directionX * this.speed * delta;
+        if (this.x < this.enemySprite.width / 2) this.x = this.enemySprite.width / 2;
+        if (this.x > Manager.width - this.enemySprite.width / 2) this.x = Manager.width - this.enemySprite.width / 2;
+    }
+
+
+    randomFire(delta) {
+        // random fire type per 30 seconds
+        this.changFireTypeCounter += delta;
+        if (this.changFireTypeCounter > 200) {
+            this.fireType = Math.floor(Math.random() * 2) + 1;
+            this.bossBullet.cleanShooting();
+            this.changFireTypeCounter = 0;
+        }
+        if (this.fireType == this.normalFireType) {
+            this.bossBullet.fire(delta);
+        }
+        else if (this.fireType == this.radiateFireType) {
+            this.bossBullet.radiate(delta);
+        }
     }
 
     attack() {
@@ -82,5 +110,6 @@ export class Boss extends PIXI.Container {
         Manager.player.point = Manager.player.point + 1;
         this.destroy();
     }
+
 
 }
