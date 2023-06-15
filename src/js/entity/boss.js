@@ -3,6 +3,7 @@ import { Manager } from "../manager.js";
 import { Healing } from "../buffer/healing.js";
 import { Boost } from "../buffer/boost.js";
 import { BossBullet } from "./bossbullet.js";
+import { sound } from "@pixi/sound";
 
 export class Boss extends PIXI.Container {
 
@@ -17,11 +18,11 @@ export class Boss extends PIXI.Container {
         this.addChild(this.enemySprite);
 
         this.bossBullet = new BossBullet(this);
-        this.bossBullet.zIndex = 2;
         Manager.currentScene.addChild(this.bossBullet);
 
+
         this.speed = 1;
-        this.maxHealth = 1000;
+        this.maxHealth = 2000;
         this.health = this.maxHealth;
         this.attacking = false;
         this.zIndex = 1;
@@ -30,11 +31,13 @@ export class Boss extends PIXI.Container {
 
         this.changeDirectionCounter = 0;
         this.directionX = 0;
-        this.changFireTypeCounter = 0;
+        this.changeFireTypeCounter = 0;
         this.fireType = 2;
+        this.noneFireType = 0;
         this.normalFireType = 1;
-        this.radiateFireType = 2;
-
+        this.laserFireType = 2;
+        this.spreadFireType = 3;
+        this.lastFireType = this.fireType;
     }
 
     update(delta) {
@@ -55,11 +58,11 @@ export class Boss extends PIXI.Container {
 
     }
 
-    randomMove(delta){
+    randomMove(delta) {
         // random move left or right per 5 seconds
         this.changeDirectionCounter += delta;
         if (this.changeDirectionCounter > 300) {
-            this.directionX = Math.random() > 0.5 ? 1 : -1;
+            this.directionX = this.x < Manager.width / 2 ? 1 : -1;
             this.changeDirectionCounter = 0;
             console.log("Boss changed direction");
         }
@@ -70,19 +73,35 @@ export class Boss extends PIXI.Container {
 
 
     randomFire(delta) {
-        // random fire type per 30 seconds
-        this.changFireTypeCounter += delta;
-        if (this.changFireTypeCounter > 200) {
-            this.fireType = Math.floor(Math.random() * 2) + 1;
-            this.bossBullet.cleanShooting();
-            this.changFireTypeCounter = 0;
+
+
+        // random fire type per 10 seconds + 5 secs none fire
+        this.changeFireTypeCounter += delta;
+        if (this.changeFireTypeCounter > 600) {
+            this.lastFireType = this.fireType;
+            if (this.lastFireType == this.noneFireType) {
+                this.fireType = Math.floor(Math.random() * 2) + 1;
+                this.changeFireTypeCounter = 0;
+            }
+            else {
+                this.fireType = this.noneFireType;
+                this.changeFireTypeCounter = 300;
+            }
+            if (this.lastFireType == this.laserFireType) {
+                this.bossBullet.cleanLaser();
+            }
+            
         }
-        if (this.fireType == this.normalFireType) {
+        if (this.fireType == this.noneFireType) {
+            return;
+        }
+        else if (this.fireType == this.normalFireType) {
             this.bossBullet.fire(delta);
         }
-        else if (this.fireType == this.radiateFireType) {
-            this.bossBullet.radiate(delta);
+        else if (this.fireType == this.laserFireType) {
+            this.bossBullet.laser(delta);
         }
+    
     }
 
     attack() {
@@ -91,7 +110,7 @@ export class Boss extends PIXI.Container {
         this.attacking = true;
         console.log("Boss attacked");
         this.interval = setInterval(() => {
-            Manager.player.attacked();
+            Manager.player.attacked(10);
             this.attacking = false;
             clearInterval(this.interval); // Dừng việc giảm health sau một khoảng thời gian 
         }, 500);

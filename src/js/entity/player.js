@@ -122,7 +122,7 @@ export class Player extends PIXI.Container {
 
 
         // Thuộc tính 
-        this.zIndex = 1;
+        this.zIndex = 2;
         this.died = false;
         this.point = 0;
         this.level = 3;
@@ -149,14 +149,14 @@ export class Player extends PIXI.Container {
 
     }
 
-    attacked() {
-        this.health -= 10;
+    attacked(dame) {
+        this.health -= dame;
         this.playerSprite.alpha = 0.5;
 
         // code to reverse the alpha of player
         setTimeout(() => {
             this.playerSprite.alpha = 1;
-        }, 200);
+        }, 300);
 
         if (this.health <= 0) {
             this.died = true;

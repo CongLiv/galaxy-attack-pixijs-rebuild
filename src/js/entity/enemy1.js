@@ -6,7 +6,7 @@ import { Boost } from "../buffer/boost.js";
 export class Enemy1 extends PIXI.Container {
     constructor() {
         super();
-
+        this.type = 'enemy1';
         const enemyTexture = PIXI.Texture.from('enemy1');
         this.enemySprite = new PIXI.Sprite(enemyTexture);
         this.enemySprite.anchor.set(0.5);
@@ -43,7 +43,7 @@ export class Enemy1 extends PIXI.Container {
         this.attacking = true;
         console.log("Enemy attacked");
         this.interval = setInterval(() => {
-            Manager.player.attacked();
+            Manager.player.attacked(10);
             clearInterval(this.interval); // Dừng việc giảm health sau một khoảng thời gian 
         }, 200);
 

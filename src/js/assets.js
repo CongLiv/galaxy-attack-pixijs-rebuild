@@ -84,6 +84,7 @@ export const manifest = {
                 "bulletsound": "../../assets/bulletsound.mp3",
                 "explosionsound": "../../assets/explosionsound.mp3",
                 "levelupsound": "../../assets/levelup.mp3",
+                "lasersound": "../../assets/lasersound.mp3",
             }
         },
 
