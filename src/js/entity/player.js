@@ -219,12 +219,14 @@ export class Player extends PIXI.Container {
         if (this.point == 10) {
             this.level = 2;
             this.maxHealth = 60;
+            this.health = this.maxHealth;
             this.isLevelUp = true;        
         }
 
-        if (this.point == 20) {
+        if (this.point == 30) {
             this.level = 3;
             this.maxHealth = 70;
+            this.health = this.maxHealth;
             this.isLevelUp = true;
         }
     }

@@ -98,6 +98,30 @@ export class GamePlayingUI extends PIXI.Container {
 
         this.blinkCounter = 1;
 
+
+        this.bossTextStyle = new PIXI.TextStyle({
+            fontFamily: 'Arial Black',
+            fontSize: 60,
+            // fontStyle: 'italic',
+            fontWeight: 'bold',
+            fill: ['#878180', '#ffffff'],
+            stroke: '#4a1850',
+            strokeThickness: 5,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 440,
+        });
+        this.bossText = new PIXI.Text("BOSS", this.bossTextStyle);
+        this.bossText.style.fill = ['#cc1616'];
+        this.bossText.anchor.set(0.5);
+        this.bossText.position.set(Manager.width / 2, Manager.height / 2);
+        this.bossText.visible = false;
+        this.addChild(this.bossText);
+
     }
 
     update(delta) {
@@ -113,9 +137,18 @@ export class GamePlayingUI extends PIXI.Container {
             this.levelUpText.alpha = Math.abs(Math.sin(this.blinkCounter));
         }
 
-        if (Manager.player.isLevelUp) {
-            console.log("call to play level up");
+        if (this.bossText.visible == true) {
+            this.blinkCounter += delta * 0.1;
+            this.bossText.alpha = Math.abs(Math.sin(this.blinkCounter));
+        }
+
+        if (Manager.player.isLevelUp && Manager.player.level != 3)  {
+            // console.log("call to play level up");
             this.playLevelUp();
+        }
+
+        else if (Manager.player.isLevelUp && Manager.player.level == 3) {
+            this.playBoss();
         }
 
     }
@@ -136,5 +169,15 @@ export class GamePlayingUI extends PIXI.Container {
             this.soundPlayed = false;
         }, 2000);
 
+    }
+
+    playBoss(){
+        this.bossText.visible = true;
+        // play sound level up only 1 time
+        
+        setTimeout(() => {
+            Manager.player.isLevelUp = false;
+            this.bossText.visible = false;
+        }, 5000);
     }
 }

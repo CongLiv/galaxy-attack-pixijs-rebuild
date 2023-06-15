@@ -78,7 +78,9 @@ export class Scene1 extends IScene {
 
             if (this.won && !this.isGameWinAdded){
                 this.addChild(this.gameWinUI);
-                this.isGameOverAdded = true;
+                sound.stop("bosssound");
+                sound.play("playingsound", {loop: true, volume: 0.5});
+                this.isGameWinAdded = true;
                 this.removeChild(this.gamePlayingUI);
             }
 

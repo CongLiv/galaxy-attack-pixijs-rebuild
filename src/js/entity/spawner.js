@@ -1,3 +1,4 @@
+import { sound } from "@pixi/sound";
 import { Manager } from "../manager";
 import { Boss } from "./boss";
 import { Enemy1 } from "./enemy1";
@@ -52,6 +53,8 @@ export class Spawner {
 
         if (Manager.player.level == 3 && !this.addBoss) {
             const boss = new Boss();
+            sound.stop("playingsound");
+            sound.play("bosssound", { loop: true });
             this.spawns.push(boss);
             this.addBoss = true;
         }
