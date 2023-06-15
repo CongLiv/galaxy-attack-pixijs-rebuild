@@ -30,7 +30,7 @@ export class Bullet extends PIXI.Container {
         }
 
         this.bullets.forEach((bullet) => this.removeChild(bullet));
-        this.bullets = this.bullets.filter(bullet => Math.abs(bullet.position.y - Manager.player.y) < 512 * 2);
+        this.bullets = this.bullets.filter(bullet => bullet.position.y > 0);
         this.bullets.forEach((bullet) => this.addChild(bullet));
 
         // Cooldown giữa các lần bắn đạn

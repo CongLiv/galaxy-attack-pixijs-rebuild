@@ -761,6 +761,7 @@ const manifest = {
         "enemy2": "../../assets/enemy2.png",
         "boss": "../../assets/boss.png",
         "bossbullet": "../../assets/bossbullet.png",
+        "bosslaser": "../../assets/bosslaser.png",
         "background": "../../assets/background.png",
         "pause": "../../assets/pause-button.png",
         "healing": "../../assets/healing.png",
@@ -782,7 +783,9 @@ const manifest = {
         "playingsound": "../../assets/playingsound.mp3",
         "bulletsound": "../../assets/bulletsound.mp3",
         "explosionsound": "../../assets/explosionsound.mp3",
-        "levelupsound": "../../assets/levelup.mp3"
+        "levelupsound": "../../assets/levelup.mp3",
+        "lasersound": "../../assets/lasersound.mp3",
+        "bosssound": "../../assets/bosssound.mp3"
       }
     }
   ]
@@ -942,6 +945,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _buffer_healing_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../buffer/healing.js */ "./src/js/buffer/healing.js");
 /* harmony import */ var _buffer_boost_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../buffer/boost.js */ "./src/js/buffer/boost.js");
 /* harmony import */ var _bossbullet_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./bossbullet.js */ "./src/js/entity/bossbullet.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+
 
 
 
@@ -958,24 +963,70 @@ class Boss extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.enemySprite.anchor.set(0.5);
     this.addChild(this.enemySprite);
     this.bossBullet = new _bossbullet_js__WEBPACK_IMPORTED_MODULE_4__.BossBullet(this);
-    this.bossBullet.zIndex = 2;
-    this.addChild(this.bossBullet);
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.addChild(this.bossBullet);
     this.speed = 1;
-    this.maxHealth = 1e3;
+    this.maxHealth = 2e3;
     this.health = this.maxHealth;
     this.attacking = false;
     this.zIndex = 1;
     this.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2, 0);
+    this.changeDirectionCounter = 0;
+    this.directionX = 0;
+    this.changeFireTypeCounter = 0;
+    this.fireType = 1;
+    this.noneFireType = 0;
+    this.normalFireType = 1;
+    this.laserFireType = 2;
+    this.spreadFireType = 3;
+    this.lastFireType = this.fireType;
   }
   update(delta) {
     this.y += this.speed * delta;
     if (this.y > _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height / 4) {
       this.y = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height / 4;
+      this.randomMove(delta);
     }
     if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite, b: this.enemySprite })) {
       this.attack();
     }
+    this.randomFire(delta);
     this.bossBullet.update(delta);
+  }
+  randomMove(delta) {
+    this.changeDirectionCounter += delta;
+    if (this.changeDirectionCounter > 300) {
+      this.directionX = this.x < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2 ? 1 : -1;
+      this.changeDirectionCounter = 0;
+      console.log("Boss changed direction");
+    }
+    this.x += this.directionX * this.speed * delta;
+    if (this.x < this.enemySprite.width / 2)
+      this.x = this.enemySprite.width / 2;
+    if (this.x > _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width - this.enemySprite.width / 2)
+      this.x = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width - this.enemySprite.width / 2;
+  }
+  randomFire(delta) {
+    this.changeFireTypeCounter += delta;
+    if (this.changeFireTypeCounter > 600) {
+      this.lastFireType = this.fireType;
+      if (this.lastFireType == this.noneFireType) {
+        this.fireType = Math.floor(Math.random() * 2) + 1;
+        this.changeFireTypeCounter = 0;
+      } else {
+        this.fireType = this.noneFireType;
+        this.changeFireTypeCounter = 300;
+      }
+      if (this.lastFireType == this.laserFireType) {
+        this.bossBullet.cleanLaser();
+      }
+    }
+    if (this.fireType == this.noneFireType) {
+      return;
+    } else if (this.fireType == this.normalFireType) {
+      this.bossBullet.fire(delta);
+    } else if (this.fireType == this.laserFireType) {
+      this.bossBullet.laser(delta);
+    }
   }
   attack() {
     if (this.attacking)
@@ -983,21 +1034,23 @@ class Boss extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.attacking = true;
     console.log("Boss attacked");
     this.interval = setInterval(() => {
-      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(10);
       this.attacking = false;
       clearInterval(this.interval);
     }, 500);
   }
   attacked() {
     this.health -= 10;
-    this.alpha = 0.7;
+    this.enemySprite.alpha = 0.7;
     setTimeout(() => {
-      this.alpha = 1;
+      this.enemySprite.alpha = 1;
     }, 300);
   }
   kill() {
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.point + 1;
     this.destroy();
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.removeChild(this.bossBullet);
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.won = true;
   }
 }
 
@@ -1027,14 +1080,25 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.boss = boss;
     this.maxBullets = 30;
     this.initBulletSpeed = 4;
-    this.initBulletCooldown = 400;
+    this.initBulletCooldown = 1e3;
     this.bulletSpeed = this.initBulletSpeed;
     this.bulletCooldown = this.initBulletCooldown;
     this.lastBulletTime = 0;
     this.bullets = [];
     this.bulletTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("bossbullet");
+    this.laserTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("bosslaser");
+    this.fireType = 2;
+    this.noneFireType = 0;
+    this.normalFireType = 1;
+    this.laserFireType = 2;
+    this.spreadFireType = 3;
+    this.zIndex = 1;
   }
   fire() {
+    this.bulletSpeed = this.initBulletSpeed;
+    this.bulletCooldown = this.initBulletCooldown;
+    this.maxBullets = 30;
+    this.fireType = this.normalFireType;
     if (this.bullets.length >= this.maxBullets) {
       let b = this.bullets.shift();
       console.log("bullet removed");
@@ -1042,7 +1106,7 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       b.destroy();
     }
     this.bullets.forEach((bullet2) => this.removeChild(bullet2));
-    this.bullets = this.bullets.filter((bullet2) => this.getGlobalPosition().y < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height && this.getGlobalPosition().x < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width && this.getGlobalPosition().x > 0);
+    this.bullets = this.bullets.filter((bullet2) => bullet2.y < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height && bullet2.x < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width && bullet2.x > 0);
     this.bullets.forEach((bullet2) => this.addChild(bullet2));
     const currentTime = Date.now();
     if (currentTime - this.lastBulletTime < this.bulletCooldown) {
@@ -1052,9 +1116,43 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     bullet.anchor.set(0.5);
     this.bullets.push(bullet);
     this.addChild(bullet);
-    bullet.position.set(0, 0);
-    _pixi_sound__WEBPACK_IMPORTED_MODULE_2__.sound.play("bulletsound", { loop: false, volume: 0.1 });
+    bullet.position.set(this.boss.x, this.boss.y + 75);
     this.lastBulletTime = currentTime;
+  }
+  laser() {
+    this.bulletSpeed = this.initBulletSpeed * 4;
+    this.bulletCooldown = 20;
+    this.maxBullets = 200;
+    this.fireType = this.laserFireType;
+    if (this.bullets.length >= this.maxBullets) {
+      let b = this.bullets.shift();
+      console.log("bullet removed");
+      this.removeChild(b);
+      b.destroy();
+    }
+    this.bullets.forEach((bullet) => this.removeChild(bullet));
+    this.bullets = this.bullets.filter((bullet) => bullet.y < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height && bullet.x < _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width && bullet.x > 0);
+    this.bullets.forEach((bullet) => this.addChild(bullet));
+    const currentTime = Date.now();
+    if (currentTime - this.lastBulletTime < this.bulletCooldown) {
+      return;
+    }
+    const laser = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(this.laserTexture);
+    laser.anchor.set(0.5);
+    this.bullets.push(laser);
+    this.addChild(laser);
+    laser.position.set(this.boss.x, this.boss.y + 75);
+    this.lastBulletTime = currentTime;
+  }
+  cleanLaser() {
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.removeChild(this);
+    this.bullets.forEach((bullet) => {
+      this.removeChild(bullet);
+    });
+    this.bullets = [];
+    _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.addChild(this);
+  }
+  spread() {
   }
   update(delta) {
     if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died) {
@@ -1063,19 +1161,32 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       });
       return;
     }
-    this.fire();
-    this.bullets.forEach((bullet) => {
-      bullet.y += this.bulletSpeed * delta;
-      console.log("bullet move");
-    });
+    if (this.bullets.length > 0) {
+      this.bullets.forEach((bullet) => {
+        if (this.fireType == this.normalFireType)
+          bullet.y += this.bulletSpeed * delta;
+        else if (this.fireType == this.laserFireType) {
+          bullet.y += this.bulletSpeed * delta;
+          bullet.x = this.boss.x;
+        } else if (this.fireType == this.spreadFireType) {
+          bullet.y += this.bulletSpeed * delta;
+          bullet.x += this.bulletSpeed * delta;
+        }
+      });
+    }
     this.collisionDetection();
   }
   collisionDetection() {
     this.bullets.forEach((bullet, bulletIndex) => {
       if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: bullet, b: _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.playerSprite })) {
-        _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
-        this.bullets.splice(bulletIndex, 1);
-        this.removeChild(bullet);
+        if (this.fireType == this.normalFireType)
+          _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(15);
+        else if (this.fireType == this.laserFireType)
+          _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(0.1);
+        if (this.fireType != this.laserFireType) {
+          this.bullets.splice(bulletIndex, 1);
+          this.removeChild(bullet);
+        }
       }
     });
   }
@@ -1117,6 +1228,7 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   fire() {
     if (this.bullets.length >= this.maxBullets) {
       let b = this.bullets.shift();
+      b.visible = false;
       this.removeChild(b);
       b.destroy();
     }
@@ -1136,7 +1248,6 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.lastBulletTime = currentTime;
   }
   update(delta) {
-    console.log(this.bullets.length);
     if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.died) {
       this.bullets.forEach((bullet) => {
         this.removeChild(bullet);
@@ -1156,13 +1267,14 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.bullets.forEach((bullet, bulletIndex) => {
       this.spawner.spawns.forEach((enemy, enemyIndex) => {
         if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
+          bullet.visible = false;
+          this.removeChild(bullet);
+          this.bullets.splice(bulletIndex, 1);
           enemy.attacked();
           if (enemy.health <= 0) {
             this.spawner.spawns.splice(enemyIndex, 1);
             enemy.kill();
           }
-          this.bullets.splice(bulletIndex, 1);
-          this.removeChild(bullet);
         }
       });
     });
@@ -1194,6 +1306,7 @@ __webpack_require__.r(__webpack_exports__);
 class Enemy1 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   constructor() {
     super();
+    this.type = "enemy1";
     const enemyTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("enemy1");
     this.enemySprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(enemyTexture);
     this.enemySprite.anchor.set(0.5);
@@ -1223,8 +1336,7 @@ class Enemy1 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.attacking = true;
     console.log("Enemy attacked");
     this.interval = setInterval(() => {
-      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
-      this.attacking = false;
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(10);
       clearInterval(this.interval);
     }, 200);
   }
@@ -1301,6 +1413,7 @@ __webpack_require__.r(__webpack_exports__);
 class Enemy2 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
   constructor() {
     super();
+    this.type = "enemy2";
     const enemyTexture = pixi_js__WEBPACK_IMPORTED_MODULE_0__.Texture.from("enemy2");
     this.enemySprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Sprite(enemyTexture);
     this.enemySprite.anchor.set(0.5);
@@ -1320,8 +1433,7 @@ class Enemy2 extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.attacking = true;
     console.log("Enemy2 attacked");
     this.interval = setInterval(() => {
-      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked();
-      this.attacking = false;
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(10);
       clearInterval(this.interval);
     }, 200);
   }
@@ -1506,10 +1618,10 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.addChild(this.playerSprite);
     this.x = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2;
     this.y = _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2 + playerSize * 5;
-    this.zIndex = 1;
+    this.zIndex = 2;
     this.died = false;
     this.point = 0;
-    this.level = 3;
+    this.level = 1;
     this.maxHealth = 50;
     this.health = this.maxHealth;
     this.boostCounter = 0;
@@ -1526,12 +1638,12 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.lastPosition = this.position.clone();
     this.counterUpdatePosition = 0;
   }
-  attacked() {
-    this.health -= 10;
-    this.alpha = 0.5;
+  attacked(dame) {
+    this.health -= dame;
+    this.playerSprite.alpha = 0.5;
     setTimeout(() => {
-      this.alpha = 1;
-    }, 200);
+      this.playerSprite.alpha = 1;
+    }, 300);
     if (this.health <= 0) {
       this.died = true;
     }
@@ -1577,11 +1689,13 @@ class Player extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     if (this.point == 10) {
       this.level = 2;
       this.maxHealth = 60;
+      this.health = this.maxHealth;
       this.isLevelUp = true;
     }
-    if (this.point == 20) {
+    if (this.point == 50) {
       this.level = 3;
       this.maxHealth = 70;
+      this.health = this.maxHealth;
       this.isLevelUp = true;
     }
   }
@@ -1669,35 +1783,58 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Spawner: () => (/* binding */ Spawner)
 /* harmony export */ });
-/* harmony import */ var _manager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../manager */ "./src/js/manager.js");
-/* harmony import */ var _boss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./boss */ "./src/js/entity/boss.js");
-/* harmony import */ var _enemy1__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./enemy1 */ "./src/js/entity/enemy1.js");
-/* harmony import */ var _enemy2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./enemy2 */ "./src/js/entity/enemy2.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+/* harmony import */ var _manager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager */ "./src/js/manager.js");
+/* harmony import */ var _boss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./boss */ "./src/js/entity/boss.js");
+/* harmony import */ var _enemy1__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./enemy1 */ "./src/js/entity/enemy1.js");
+/* harmony import */ var _enemy2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./enemy2 */ "./src/js/entity/enemy2.js");
+
 
 
 
 
 class Spawner {
   constructor() {
-    const spawnInterval = 500;
+    const spawnInterval = 300;
     this.maxSpawns = 5;
     this.spawns = [];
     setInterval(() => this.spawn(), spawnInterval);
   }
   spawn() {
-    if (this.spawns.length < this.maxSpawns) {
-      if (_manager__WEBPACK_IMPORTED_MODULE_0__.Manager.player.level == 1) {
-        const spawn = new _enemy1__WEBPACK_IMPORTED_MODULE_2__.Enemy1();
+    if (this.spawns.length < this.maxSpawns && _manager__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.won == false) {
+      if (_manager__WEBPACK_IMPORTED_MODULE_1__.Manager.player.level == 1) {
+        const spawn = new _enemy1__WEBPACK_IMPORTED_MODULE_3__.Enemy1();
         this.spawns.push(spawn);
-      } else if (_manager__WEBPACK_IMPORTED_MODULE_0__.Manager.player.level == 2) {
-        const spawn = new _enemy2__WEBPACK_IMPORTED_MODULE_3__.Enemy2();
-        this.spawns.push(spawn);
+      } else if (_manager__WEBPACK_IMPORTED_MODULE_1__.Manager.player.level == 2) {
+        this.maxSpawns = 7;
+        const random = Math.floor(Math.random() * 3);
+        if (random == 0) {
+          const enemy1 = new _enemy1__WEBPACK_IMPORTED_MODULE_3__.Enemy1();
+          this.spawns.push(enemy1);
+        } else {
+          const enemy2 = new _enemy2__WEBPACK_IMPORTED_MODULE_4__.Enemy2();
+          this.spawns.push(enemy2);
+        }
       } else {
-        const spawn = new _boss__WEBPACK_IMPORTED_MODULE_1__.Boss();
-        this.maxSpawns = 1;
-        this.spawns.push(spawn);
+        this.maxSpawns = 3;
+        const random = Math.floor(Math.random() * 2);
+        if (random == 0) {
+          const enemy1 = new _enemy1__WEBPACK_IMPORTED_MODULE_3__.Enemy1();
+          this.spawns.push(enemy1);
+        } else {
+          const enemy2 = new _enemy2__WEBPACK_IMPORTED_MODULE_4__.Enemy2();
+          this.spawns.push(enemy2);
+        }
       }
     }
+    if (_manager__WEBPACK_IMPORTED_MODULE_1__.Manager.player.level == 3 && !this.addBoss) {
+      const boss = new _boss__WEBPACK_IMPORTED_MODULE_2__.Boss();
+      _pixi_sound__WEBPACK_IMPORTED_MODULE_0__.sound.stop("playingsound");
+      _pixi_sound__WEBPACK_IMPORTED_MODULE_0__.sound.play("bosssound", { loop: true });
+      this.spawns.push(boss);
+      this.addBoss = true;
+    }
+    console.log(this.spawns.length);
   }
 }
 
@@ -1972,6 +2109,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _buffer_healing_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../buffer/healing.js */ "./src/js/buffer/healing.js");
 /* harmony import */ var _buffer_bufferHandle_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../buffer/bufferHandle.js */ "./src/js/buffer/bufferHandle.js");
 /* harmony import */ var _entity_enemy2_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../entity/enemy2.js */ "./src/js/entity/enemy2.js");
+/* harmony import */ var _ui_gameWinUI_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../ui/gameWinUI.js */ "./src/js/ui/gameWinUI.js");
+
 
 
 
@@ -2009,13 +2148,15 @@ class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_2__.IScene {
     this.addChild(this.gamePauseUI);
     this.gamePauseUI.visible = false;
     this.sortableChildren = true;
+    this.gameWinUI = new _ui_gameWinUI_js__WEBPACK_IMPORTED_MODULE_13__.GameWinUI();
+    this.won = false;
   }
   update(delta) {
     if (this.pausing == false) {
       this.gamePauseUI.visible = false;
       this.background.tilePosition.y += 1 * delta;
       this.gamePlayingUI.update(delta);
-      if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.isKilled == false)
+      if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.isKilled == false && this.won == false)
         _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.update(delta);
       _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.shooting.update(delta);
       _manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.bufferHandle.update(delta);
@@ -2024,12 +2165,20 @@ class Scene1 extends _manager_js__WEBPACK_IMPORTED_MODULE_2__.IScene {
         this.addChild(enemy);
       });
       if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.died && !this.isGameOverAdded) {
-        console.log("game over");
         this.addChild(this.gameOverUI);
         this.isGameOverAdded = true;
       }
+      if (this.won && !this.isGameWinAdded) {
+        this.addChild(this.gameWinUI);
+        _pixi_sound__WEBPACK_IMPORTED_MODULE_1__.sound.stop("bosssound");
+        _pixi_sound__WEBPACK_IMPORTED_MODULE_1__.sound.play("playingsound", { loop: true, volume: 0.5 });
+        this.isGameWinAdded = true;
+        this.removeChild(this.gamePlayingUI);
+      }
       if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.died)
         this.gameOverUI.update(delta);
+      if (this.won)
+        this.gameWinUI.update(delta);
       if (_manager_js__WEBPACK_IMPORTED_MODULE_2__.Manager.player.died && !this.removedChild) {
         this.removeChild(this.gamePlayingUI);
         this.removedChild = true;
@@ -2113,7 +2262,7 @@ class GameOverUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.gameOverBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
     this.gameReloadText.on("pointerdown", () => {
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__.Menu());
-      _pixi_sound__WEBPACK_IMPORTED_MODULE_3__.sound.stop("playingsound");
+      _pixi_sound__WEBPACK_IMPORTED_MODULE_3__.sound.stopAll();
     });
     this.addChild(this.gameOverBar);
     this.zIndex = 100;
@@ -2225,7 +2374,7 @@ class GamePauseUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.resumeBottonBar3.on("pointerdown", () => {
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__.Menu());
       _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.pausing = false;
-      _pixi_sound__WEBPACK_IMPORTED_MODULE_3__.sound.stop("playingsound");
+      _pixi_sound__WEBPACK_IMPORTED_MODULE_3__.sound.stopAll();
     });
     this.resumeBottonBar3.addChild(this.resumeBottonText3);
     this.gameResumeBar.addChild(this.resumeBottonBar1);
@@ -2334,6 +2483,28 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.levelUpText.visible = false;
     this.addChild(this.levelUpText);
     this.blinkCounter = 1;
+    this.bossTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 60,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#878180", "#ffffff"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.bossText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("BOSS", this.bossTextStyle);
+    this.bossText.style.fill = ["#cc1616"];
+    this.bossText.anchor.set(0.5);
+    this.bossText.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.height / 2);
+    this.bossText.visible = false;
+    this.addChild(this.bossText);
   }
   update(delta) {
     this.healthBar.width = this.healthBar.initalWidth * _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.health / _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.maxHealth;
@@ -2345,9 +2516,14 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.blinkCounter += delta * 0.1;
       this.levelUpText.alpha = Math.abs(Math.sin(this.blinkCounter));
     }
-    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp) {
-      console.log("call to play level up");
+    if (this.bossText.visible == true) {
+      this.blinkCounter += delta * 0.1;
+      this.bossText.alpha = Math.abs(Math.sin(this.blinkCounter));
+    }
+    if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp && _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.level != 3) {
       this.playLevelUp();
+    } else if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp && _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.level == 3) {
+      this.playBoss();
     }
   }
   playLevelUp() {
@@ -2362,6 +2538,97 @@ class GamePlayingUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       this.levelUpText.visible = false;
       this.soundPlayed = false;
     }, 2e3);
+  }
+  playBoss() {
+    this.bossText.visible = true;
+    setTimeout(() => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.isLevelUp = false;
+      this.bossText.visible = false;
+    }, 5e3);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/js/ui/gameWinUI.js":
+/*!********************************!*\
+  !*** ./src/js/ui/gameWinUI.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GameWinUI: () => (/* binding */ GameWinUI)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../manager.js */ "./src/js/manager.js");
+/* harmony import */ var _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../scenes/menu.js */ "./src/js/scenes/menu.js");
+/* harmony import */ var _pixi_sound__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @pixi/sound */ "./node_modules/@pixi/sound/lib/index.mjs");
+
+
+
+
+class GameWinUI extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
+  constructor() {
+    super();
+    this.gameOverBar = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    this.bigTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 50,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#60a7b3", "#e4d7bf"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.smallTextStyle = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.TextStyle({
+      fontFamily: "Arial Black",
+      fontSize: 25,
+      // fontStyle: 'italic',
+      fontWeight: "bold",
+      fill: ["#60a7b3", "#e4d7bf"],
+      stroke: "#4a1850",
+      strokeThickness: 5,
+      dropShadow: true,
+      dropShadowColor: "#000000",
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6,
+      wordWrap: true,
+      wordWrapWidth: 440
+    });
+    this.gameOverText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("YOU WON!", this.bigTextStyle);
+    this.gameOverText.anchor.set(0.5);
+    this.gameOverText.zIndex = 2;
+    this.gameOverBar.addChild(this.gameOverText);
+    this.gameReloadText = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Text("Return to menu", this.smallTextStyle);
+    this.gameReloadText.anchor.set(0.5);
+    this.gameReloadText.zIndex = 2;
+    this.gameReloadText.interactive = true;
+    this.gameReloadText.cursor = "pointer";
+    this.gameReloadText.position.set(0, 50);
+    this.gameOverBar.addChild(this.gameReloadText);
+    this.gameOverBar.position.set(_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.width / 2, _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.app.screen.height / 2);
+    this.gameReloadText.on("pointerdown", () => {
+      _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.changeScene(new _scenes_menu_js__WEBPACK_IMPORTED_MODULE_2__.Menu());
+      _pixi_sound__WEBPACK_IMPORTED_MODULE_3__.sound.stopAll();
+    });
+    this.addChild(this.gameOverBar);
+    this.zIndex = 100;
+    this.blinkCounter = 1;
+  }
+  update(delta) {
+    this.blinkCounter += delta * 0.1;
+    this.gameReloadText.alpha = Math.abs(Math.sin(this.blinkCounter));
   }
 }
 
@@ -2474,11 +2741,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Utils: () => (/* binding */ Utils)
 /* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/index.mjs");
+/* harmony import */ var _manager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./manager.js */ "./src/js/manager.js");
+
+
 class Utils {
   constructor() {
   }
   rectsIntersect({ a, b }) {
-    return a.getGlobalPosition().x + a.width > b.getGlobalPosition().x - b.width / 2 && a.getGlobalPosition().x < b.getGlobalPosition().x - b.width / 2 + b.width && a.getGlobalPosition().y + a.height > b.getGlobalPosition().y - b.height / 2 && a.getGlobalPosition().y < b.getGlobalPosition().y + b.height - b.height / 2;
+    return a.getGlobalPosition().x - a.width / 2 < b.getGlobalPosition().x + b.width / 2 && a.getGlobalPosition().x + a.width / 2 > b.getGlobalPosition().x - b.width / 2 && a.getGlobalPosition().y - a.height / 2 < b.getGlobalPosition().y + b.height / 2 && a.getGlobalPosition().y + a.height / 2 > b.getGlobalPosition().y - b.height / 2;
   }
 }
 
