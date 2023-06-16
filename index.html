@@ -1265,20 +1265,23 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.collisionDetection();
   }
   collisionDetection() {
-    this.bullets.forEach((bullet, bulletIndex) => {
-      this.spawner.spawns.forEach((enemy, enemyIndex) => {
+    for (let x = 0; x < this.bullets.length; x++) {
+      const bullet = this.bullets[x];
+      for (let y = 0; y < this.spawner.spawns.length; y++) {
+        const enemy = this.spawner.spawns[y];
         if (_manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
+          let tmpBullet = this.bullets.indexOf(bullet);
           bullet.visible = false;
           this.removeChild(bullet);
-          this.bullets.splice(bulletIndex, 1);
+          this.bullets.splice(x, 1);
           enemy.attacked();
           if (enemy.health <= 0) {
-            this.spawner.spawns.splice(enemyIndex, 1);
+            this.spawner.spawns.splice(y, 1);
             enemy.kill();
           }
         }
-      });
-    });
+      }
+    }
   }
 }
 
