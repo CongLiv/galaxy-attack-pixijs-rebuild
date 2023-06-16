@@ -9,7 +9,7 @@ export class BossBullet extends PIXI.Container {
         this.boss = boss;
         this.maxBullets = 30;
         this.initBulletSpeed = 4;
-        this.initBulletCooldown = 1000;
+        this.initBulletCooldown = 1100;
         this.bulletSpeed = this.initBulletSpeed;
         this.bulletCooldown = this.initBulletCooldown;
         this.lastBulletTime = 0;
@@ -109,7 +109,8 @@ export class BossBullet extends PIXI.Container {
 
         // await remove all bullet
         this.bullets.forEach((bullet) => {
-            this.removeChild(bullet);
+            this.removeChild(bullet); 
+            bullet.destroy();
         });
         this.bullets = [];
 
@@ -166,7 +167,7 @@ export class BossBullet extends PIXI.Container {
             if (Manager.Utils.rectsIntersect({ a: bullet, b: Manager.player.playerSprite })) {
 
                 if (this.fireType == this.normalFireType) Manager.player.attacked(15);
-                else if (this.fireType == this.laserFireType) Manager.player.attacked(0.1);
+                else if (this.fireType == this.laserFireType) Manager.player.attacked(0.075);
 
                 if (this.fireType != this.laserFireType) {
                     this.bullets.splice(bulletIndex, 1);
