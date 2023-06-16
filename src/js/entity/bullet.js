@@ -8,7 +8,7 @@ export class Bullet extends PIXI.Container {
         super();
         this.spawner = spawner;
         this.maxBullets = 30;
-        this.initBulletSpeed = 20
+        this.initBulletSpeed = 20;
         this.initBulletCooldown = 250;
         this.bulletSpeed = this.initBulletSpeed;
         this.bulletCooldown = this.initBulletCooldown;
@@ -44,8 +44,8 @@ export class Bullet extends PIXI.Container {
         bullet.position.set(Manager.player.x, Manager.player.y - 50);
         this.bullets.push(bullet);
         this.addChild(bullet);
-        
-        sound.play('bulletsound', {loop: false, volume: 0.1});
+
+        sound.play('bulletsound', { loop: false, volume: 0.1 });
 
         this.lastBulletTime = currentTime;
     }
@@ -54,7 +54,7 @@ export class Bullet extends PIXI.Container {
 
     update(delta) {
 
-        
+
         if (Manager.player.died) {
             // remove all bullet
             this.bullets.forEach((bullet) => {
@@ -71,61 +71,52 @@ export class Bullet extends PIXI.Container {
         });
 
         this.collisionDetection();
-       
+
 
     }
 
     collisionDetection() {
-        for (let x = 0; x < this.bullets.length; x++) {
-            const bullet = this.bullets[x];
-            for (let y = 0; y < this.spawner.spawns.length; y++) {
-                const enemy = this.spawner.spawns[y];
+
+
+
+        let indexBulletNeedRemove = [];
+
+        this.bullets.forEach((bullet, bulletIndex) => {
+            this.spawner.spawns.forEach((enemy, enemyIndex) => {
                 if (Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
-                    let tmpBullet = this.bullets.indexOf(bullet);
-                    // console.log(tmpBullet);
-                    // if(tmpBullet > -1){
-                    //     bullet.visible = false;
-                    //     this.removeChild(bullet);
-                    //     this.bullets.splice(x, 1);
-                    // }
 
-                    bullet.visible = false;
-                    this.removeChild(bullet);
-                    this.bullets.splice(x, 1);
-                
+                    indexBulletNeedRemove.push(bulletIndex);
                     enemy.attacked();
-
                     if (enemy.health <= 0) {
-                        this.spawner.spawns.splice(y, 1);
+                        this.spawner.spawns.splice(enemyIndex, 1);
                         enemy.kill();
                     }
-                    // console.log("Point: " + Manager.player.point);
-                    
+
                 }
-            }
+            });
+        });
+
+        // indexBulletNeedRemove.forEach((index) => {
+        //     let b = this.bullets[index];
+        //     b.visible = false;
+        //     this.removeChild(b);
+        //     b.destroy();
             
-        }
-        // this.bullets.forEach((bullet, bulletIndex) => {
-        //     this.spawner.spawns.forEach((enemy, enemyIndex) => {
-        //         if (Manager.Utils.rectsIntersect({ a: bullet, b: enemy.enemySprite })) {
-
-        //             // bullet.visible = false;
-        //             // this.removeChild(bullet);
-        //             // this.bullets.splice(bulletIndex, 1);
-        //             enemy.attacked();
-
-        //             if (enemy.health <= 0) {
-        //                 this.spawner.spawns.splice(enemyIndex, 1);
-        //                 enemy.kill();
-        //             }
-                                        
-        //             // console.log("Point: " + Manager.player.point);
-
-                    
-        //         }
-        //     });
         // });
-    }
 
+        // removechild then destroy
+        indexBulletNeedRemove.forEach((index) => {
+            let b = this.bullets[index];
+            this.removeChild(b);
+            this.bullets.splice(index, 1);
+            //b.visible = false;
+            //b.destroy();
+        });
+
+
+
+        
+    }
+    
 
 }

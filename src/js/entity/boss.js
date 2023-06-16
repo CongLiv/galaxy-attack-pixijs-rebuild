@@ -41,7 +41,7 @@ export class Boss extends PIXI.Container {
     }
 
     update(delta) {
-
+        console.log(this.health);
         this.y += this.speed * delta;
         if (this.y > Manager.height / 4) {
             this.y = Manager.height / 4;
