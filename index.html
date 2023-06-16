@@ -1080,7 +1080,7 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     this.boss = boss;
     this.maxBullets = 30;
     this.initBulletSpeed = 4;
-    this.initBulletCooldown = 1e3;
+    this.initBulletCooldown = 1100;
     this.bulletSpeed = this.initBulletSpeed;
     this.bulletCooldown = this.initBulletCooldown;
     this.lastBulletTime = 0;
@@ -1148,6 +1148,7 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.removeChild(this);
     this.bullets.forEach((bullet) => {
       this.removeChild(bullet);
+      bullet.destroy();
     });
     this.bullets = [];
     _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.currentScene.addChild(this);
@@ -1182,7 +1183,7 @@ class BossBullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
         if (this.fireType == this.normalFireType)
           _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(15);
         else if (this.fireType == this.laserFireType)
-          _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(0.1);
+          _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.attacked(0.075);
         if (this.fireType != this.laserFireType) {
           this.bullets.splice(bulletIndex, 1);
           this.removeChild(bullet);
@@ -1233,7 +1234,7 @@ class Bullet extends pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container {
       b.destroy();
     }
     this.bullets.forEach((bullet2) => this.removeChild(bullet2));
-    this.bullets = this.bullets.filter((bullet2) => Math.abs(bullet2.position.y - _manager_js__WEBPACK_IMPORTED_MODULE_1__.Manager.player.y) < 512 * 2);
+    this.bullets = this.bullets.filter((bullet2) => bullet2.position.y > 0);
     this.bullets.forEach((bullet2) => this.addChild(bullet2));
     const currentTime = Date.now();
     if (currentTime - this.lastBulletTime < this.bulletCooldown) {
@@ -39581,9 +39582,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scenes_loaderScene_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scenes/loaderScene.js */ "./src/js/scenes/loaderScene.js");
 
 
-_manager_js__WEBPACK_IMPORTED_MODULE_0__.Manager.initialize(512, 512 * 2, 6591981);
-const loady = new _scenes_loaderScene_js__WEBPACK_IMPORTED_MODULE_1__.LoaderScene();
-_manager_js__WEBPACK_IMPORTED_MODULE_0__.Manager.changeScene(loady);
+window.onload = () => {
+  _manager_js__WEBPACK_IMPORTED_MODULE_0__.Manager.initialize(512, 512 * 2, 6591981);
+  const loady = new _scenes_loaderScene_js__WEBPACK_IMPORTED_MODULE_1__.LoaderScene();
+  _manager_js__WEBPACK_IMPORTED_MODULE_0__.Manager.changeScene(loady);
+};
 
 })();
 
