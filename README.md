@@ -1,6 +1,6 @@
 # galaxy-attack-pixijs-rebuild
 
-<h3 href = "https://congliv.github.io/galaxy-attack-pixijs-rebuild/">Live Demo</h3>
+<h3><a href = "https://congliv.github.io/galaxy-attack-pixijs-rebuild/">Live Demo</a></h3>
 
 <h3> Install dependencies </h3>
 
